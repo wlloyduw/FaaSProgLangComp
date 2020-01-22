@@ -1,0 +1,15 @@
+{
+	"README": "See ./deploy/README.md for help!",
+
+	"functionName": "python-hello",
+	
+	"lambdaRoleARN": "arn:aws:iam::857205555574:role/service-role/simple_microservice_role",
+	"lambdaSubnets": "",
+	"lambdaSecurityGroups": "",
+
+	"test": {
+		"name": "Bob",
+		"bucketname": "testbucketohiodap",
+		"key": "562sales_small.csv"
+	}
+}

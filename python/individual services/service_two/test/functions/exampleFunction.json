@@ -1,0 +1,6 @@
+{
+	"function": "python-service-two",
+    "platform": "AWS Lambda",
+    "source": "../python_template",
+    "endpoint": ""
+}

@@ -1,0 +1,31 @@
+{
+	"README": "See ./deploy/README.md for help!",
+
+	"functionName":     "ServiceThreeGo",
+
+	"lambdaHandler": "main",
+	"lambdaRoleARN": "arn:aws:iam::576608023434:role/lambda.with.everything",
+	"lambdaSubnets": "subnet-aabea6c2,subnet-9e9c25d2,subnet-0d085977",
+	"lambdaSecurityGroups": "sg-d1860cb3",
+
+	"memorySetting": "3008",
+
+	"test": {
+		"bucketname": "df.service.one",
+		"key": "QueryResults.csv",
+		"tablename": "SalesData",
+		"filterBy": {
+			"Region": ["Australia_and_Oceania"],
+			"Item_Type": ["Office_Supplies"],
+			"Sales_Channel": ["Offline"],
+			"Order_Priority": ["Medium"],
+			"Country": ["Fiji"]
+		},
+		"aggregateBy": {
+			"max": ["Units_Sold"],
+			"min": ["Units_Sold"],
+			"avg": ["Order_Processing_Time", "Gross_Margin", "Units_Sold"],
+			"sum": ["Units_Sold", "Total_Revenue", "Total_Profit"]
+		}
+	}
+}

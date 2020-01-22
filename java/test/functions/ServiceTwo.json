@@ -1,0 +1,6 @@
+{
+	"function": "ServiceTwo",
+    "platform": "AWS Lambda",
+    "source": "../../main",
+    "endpoint": ""
+}

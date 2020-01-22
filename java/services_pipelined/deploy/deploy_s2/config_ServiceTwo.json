@@ -1,0 +1,35 @@
+{
+	"README": "See ./deploy/README.md for help!",
+
+	"functionName":     "ServiceTwo",
+
+	"lambdaHandler": "lambda.ServiceTwo::handleRequest",
+	"lambdaRoleARN": "arn:aws:iam::857205555574:role/lambda_basic_execution",
+	"lambdaSubnets": "subnet-1c2a7d66 (172.31.16.0/20) | us-east-2b, subnet-0a514862 (172.31.0.0/20) | us-east-2a, subnet-1b6ed157 (172.31.32.0/20) | us-east-2c",
+	"lambdaSecurityGroups": "sg-12ae6d70 (default)",
+
+
+
+
+
+
+
+	"test": {
+		"bucketname": "testbucketohiodap",
+	"key": "562sales_small_new.csv",
+	"filterby": { 
+		"Region": ["Austrailia, Oceania"],
+		"Item_Type":["Office_Supplies"],
+		"Sales_Channel":["Offline"],
+		"Order_Priority":["Medium"],
+		"Country":["Fiji"]
+	},
+	"aggregateby" : {
+		"max":["Units_Sold"],
+		"min":["Units_Sold"],
+		"avg":["Order_Processing_Time","Gross_Margin","Units_Sold"],
+		"sum":["Units_Sold","Total_Revenue","Total_Profit"]
+	},
+	"tablename" : "mytable"
+	}
+}

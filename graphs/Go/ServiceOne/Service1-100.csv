@@ -1,0 +1,66 @@
+2019-12-12 20:48:21.137373 - Python Partest Version 0.5
+Setting up test: runsperthread=1 threads=50 totalruns=50 payload=[{'bucketname': 'df.service.one' 'key': '100_Sales_Records.csv'}]
+
+Raw results of each run:
+1_run_id,2_thread_id,contextSwitchesDelta,cpuCores,cpuIdleDelta,cpuIowaitDelta,cpuIrqDelta,cpuKrnDelta,cpuModel,cpuNiceDelta,cpuSoftIrqDelta,cpuType,cpuUsrDelta,frameworkRuntime,latency,message,payload,roundTripTime,runtime,userRuntime,vmcpustealDelta
+0,2,215,2,11,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5312.01,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5371.01,59,59,0
+0,3,609,2,15,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,1,0,5326.81,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5407.81,81,81,1
+0,0,250,2,29,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5317.86,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5466.86,149,149,0
+0,1,232,2,6,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5437.05,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5469.05,32,32,0
+0,7,83,2,10,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,1,0,5414.58,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5469.58,55,55,0
+0,6,293,2,9,0,0,0,62,0,1,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,1,0,5438.56,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5481.56,43,42,0
+0,10,87,2,12,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,1,0,5455.53,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5516.53,61,61,0
+0,21,120,2,9,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5354.59,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5400.59,46,46,0
+0,8,81,2,10,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5685.98,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5737.98,52,52,0
+0,5,89,2,9,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5762.3,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5810.3,48,47,0
+0,14,72,2,8,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5637.53,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5680.53,43,43,0
+0,40,370,2,15,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,1,0,5480.51,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5560.51,80,80,0
+0,29,245,2,7,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5634.16,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5668.16,34,34,0
+0,16,232,2,6,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5721.26,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5754.26,33,33,0
+0,34,268,2,12,0,0,0,62,0,1,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5581.96,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5646.96,65,65,0
+0,33,201,2,11,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,2,0,5585.07,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5655.07,70,70,0
+0,9,204,2,6,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5846.74,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5879.74,33,32,0
+0,31,198,2,14,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5624.89,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5699.89,75,74,0
+0,30,72,2,14,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5631.95,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5700.95,69,69,0
+0,22,177,2,7,0,0,0,62,0,1,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5722.25,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5757.25,35,35,0
+0,39,172,2,7,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5659.23,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5697.23,38,38,0
+0,28,248,2,11,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,1,0,5718.0,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5778.0,60,60,0
+0,15,141,2,11,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5792.6,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5848.6,56,56,0
+0,13,203,2,18,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,1,0,5793.29,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5885.29,92,92,0
+0,19,152,2,12,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,1,0,5773.94,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5835.94,62,62,0
+0,48,188,2,9,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5625.75,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5670.75,45,45,0
+0,41,513,2,11,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5665.87,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5724.87,59,59,0
+0,25,84,2,10,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5767.22,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5815.22,48,48,0
+0,32,275,2,9,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5741.84,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5790.84,49,49,0
+0,4,79,2,11,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5976.03,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},6032.03,56,56,0
+0,23,71,2,6,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5814.02,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5844.02,30,30,0
+0,35,257,2,6,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5739.48,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5771.48,32,32,0
+0,37,65,2,9,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,1,0,5724.79,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5774.79,50,49,0
+0,24,218,2,6,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,1,0,5821.58,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5855.58,34,34,0
+0,18,69,2,10,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5848.38,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5898.38,50,50,0
+0,44,82,2,6,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5719.05,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5751.05,32,32,0
+0,36,84,2,13,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,1,0,5733.46,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5799.46,66,66,0
+0,47,76,2,7,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5706.66,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5738.66,32,32,0
+0,17,251,2,6,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5886.19,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5920.19,34,33,0
+0,43,382,2,11,0,0,1,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,1,0,5701.56,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5760.56,59,59,0
+0,12,385,2,9,0,0,2,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,1,0,5927.37,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5979.37,52,51,0
+0,11,356,2,12,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5946.46,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},6006.46,60,60,0
+0,38,78,2,13,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5736.96,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5800.96,64,64,0
+0,45,305,2,8,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5725.22,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5769.22,44,44,0
+0,20,79,2,14,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5859.92,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5928.92,69,69,0
+0,42,71,2,6,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5772.64,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5802.64,30,30,0
+0,49,269,2,6,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5733.14,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5766.14,33,33,0
+0,46,70,2,6,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5751.98,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5782.98,31,31,0
+0,27,408,2,12,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5846.89,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5909.89,63,63,1
+0,26,404,2,14,0,0,0,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,0,0,5859.22,bucketname = df.service.one; key = 100_Sales_Records.csv,{'bucketname': 'df.service.one'; 'key': '100_Sales_Records.csv'},5931.22,72,72,0
+Successful Runs: 50
+
+Category cpuType:
+cpuType,uses,avg_contextSwitchesDelta,avg_cpuCores,avg_cpuIdleDelta,avg_cpuIowaitDelta,avg_cpuIrqDelta,avg_cpuKrnDelta,avg_cpuNiceDelta,avg_cpuSoftIrqDelta,avg_cpuUsrDelta,avg_frameworkRuntime,avg_latency,avg_roundTripTime,avg_runtime,avg_userRuntime,avg_vmcpustealDelta
+Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,50,202.66,2.00,10.18,0.00,0.00,0.06,0.00,0.06,0.30,0.00,5686.81,5740.11,53.30,53.16,0.04
+Total number of unique cpuTypes: 1
+
+Category zAll:
+zAll,uses,avg_contextSwitchesDelta,avg_cpuCores,avg_cpuIdleDelta,avg_cpuIowaitDelta,avg_cpuIrqDelta,avg_cpuKrnDelta,avg_cpuNiceDelta,avg_cpuSoftIrqDelta,avg_cpuUsrDelta,avg_frameworkRuntime,avg_latency,avg_roundTripTime,avg_runtime,avg_userRuntime,avg_vmcpustealDelta
+Final Results:,50,202.66,2.00,10.18,0.00,0.00,0.06,0.00,0.06,0.30,0.00,5686.81,5740.11,53.30,53.16,0.04
+Total number of unique zAlls: 1

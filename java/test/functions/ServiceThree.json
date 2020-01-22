@@ -1,0 +1,6 @@
+{
+	"function": "ServiceThree",
+    "platform": "AWS Lambda",
+    "source": "../../main",
+    "endpoint": ""
+}

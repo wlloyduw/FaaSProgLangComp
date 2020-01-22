@@ -1,0 +1,18 @@
+{
+	"README": "See ./deploy/README.md for help!",
+
+	"functionName":     "test_go",
+
+	"lambdaHandler": "main",
+	"lambdaRoleARN": "arn:aws:iam::576608023434:role/lambda.with.everything",
+	"lambdaSubnets": "",
+	"lambdaSecurityGroups": "",
+
+	"memorySetting": "1024",
+
+	"test": {
+		"name": "Bob",
+		"bucket": "somebucket",
+		"key": "somekey"
+	}
+}

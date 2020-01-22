@@ -1,0 +1,31 @@
+2019-12-14 19:20:15.329413 - Python Partest Version 0.5
+Setting up test: runsperthread=1 threads=1 totalruns=1 payload=[{'bucketname': 'cvs.bucket.reh' 'key': '1000000_newdata.csv' 'tablename': 'mytable'}]
+
+Raw results of each run:
+1_run_id,2_thread_id,bucketname,containerID,cpuIdle,cpuIdleDelta,cpuIowait,cpuIowaitDelta,cpuIrq,cpuIrqDelta,cpuKrn,cpuKrnDelta,cpuModel,cpuNice,cpuNiceDelta,cpuSoftIrq,cpuSoftIrqDelta,cpuType,cpuUsr,cpuUsrDelta,frameworkRuntime,iteration,key,latency,newcontainer,payload,roundTripTime,runtime,test val,uuid,vmID,vmID[iteration],vmcpusteal,vmcpustealDelta,vmuptime
+0,0,bucketname cvs.bucket.reh!,2019/12/15/[$LATEST]bcb060c8610d46bc9ddeb37b30484bb3,1176134,22110,3,0,0,0,577,151,Intel(R) Xeon(R) Processor @ 2.50GHz,0,0,59,21,Intel(R) Xeon(R) Processor @ 2.50GHz - Model Intel(R) Xeon(R) Processor @ 2.50GHz,7128,3517,24.37,1,1000000_newdata.csv,3551.9,0,{'bucketname': 'cvs.bucket.reh'; 'key': '1000000_newdata.csv'; 'tablename': 'mytable'},133013.9,129462.45,Region;Country;Item Type;Sales Channel;Order Priority;Order Date;Order ID;Ship Date;Units Sold;Unit Price;Unit Cost;Total Revenue;Total Cost;Total Profit; Oder Processing Time; Gross Margin,d24d9d50-3dd1-43e8-b064-489efe1b7ee0,AXNx85,AXNx85[1],37,11,1576373258
+0,0,bucketname cvs.bucket.reh!,2019/12/15/[$LATEST]bcb060c8610d46bc9ddeb37b30484bb3,1199067,24087,3,0,0,0,761,137,Intel(R) Xeon(R) Processor @ 2.50GHz,0,0,81,21,Intel(R) Xeon(R) Processor @ 2.50GHz - Model Intel(R) Xeon(R) Processor @ 2.50GHz,10713,3480,23.73,2,1000000_newdata.csv,4369.51,0,{'bucketname': 'cvs.bucket.reh'; 'key': '1000000_newdata.csv'; 'tablename': 'mytable'},143545.51,139176.91,Region;Country;Item Type;Sales Channel;Order Priority;Order Date;Order ID;Ship Date;Units Sold;Unit Price;Unit Cost;Total Revenue;Total Cost;Total Profit; Oder Processing Time; Gross Margin,d24d9d50-3dd1-43e8-b064-489efe1b7ee0,AXNx85,AXNx85[2],49,6,1576373258
+0,0,bucketname cvs.bucket.reh!,2019/12/15/[$LATEST]bcb060c8610d46bc9ddeb37b30484bb3,1223660,23328,3,0,0,0,932,121,Intel(R) Xeon(R) Processor @ 2.50GHz,0,0,102,19,Intel(R) Xeon(R) Processor @ 2.50GHz - Model Intel(R) Xeon(R) Processor @ 2.50GHz,14260,3463,24.77,3,1000000_newdata.csv,2964.46,0,{'bucketname': 'cvs.bucket.reh'; 'key': '1000000_newdata.csv'; 'tablename': 'mytable'},138168.46,135204.35,Region;Country;Item Type;Sales Channel;Order Priority;Order Date;Order ID;Ship Date;Units Sold;Unit Price;Unit Cost;Total Revenue;Total Cost;Total Profit; Oder Processing Time; Gross Margin,d24d9d50-3dd1-43e8-b064-489efe1b7ee0,AXNx85,AXNx85[3],55,9,1576373258
+0,0,bucketname cvs.bucket.reh!,2019/12/15/[$LATEST]bcb060c8610d46bc9ddeb37b30484bb3,1247605,26202,3,0,0,0,1080,148,Intel(R) Xeon(R) Processor @ 2.50GHz,0,0,121,21,Intel(R) Xeon(R) Processor @ 2.50GHz - Model Intel(R) Xeon(R) Processor @ 2.50GHz,17795,3426,23.26,4,1000000_newdata.csv,3573.16,0,{'bucketname': 'cvs.bucket.reh'; 'key': '1000000_newdata.csv'; 'tablename': 'mytable'},153012.16,149439.05,Region;Country;Item Type;Sales Channel;Order Priority;Order Date;Order ID;Ship Date;Units Sold;Unit Price;Unit Cost;Total Revenue;Total Cost;Total Profit; Oder Processing Time; Gross Margin,d24d9d50-3dd1-43e8-b064-489efe1b7ee0,AXNx85,AXNx85[4],66,4,1576373258
+0,0,bucketname cvs.bucket.reh!,2019/12/15/[$LATEST]bcb060c8610d46bc9ddeb37b30484bb3,1274269,50109,3,0,0,0,1259,142,Intel(R) Xeon(R) Processor @ 2.50GHz,0,0,142,23,Intel(R) Xeon(R) Processor @ 2.50GHz - Model Intel(R) Xeon(R) Processor @ 2.50GHz,21291,3456,23.38,5,1000000_newdata.csv,2700.52,0,{'bucketname': 'cvs.bucket.reh'; 'key': '1000000_newdata.csv'; 'tablename': 'mytable'},271877.52,269177.01,Region;Country;Item Type;Sales Channel;Order Priority;Order Date;Order ID;Ship Date;Units Sold;Unit Price;Unit Cost;Total Revenue;Total Cost;Total Profit; Oder Processing Time; Gross Margin,d24d9d50-3dd1-43e8-b064-489efe1b7ee0,AXNx85,AXNx85[5],70,7,1576373258
+Successful Runs: 5
+
+Category containerID:
+containerID,uses,avg_cpuIdleDelta,avg_cpuIowaitDelta,avg_cpuIrqDelta,avg_cpuKrnDelta,avg_cpuNiceDelta,avg_cpuSoftIrqDelta,avg_cpuUsrDelta,avg_frameworkRuntime,avg_iteration,avg_latency,sum_newcontainer,avg_roundTripTime,avg_runtime,avg_vmcpusteal,avg_vmcpustealDelta,avg_vmuptime
+2019/12/15/[$LATEST]bcb060c8610d46bc9ddeb37b30484bb3,5,29167.20,0.00,0.00,139.80,0.00,21.00,3468.40,23.90,3.00,3431.91,0,167923.51,164491.95,55.40,7.40,1576373258.00
+Total number of unique containerIDs: 1
+
+Category cpuType:
+cpuType,uses,avg_cpuIdleDelta,avg_cpuIowaitDelta,avg_cpuIrqDelta,avg_cpuKrnDelta,avg_cpuNiceDelta,avg_cpuSoftIrqDelta,avg_cpuUsrDelta,avg_frameworkRuntime,avg_iteration,avg_latency,sum_newcontainer,avg_roundTripTime,avg_runtime,avg_vmcpusteal,avg_vmcpustealDelta,avg_vmuptime
+Intel(R) Xeon(R) Processor @ 2.50GHz - Model Intel(R) Xeon(R) Processor @ 2.50GHz,5,29167.20,0.00,0.00,139.80,0.00,21.00,3468.40,23.90,3.00,3431.91,0,167923.51,164491.95,55.40,7.40,1576373258.00
+Total number of unique cpuTypes: 1
+
+Category vmID:
+vmID,uses,avg_cpuIdleDelta,avg_cpuIowaitDelta,avg_cpuIrqDelta,avg_cpuKrnDelta,avg_cpuNiceDelta,avg_cpuSoftIrqDelta,avg_cpuUsrDelta,avg_frameworkRuntime,avg_iteration,avg_latency,sum_newcontainer,avg_roundTripTime,avg_runtime,avg_vmcpusteal,avg_vmcpustealDelta,avg_vmuptime
+AXNx85,5,29167.20,0.00,0.00,139.80,0.00,21.00,3468.40,23.90,3.00,3431.91,0,167923.51,164491.95,55.40,7.40,1576373258.00
+Total number of unique vmIDs: 1
+
+Category zAll:
+zAll,uses,avg_cpuIdleDelta,avg_cpuIowaitDelta,avg_cpuIrqDelta,avg_cpuKrnDelta,avg_cpuNiceDelta,avg_cpuSoftIrqDelta,avg_cpuUsrDelta,avg_frameworkRuntime,avg_iteration,avg_latency,sum_newcontainer,avg_roundTripTime,avg_runtime,avg_vmcpusteal,avg_vmcpustealDelta,avg_vmuptime
+Final Results:,5,29167.20,0.00,0.00,139.80,0.00,21.00,3468.40,23.90,3.00,3431.91,0,167923.51,164491.95,55.40,7.40,1576373258.00
+Total number of unique zAlls: 1

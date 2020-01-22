@@ -1,0 +1,21 @@
+2019-12-12 21:04:46.280881 - Python Partest Version 0.5
+Setting up test: runsperthread=1 threads=1 totalruns=1 payload=[{'bucketname': 'df.service.one' 'key': 'edited_5000_Sales_Records.csv' 'tablename': 'SalesData'}]
+
+Raw results of each run:
+1_run_id,2_thread_id,contextSwitchesDelta,cpuCores,cpuIdleDelta,cpuIowaitDelta,cpuIrqDelta,cpuKrnDelta,cpuModel,cpuNiceDelta,cpuSoftIrqDelta,cpuType,cpuUsrDelta,frameworkRuntime,iteration,latency,message,payload,roundTripTime,runtime,userRuntime,vmcpustealDelta
+0,0,5365,2,124,0,0,0,62,0,2,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,12,0,1,805.01,bucketname is = df.service.one! This is an attributed added to the Inspector!,{'bucketname': 'df.service.one'; 'key': 'edited_5000_Sales_Records.csv'; 'tablename': 'SalesData'},1516.01,711,711,1
+0,0,5232,2,136,0,0,2,62,0,1,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,15,0,2,856.6,bucketname is = df.service.one! This is an attributed added to the Inspector!,{'bucketname': 'df.service.one'; 'key': 'edited_5000_Sales_Records.csv'; 'tablename': 'SalesData'},1631.6,775,775,3
+0,0,5918,2,173,1,0,1,62,0,0,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,14,0,3,763.5,bucketname is = df.service.one! This is an attributed added to the Inspector!,{'bucketname': 'df.service.one'; 'key': 'edited_5000_Sales_Records.csv'; 'tablename': 'SalesData'},1725.5,962,962,1
+0,0,6396,2,148,0,0,2,62,0,1,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,13,0,4,806.31,bucketname is = df.service.one! This is an attributed added to the Inspector!,{'bucketname': 'df.service.one'; 'key': 'edited_5000_Sales_Records.csv'; 'tablename': 'SalesData'},1648.31,842,842,0
+0,0,5451,2,121,0,0,1,62,0,1,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,13,0,5,735.86,bucketname is = df.service.one! This is an attributed added to the Inspector!,{'bucketname': 'df.service.one'; 'key': 'edited_5000_Sales_Records.csv'; 'tablename': 'SalesData'},1440.86,705,705,1
+Successful Runs: 5
+
+Category cpuType:
+cpuType,uses,avg_contextSwitchesDelta,avg_cpuCores,avg_cpuIdleDelta,avg_cpuIowaitDelta,avg_cpuIrqDelta,avg_cpuKrnDelta,avg_cpuNiceDelta,avg_cpuSoftIrqDelta,avg_cpuUsrDelta,avg_frameworkRuntime,avg_iteration,avg_latency,avg_roundTripTime,avg_runtime,avg_userRuntime,avg_vmcpustealDelta
+Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,5,5672.40,2.00,140.40,0.20,0.00,1.20,0.00,1.00,13.40,0.00,3.00,793.46,1592.46,799.00,799.00,1.20
+Total number of unique cpuTypes: 1
+
+Category zAll:
+zAll,uses,avg_contextSwitchesDelta,avg_cpuCores,avg_cpuIdleDelta,avg_cpuIowaitDelta,avg_cpuIrqDelta,avg_cpuKrnDelta,avg_cpuNiceDelta,avg_cpuSoftIrqDelta,avg_cpuUsrDelta,avg_frameworkRuntime,avg_iteration,avg_latency,avg_roundTripTime,avg_runtime,avg_userRuntime,avg_vmcpustealDelta
+Final Results:,5,5672.40,2.00,140.40,0.20,0.00,1.20,0.00,1.00,13.40,0.00,3.00,793.46,1592.46,799.00,799.00,1.20
+Total number of unique zAlls: 1
