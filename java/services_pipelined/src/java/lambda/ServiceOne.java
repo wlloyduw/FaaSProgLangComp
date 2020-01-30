@@ -5,15 +5,12 @@ import saaf.Response;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import java.nio.charset.StandardCharsets;
-import com.amazonaws.services.s3.AmazonS3Client;
+//import java.nio.charset.StandardCharsets;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
-import com.opencsv.CSVReader;
-import com.opencsv.CSVWriter;
 import java.sql.Timestamp;
 
 import java.io.*;
@@ -43,91 +40,103 @@ import java.util.Random;
  * @author David Perez
  */
 public class ServiceOne implements RequestHandler<Request, HashMap<String, Object>> {
-    private static final String COMMA_DELIMITER=", ";
 
-    
+    public static String TEMP_DIRECTORY = "/tmp/";
+    public static String PROCESSED_NAME = "processed_";
 
-    
     /**
     *This method will take information from an InputStream and will read it into a list of String[], where each element in the String[] is an attribute within a column.
     *@Param input is an InputStream holding information from a CSV file.
     */
-    public CSVReader readcsv(InputStream input) {
+    public List<String[]> readcsv(InputStream input, String key) {
+        int len = 0;
         List<String[]> records = new ArrayList<String[]>();
-        CSVReader csvReader = null;
+
         try {
-            csvReader = new CSVReader(new InputStreamReader(input));
+            byte[] data = null;
 
+            FileOutputStream fileOutputStream = new FileOutputStream(TEMP_DIRECTORY +PROCESSED_NAME + key);
+            while ((len = input.read(data)) != -1) {
+                    fileOutputStream.write(data, 0, len);
+            }
         } catch (Exception e) {
-            System.out.println("error");
+            System.out.println("Download error");
         }
-        return csvReader;
+       
+        try {
+            File csv_file = new File(TEMP_DIRECTORY + PROCESSED_NAME + key);
+            BufferedReader file_reader = new BufferedReader(new FileReader(csv_file));
+            String line;
+	    file_reader.readLine();
+			
+            // Insert data row by row
+            while ((line = file_reader.readLine()) != null){
+            	String[] fields = line.split(",");
+            	records.add(fields);
+            }
+            file_reader.close();
+        } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+        }
+        return records;
     }
-
 
     /**
     * This method will take a CSVReader holding information from a CSVFILE and return a StringBuilder of the csv file with modified information.
     * @Param Reader is a CSVReader used to process information from a csv file.
     * @Param logger is a LambdaLogger to log information to cloudwatch.
     */
-    public StringBuilder write_csv(CSVReader reader, LambdaLogger logger) {
+    public StringBuilder writecsv(List<String[]> records, LambdaLogger logger) {
 
-	String[] entries = null;
 	StringBuilder sb = new StringBuilder();
         try {
-            entries = reader.readNext();
-            ArrayList loaded_entries = new ArrayList(Arrays.asList(entries));
-            sb.append(String.join(",", loaded_entries) +",Order Processing Time, Gross Margin\n");
-            int i = 0;
-            Set<Integer> unique_ids = new HashSet<Integer>();        
+            for (int i = 0; i < records.size(); i ++) {
+                Set<Integer> unique_ids = new HashSet<Integer>();        
+                if (i == 0) {
+                    sb.append(String.join(",", records.get(i)) +",Order Processing Time, Gross Margin\n");
 
-            while ((entries = reader.readNext()) !=null) {
-     
-                loaded_entries = new ArrayList(Arrays.asList(entries));
-                if (unique_ids.contains(Integer.parseInt((String)loaded_entries.get(6)))) {
-                    continue;
                 } else {
+                    //loaded_entries = new ArrayList(Arrays.asList(entries));
+                    if (unique_ids.contains(Integer.parseInt(records.get(i)[6]))) {
+                        continue;
+                    } else {
 
-                    String val = (String)loaded_entries.get(4);
-                    if (val.equals("C")) {
-                        loaded_entries.set(4, "Critical");
+                        String val = records.get(i)[4];
+                        if (val.equals("C")) {
 
+                        }
+                        else if (val.equals("L")){
+                            records.get(i)[4]="Low";
+                        }
+                        else if (val.equals("M")){
+                            records.get(i)[4]="Medium";
+                        }
+                        else if (val.equals("H")) {
+                            records.get(i)[4]="High";
+                        }
+
+
+                        String[] date1_values=(records.get(i)[5]).split("/");
+                        String[] date2_values=(records.get(i)[7]).split("/");
+                        int month = Integer.parseInt(date1_values[0]);
+                        int day = Integer.parseInt(date1_values[1]);
+                        int year = Integer.parseInt(date1_values[2]);
+
+                        int month2 = Integer.parseInt(date2_values[0]);
+                        int day2 = Integer.parseInt(date2_values[1]);
+                        int year2 = Integer.parseInt(date2_values[2]);
+
+                        int order_time= ((year2 - year) * 365) + ((month2 - month) * 30) + (day2 - day);
+                        float gross_margin = Float.parseFloat((records.get(i)[13])) / Float.parseFloat((records.get(i)[11])); 
+                        records.get(i)[14]=(Integer.toString(order_time));
+                        records.get(i)[15]=(String.valueOf(gross_margin));
+
+                        sb.append(String.join(",", records.get(i)) +"\n");
+                        unique_ids.add(Integer.parseInt(records.get(i)[6]));
                     }
-                    else if (val.equals("L")){
-                        loaded_entries.set(4, "Low");
-                    }
-                    else if (val.equals("M")){
-                        loaded_entries.set(4, "Medium");
-                    }
-                    else if (val.equals("H")) {
-                        loaded_entries.set(4, "High");
-                    }
-
-
-                    String[] date1_values=((String)loaded_entries.get(5)).split("/");
-                    String[] date2_values=((String)loaded_entries.get(7)).split("/");
-                    int month = Integer.parseInt(date1_values[0]);
-                    int day = Integer.parseInt(date1_values[1]);
-                    int year = Integer.parseInt(date1_values[2]);
-
-                    int month2 = Integer.parseInt(date2_values[0]);
-                    int day2 = Integer.parseInt(date2_values[1]);
-                    int year2 = Integer.parseInt(date2_values[2]);
-
-                    int order_time= ((year2 - year) * 365) + ((month2 - month) * 30) + (day2 - day);
-                    float gross_margin = Float.parseFloat(((String)loaded_entries.get(13))) / Float.parseFloat(((String)loaded_entries.get(11))); 
-                    loaded_entries.add(Integer.toString(order_time));
-                    loaded_entries.add(String.valueOf(gross_margin));
-
-                    if (i %1000 == 0) {
-                        logger.log("added records " + i);
-                    }
-                    i +=1;
-                    sb.append(String.join(",", loaded_entries) +"\n");
-                    unique_ids.add(Integer.parseInt((String)loaded_entries.get(6)));
                 }
             }
-
         } catch (Exception e) {
              throw new RuntimeException("Can't parse file " +  e);
         }
@@ -156,7 +165,7 @@ public class ServiceOne implements RequestHandler<Request, HashMap<String, Objec
                 + "! This is an attributed added to the Inspector!");
 
         String bucketname = request.getBucketName();
-        String key = request.getKey();
+        String key = request.getKey();        
 
         AmazonS3 s3Client = AmazonS3ClientBuilder.standard().build();         
         //get object file using source bucket and srcKey name
@@ -166,12 +175,14 @@ public class ServiceOne implements RequestHandler<Request, HashMap<String, Objec
         InputStream objectData = s3Object.getObjectContent();
         //scanning data line by line
         logger.log("reading csv into records start");
-        CSVReader records = readcsv(objectData);
+        
+        List<String[]> records = readcsv(objectData, TEMP_DIRECTORY + key);
+        StringBuilder sw = writecsv(records, logger);
         logger.log("finished reading records");
-        StringBuilder sw = write_csv(records, logger);
         logger.log("finished writing records");        
 
-        byte[] bytes = sw.toString().getBytes(StandardCharsets.UTF_8);
+       // byte[] bytes = sw.toString().getBytes(StandardCharsets.UTF_8);
+        byte[] bytes = sw.toString().getBytes();
         InputStream is = new ByteArrayInputStream(bytes);
         ObjectMetadata meta = new ObjectMetadata();
         meta.setContentLength(bytes.length);

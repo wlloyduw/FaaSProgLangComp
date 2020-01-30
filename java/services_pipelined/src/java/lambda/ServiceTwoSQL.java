@@ -7,47 +7,18 @@ package lambda;
 
 import saaf.Inspector;
 import saaf.Response;
-import com.amazonaws.services.lambda.runtime.ClientContext;
-import com.amazonaws.services.lambda.runtime.CognitoIdentity;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.Region;
-import com.amazonaws.services.s3.model.*;
-import com.opencsv.CSVReader;
-import com.opencsv.CSVWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.io.FileReader;
 import java.io.*;
-/*
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-*/
 import java.util.*;
-/*
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Random;
-import java.util.LinkedList;
-import java.util.Properties;
-*/
+
 
 /**
  * uwt.lambda_test::handleRequest
@@ -57,24 +28,52 @@ import java.util.Properties;
 public class ServiceTwoSQL implements RequestHandler<Request, HashMap<String, Object>>
 {
     static String CONTAINER_ID = "/tmp/container-id";
-    static Charset CHARSET = Charset.forName("US-ASCII");
+    
+    public static String TEMP_DIRECTORY = "/tmp/";
+    public static String PROCESSED_NAME = "processed_";
+    private static final String AWS_ACCESS_KEY_ID="AKIAJ7IUEAYJXBAAIJMQ";
+    private static final String AWS_SECRET_ACCESS_KEY="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";
+    
     /**
     *This method will take information from an InputStream and will read it into a list of String[], where each element in the String[] is an attribute within a column.
     *@Param input is an InputStream holding information from a CSV file.
     */
-    public List<String[]> readcsv(InputStream input) {
+    
+    
+    public List<String[]> readcsv(InputStream input, String key) {
+        int len = 0;
         List<String[]> records = new ArrayList<String[]>();
-        CSVReader csvReader = null;
+
         try {
-            csvReader = new CSVReader(new InputStreamReader(input));
-            csvReader.readNext();
-            records = csvReader.readAll();
+            byte[] data = null;
+
+            FileOutputStream fileOutputStream = new FileOutputStream(TEMP_DIRECTORY +PROCESSED_NAME + key);
+            while ((len = input.read(data)) != -1) {
+                    fileOutputStream.write(data, 0, len);
+            }
         } catch (Exception e) {
-            System.out.println("error");
+            System.out.println("Download error");
+        }
+       
+        try {
+            File csv_file = new File(TEMP_DIRECTORY + PROCESSED_NAME + key);
+            BufferedReader file_reader = new BufferedReader(new FileReader(csv_file));
+            String line;
+	    file_reader.readLine();
+			
+            // Insert data row by row
+            while ((line = file_reader.readLine()) != null){
+            	String[] fields = line.split(",");
+            	records.add(fields);
+            }
+            file_reader.close();
+        } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
         }
         return records;
     }
-
+    
     /**
     *This method will take a list of Records from a CSV file and will write the information into a database.
     * @Param Records is a list of String[] where each String[] holds information to be added to a database.
@@ -173,7 +172,7 @@ public class ServiceTwoSQL implements RequestHandler<Request, HashMap<String, Ob
             String username = properties.getProperty("username");
             String password = properties.getProperty("password");
             String driver = properties.getProperty("driver");
-            List<String[]> records = readcsv(objectData);
+            List<String[]> records = readcsv(objectData, TEMP_DIRECTORY + key);
             write_csv(records, url, username, password, mytable, batchSize, logger);
          
         } 

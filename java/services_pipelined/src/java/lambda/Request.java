@@ -4,24 +4,20 @@
  * and open the template in the editor.
  */
 package lambda;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONString;
+
 
 /**
- *
+ * @author David
  * @author wlloyd
  */
 public class Request {
-    String filterBy;
-    String aggregateBy;
-    JSONObject filterByJSON;
-    JSONObject aggregateByJSON;
+    HashMap<String, String[]> filterBy;
+    HashMap<String, String[]> aggregateBy;
+    int batchSize;
     String bucketname;
     String key;
-    String tablename;
-    int batchSize;
+	String tablename;
+
     public String getBucketName() {
         return this.bucketname;
     }
@@ -60,61 +56,39 @@ public class Request {
         this.key = theKey;
     }
 
-    public String getFilterBy() {
-        return this.filterBy;
-    }
-    
-    public String getFilterByALLCAPS() {
-        return filterBy.toUpperCase();
-    }
-
-    public void setFilterBy(String filterBy) {
-		//this.filterByJSON= filterBy;//new JSONObject(filterBy);
-        //this.filterBy = filterBy.toString();
-		this.filterBy = filterBy;  
-		this.filterByJSON = new JSONObject(filterBy);
-	}
-
-    public JSONObject getFilterByAsJSONOBJ() {
-            return this.filterByJSON;
-    }
-
-
-    public String getAggregateBy() {
-        return this.aggregateBy;
-    }
-    
-    public String getAggregateByALLCAPS() {
-        return filterBy.toUpperCase();
-    }
-
-    public void setAggregateBy(String aggregateBy) {
-        //this.aggregateBy = aggregateBy.toString();
-		//this.aggregateByJSON = aggregateBy;
-		this.aggregateBy = aggregateBy;    
-		this.aggregateByJSON = new JSONObject(aggregateBy);
-    }
-
-    public JSONObject getAggregateByAsJSONOBJ() {
-        return this.aggregateByJSON; 
-    }
-	
-	
-    public int getBatchSizee() {
+	public int getBatchSize() {
         return this.batchSize;
     }
 	
-    public void setBatchSizee(int batchSize) {
+    public void setBatchSize(int batchSize) {
         this.batchSize = batchSize;
     }
-	
+    
+
+	public HashMap<String, String[]> getFilterBy() {
+		return this.filterBy;
+	}
+
+	public HashMap<String, String[]> getAggregateBy() {
+		return this.aggregateBy;
+	}
+
+	public void setFilterBy(HashMap<String, String[]> theFilterBy) {
+		this.filterBy = theFilterBy;
+	}
+
+	public void setAggregateBy(HashMap<String, String[]> theAggregateBy) {
+		this.aggregateBy = theAggregateBy;
+	}
+
+
 	//constructor
-    public Request(String filterBy, String aggregateBy, String key, String bucketname, String tablename, int batchSize) {
+    public Request(HashMap<String, String[]> filterBy, HashMap<String, String[]> aggregateBy, String key, String bucketname, String tablename, int batchSize) {
         this.setFilterBy(filterBy);
         this.setAggregateBy(aggregateBy);
         this.setBucketname(bucketname);
         this.setKey(key);
-	this.setTablename(tablename);
+		this.setTablename(tablename);
     	this.setBatchSize(batchSize);
     }
 
