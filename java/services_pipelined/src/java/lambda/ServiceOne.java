@@ -12,7 +12,6 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import java.sql.Timestamp;
-fdsfkadjlksadkf;
 import java.io.*;
 /*
 import java.io.StringWriter;
