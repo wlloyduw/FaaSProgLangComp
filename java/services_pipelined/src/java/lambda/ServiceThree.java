@@ -4,155 +4,144 @@
  * and open the template in the editor.
  */
 package lambda;
-import saaf.Inspector;
-import saaf.Response;
 
-import com.amazonaws.services.lambda.runtime.ClientContext;
-import com.amazonaws.services.lambda.runtime.CognitoIdentity;
+
+import saaf.Inspector;
+import saaf.Reponse;
+
 import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.lambda.runtime.LambdaLogger;
-import com.amazonaws.services.s3.model.Region;
-import com.amazonaws.services.s3.model.*;
-import com.opencsv.CSVReader;
-import com.opencsv.CSVWriter;
 
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
+import com.amazonaws.services.lambda.runtime.LambdaLogger;
+
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONString;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import java.io.*;
-/*
-import java.io.FileReader;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.InputStreamReader;
-import java.io.InputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-*/
+
 import java.util.*;
-/*
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Random;
-import java.util.LinkedList;
-import java.util.Properties;
-*/
 
 /**
  * uwt.lambda_test::handleRequest
  * @author wlloyd
  * @author david perez
  */
-public class ServiceThree implements RequestHandler<Request, HashMap<String, Object>>
-{
-    static String CONTAINER_ID = "/tmp/container-id";
-    static Charset CHARSET = Charset.forName("US-ASCII");
-    static String[] FILTER_BY_VALUES= {"Region", "Item_Type", "Sales_Channel", "Order_Priority", "Country"};
-    static String[] AGGREGATE_BY_VALUES= {"max", "min", "avg", "sum"};
-    public JSONArray filterByArr(JSONObject Arr, String Key) {
-            return Arr.getJSONArray(Key);
+public class ServiceThree implements RequestHandler<Request, HashMap<String, Object>> {
+
+    public int hashSize(HashMap<String, String[]> theHashMap) {
+            int count = 0;
+            Iterator<Entry<String, String[]>> it = theHashMap.entrySet().iterator();
+            while (it.hasNext()) {
+                    Map.Entry<String, String[]> pair = (Map.Entry<String, String[]>) it.next();
+                    count += pair.getValue().length;
+            }
+            return count;
     }
+
     /**
     *This method will create a list of strings that contain query information regarding to Where to query at.
     *For example, a created string could be "WHERE Region = ".
     * This string is basically the beginning half of a query. The other half is made using another method where we create the Select portion of the query.
     *@param JSONObj is a JSONObject with information holding lists of where to query from and what to query.
     */
-    public LinkedList<String> createWhereString(JSONObject JSONObj) {
-            LinkedList<String> newList = new LinkedList<String>();
-            for (int i = 0; i < FILTER_BY_VALUES.length; i++) {
-                    JSONArray arrJson=JSONObj.getJSONArray(FILTER_BY_VALUES[i]);
-                    for(int j=0;j<arrJson.length();j++) {
+    public String[] createWhereString(HashMap<String, String[]> filter_values) {
+
+		String[] filterBy = new String[hashSize(filter_values)];
+		int index =0;
+                
+                Iterator<Entry<String, String[]>> it = filter_values.entrySet().iterator();
+                while (it.hasNext()) {
+			Map.Entry<String, String[]> pair = (Map.Entry<String, String[]>) it.next();
+                        for (String value : pair.getValue()) {
                             String whereString="WHERE ";
-                            String filterVal = "`" +FILTER_BY_VALUES[i].replace('_', ' ') +"`"; 
-                            whereString += filterVal +"=\"" +arrJson.getString(j).replace('_', ' ') +"\"" ;
-                            newList.add(whereString);
+                            String filterVal = "`" + pair.getKey();
+                            whereString += filterVal +"=\"" + value.replace('_', ' ') + "`";
+                            filterBy[index] = whereString;
+                            index++;
+                        }
+                }
+                
+		return filterBy;
+    }
+    
+    public String[] createAggFunctionStrings(HashMap<String, String[]> aggregateValues, String mytable, String[] filterBy) {
+        String[] aggregateBy = new String[hashSize(aggregateValues)];
+        int index = 0;
+
+
+        for (int i = 0; i < filterBy.length; i++) {
+            String filterByString = filterBy[i];
+            String aggString="SELECT ";
+
+            Iterator<Entry<String, String[]>> it = aggregateValues.entrySet().iterator();
+            while (it.hasNext()) {
+                    Map.Entry<String, String[]> pair = (Map.Entry<String, String[]>) it.next();
+                    for (String value : pair.getValue()) {
+                        aggString += pair.getKey() + "(`";
+                        aggString += value.replace('_', ' ') + "`)";
+                        aggString +=", ";
                     }
             }
-            return newList;
+            aggString+=" \"" + filterByString.replace('"', ' ')  + "\" ";
+            aggString+="AS `Filtered By` ";
+            aggString+="FROM " + mytable + " ";
+            aggString+=filterByString +";";
+            aggregateBy[index] = aggString;
+            index++;			
+        }
+               
+        return aggregateBy;
     }
-    /**
-    *This method will create a list of strings that contain query information regarding to what to Select from the tables.
-    *For example, a created string could be "SELECT MAX (`Units Sold`), AS `Filtered By` FROM {mytable}";.
-    * This string is basically the end half of a query. The other half is made using another method where we create the Where portion of the query.
-    */
-    public LinkedList<String> createAggFunctionStrings(JSONObject JSONObj, String mytable, LinkedList<String> filterBy) {
-            LinkedList<String> newList = new LinkedList<String>();
-            for (int q = 0; q < filterBy.size(); q++ ) {
-                String filterByString = filterBy.get(q);
-                String aggString="SELECT ";
-                for (int i =0; i < AGGREGATE_BY_VALUES.length; i++) {
-                        JSONArray arrJson=JSONObj.getJSONArray(AGGREGATE_BY_VALUES[i]);
-                        for(int j=0;j<arrJson.length();j++) {
-                                aggString+= AGGREGATE_BY_VALUES[i].toUpperCase() + "(`";
-                                aggString+=arrJson.getString(j).replace('_', ' ') +"`)";				
-                                aggString+=", ";
-                        }	
-                }
-                aggString+=" \"" + filterByString.replace('"', ' ')  + "\" ";
-                aggString+="AS `Filtered By` ";
-                aggString+="FROM " + mytable + " ";
-                aggString+=filterByString +";";
-                newList.add(aggString);
-            }
-            return newList;
-    }
-   
-    /**
+
+    
+ 
+   /**
     *This method will convert a list of queries into a single query containing all queries unioned.
     * @param queries is a list of queries that will be unioned together into a single string.
     */
-    public String Union_Queries(LinkedList<String> queries) {
+    public String Union_Queries(String[] queries) {
         String fullQuery = "";
-        for (int i = 0; i < queries.size(); i++) {
-            fullQuery += queries.get(i).replace(';', ' ');
-            if ( i != queries.size() -1) {
+        for (int i = 0; i < queries.length; i++) {
+            fullQuery += queries[i].replace(';', ' ');
+            if ( i != queries.length -1) {
                 fullQuery += " UNION ";
             }
         }
         fullQuery +=";";
         return fullQuery;
     }
+  
+
 
     /**
     * This method will convert a resultset into a JSON string.
     * @param rs is a ResultSet that will be converted to a json string.
     */
     public String convertRsToJSON(ResultSet rs) {
-        JSONArray json = new JSONArray();
+        //JSONArray json = new JSONArray();
         try { 
             ResultSetMetaData rsmd = rs.getMetaData();
             while(rs.next()) {
               int numColumns = rsmd.getColumnCount();
-              JSONObject obj = new JSONObject();
+          //    JSONObject obj = new JSONObject();
               for (int i=1; i<=numColumns; i++) {
                 String column_name = rsmd.getColumnName(i);
-                obj.put(column_name, rs.getObject(column_name));
+                //obj.put(column_name, rs.getObject(column_name));
               }
-              json.put(obj);
+            //  json.put(obj);
             }
         } catch (SQLException e) {
             System.out.println("Sql exception while converting ResultSet to String");
         }
-        return json.toString();
+        //return json.toString();
     }
             
     /**
@@ -170,23 +159,23 @@ public class ServiceThree implements RequestHandler<Request, HashMap<String, Obj
         Inspector inspector = new Inspector();
         inspector.inspectAll();
         inspector.addTimeStamp("frameworkRuntime");
+	logger.log("test");
         //****************START FUNCTION IMPLEMENTATION*************************
         //Create and populate a separate response object for function output. (OPTIONAL)
         String bucketname = request.getBucketName();
+	logger.log("test");
         String key = request.getKey();
+	logger.log("test");
         Response r = new Response();
+	logger.log("test");
         String mytable = request.getTableName();
-        JSONObject filterByJSON = request.getFilterByAsJSONOBJ(); 
-        JSONObject aggregateByJSON = request.getAggregateByAsJSONOBJ();
-        LinkedList<String> whereStrings= createWhereString(filterByJSON);
-        LinkedList<String> queryStrings = createAggFunctionStrings(aggregateByJSON, mytable, whereStrings);
+	HashMap<String, String[]> filterByMap = request.geFilterBy();
+	HashMap<String, String[]> aggregateByMap = request.getAggregateBy();	
+	logger.log("test");
+	String[] whereStrings = createWhereString(filterByMap);
+	String[] queryStrings = createAggFunctionStrings(aggregateByMap, myTable, whereStrings);
         String fullQuery = Union_Queries(queryStrings);	
-        logger.log(filterByJSON.toString());
-        logger.log(aggregateByJSON.toString());
 
-        for (int i = 0; i < queryStrings.size(); i++) {
-            logger.log(queryStrings.get(i).toString());
-        }
         logger.log(fullQuery);
         try 
         { 
@@ -199,9 +188,9 @@ public class ServiceThree implements RequestHandler<Request, HashMap<String, Obj
             Connection con = DriverManager.getConnection(url,username,password);
             PreparedStatement ps = con.prepareStatement(fullQuery);
             ResultSet rs = ps.executeQuery();
-            String queryResults = convertRsToJSON(rs);
+           // String queryResults = convertRsToJSON(rs);
             AmazonS3 s3Client = AmazonS3ClientBuilder.standard().build();  
-            s3Client.putObject(bucketname, "QueryResults.txt", queryResults);
+           // s3Client.putObject(bucketname, "QueryResults.txt", queryResults);
             int iteration = 100;
             for (int i = 0; i < iteration; i++) {
                 String testQuery = "SELECT * from " + mytable + ";";

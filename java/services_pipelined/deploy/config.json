@@ -1,28 +1,32 @@
 {
 	"README": "See ./deploy/README.md for help!",
 
-	"functionName": "ServiceThree",
+	"functionName": "ServiceOne",
 
-	"lambdaHandler": "lambda.ServiceThree::handleRequest",
-	"lambdaRoleARN": "arn:aws:iam::857205555574:role/lambda_basic_execution",
+	"lambdaHandler": "lambda.ServiceOne::handleRequest",
+	"lambdaRoleARN": "arn:aws:iam::857205555574:role/service-role/simple_microservice_role",
 	"lambdaSubnets": "subnet-1c2a7d66,subnet-0a514862,subnet-1b6ed157",
 	"lambdaSecurityGroups": "sg-12ae6d70",
 
-
 	"test": {
-
-	"bucketname": "testbucketohiodap",
-	"key": "562sales_100_new.csv",
-	"filterBy": "{\"Region\":[\"Australia,_Oceania\"],\"Item_Type\":[\"Office_Supplies\"],\"Sales_Channel\":[\"Offline\"],\"Order_Priority\":[\"Medium\"],\"Country\":[\"Fiji\"]}",
-
-	"aggregateBy" : "{\"max\":[\"Units_Sold\"],\"min\":[\"Units_Sold\"],\"avg\":[\"Order_Processing_Time\",\"Gross_Margin\",\"Units_Sold\"],\"sum\":[\"Units_Sold\",\"Total_Revenue\",\"Total_Profit\"]}",
-	"tablename" : "mytable_100"
-    
-    
+		"bucketname": "testbucketohiodap",
+		"key": "562sales_100_new.csv",
+		"tablename" : "mytable_100",
+		"filterBy": {
+			"Region": ["Australia_and_Oceania"],
+			"Item_Type": ["Office_Supplies"],
+			"Sales_Channel": ["Offline"],
+			"Order_Priority": ["Medium"],
+			"Country": ["Fiji"]
+		},
+		"aggregateBy": {
+			"max": ["Units_Sold"],
+			"min": ["Units_Sold"],
+			"avg": ["Order_Processing_Time", "Gross_Margin", "Units_Sold"],
+			"sum": ["Units_Sold", "Total_Revenue", "Total_Profit"]
+		}
 	}
 }
-
-
 
 
 
