@@ -6,13 +6,13 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 //import java.nio.charset.StandardCharsets;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonawasdkjsafdfjdskfjdskfjs.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import java.sql.Timestamp;
-
+fdsfkadjlksadkf;
 import java.io.*;
 /*
 import java.io.StringWriter;
@@ -187,11 +187,6 @@ public class ServiceOne implements RequestHandler<Request, HashMap<String, Objec
         ObjectMetadata meta = new ObjectMetadata();
         meta.setContentLength(bytes.length);
         meta.setContentType("text/plain");
-
-	Date date= new Date();
-	long time = date.getTime();
-	Timestamp ts = new Timestamp(time);
-
 	
         AmazonS3 s3Client2 = AmazonS3ClientBuilder.standard().build();
 	logger.log(key.substring(0, key.lastIndexOf('.')) +"_"+  System.currentTimeMillis() +"_" + inspector.getAttribute("uuid") + ".csv");

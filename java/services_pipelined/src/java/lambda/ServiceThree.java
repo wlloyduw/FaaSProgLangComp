@@ -36,10 +36,6 @@ import java.util.*;
  */
 public class ServiceThree implements RequestHandler<Request, HashMap<String, Object>> {
 
-
-
- 
-
     public int hashSize(HashMap<String, String[]> theHashMap) {
             int count = 0;
             Iterator<Entry<String, String[]>> it = theHashMap.entrySet().iterator();
@@ -163,26 +159,23 @@ public class ServiceThree implements RequestHandler<Request, HashMap<String, Obj
         Inspector inspector = new Inspector();
         inspector.inspectAll();
         inspector.addTimeStamp("frameworkRuntime");
-		logger.log("test");
+	logger.log("test");
         //****************START FUNCTION IMPLEMENTATION*************************
         //Create and populate a separate response object for function output. (OPTIONAL)
         String bucketname = request.getBucketName();
-		logger.log("test");
+	logger.log("test");
         String key = request.getKey();
-		logger.log("test");
-        //Response r = new Response();
-		logger.log("test");
+	logger.log("test");
+        Response r = new Response();
+	logger.log("test");
         String mytable = request.getTableName();
-		HashMap<String, String[]> filterByMap = request.geFilterBy();
-		HashMap<String, String[]> aggregateByMap = request.getAggregateBy();	
-		logger.log("test");
-		String[] whereStrings = createWhereString(filterByMap);
-		String[] queryStrings = createAggFunctionStrings(aggregateByMap, myTable, whereStrings);
+	HashMap<String, String[]> filterByMap = request.geFilterBy();
+	HashMap<String, String[]> aggregateByMap = request.getAggregateBy();	
+	logger.log("test");
+	String[] whereStrings = createWhereString(filterByMap);
+	String[] queryStrings = createAggFunctionStrings(aggregateByMap, myTable, whereStrings);
         String fullQuery = Union_Queries(queryStrings);	
 
-       // for (int i = 0; i < queryStrings.size(); i++) {
-         //   logger.log(queryStrings.get(i).toString());
-        //}
         logger.log(fullQuery);
         try 
         { 
