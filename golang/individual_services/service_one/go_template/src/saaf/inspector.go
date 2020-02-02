@@ -9,6 +9,14 @@ import (
 	"time"
 )
 
+// DONT USE RUN COMMAND, just read the file (ok in Java but other languages is terrible)
+// or use whatevr you can to get 'uname -v' (low priority)
+// no bean stuff (only java uses)
+// inspectContainer is very important because it allows us to see if its a reused container
+// inspectPlatform is next
+// inspectMemory is ok
+// inspectLinux is last
+// Add check if previously inspected and if so, return
 type Inspector struct {
 	startTime time.Time
 
@@ -54,22 +62,27 @@ func (inspector *Inspector) InspectAll() {
 }
 
 func (inspector *Inspector) InspectContainer() {
+	// Add check if previously inspected and if so, return
 	// TODO
 }
 
 func (inspector *Inspector) InspectPlatform() {
+	// Add check if previously inspected and if so, return
 	// TODO
 }
 
 func (inspector *Inspector) InspectLinux() {
+	// Add check if previously inspected and if so, return
 	// TODO
 }
 
 func (inspector *Inspector) InspectMemory() {
+	// Add check if previously inspected and if so, return
 	// TODO
 }
 
 func (inspector *Inspector) InspectCPU() {
+	// Add check if previously inspected and if so, return
 	inspector.inspectedCPU = true
 
 	cpuInfoMap, err := parseCPUInfoFile()
@@ -163,6 +176,7 @@ func (inspector *Inspector) InspectAllDeltas() {
 }
 
 func (inspector *Inspector) InspectCPUDelta() {
+	// Add check that value had previously been gotten to all inspect*deltas
 	statMap, err := parseStatFile()
 	if err != nil {
 		return
@@ -185,6 +199,7 @@ func (inspector *Inspector) InspectMemoryDelta() {
 	// TODO
 }
 
+// can we add another timestamp method that takes a timestamp and adds a timestamp in relation to one that is passed
 func (inspector *Inspector) AddTimeStamp(key string) {
 	inspector.attributes[key] = time.Since(inspector.startTime).Milliseconds()
 }
