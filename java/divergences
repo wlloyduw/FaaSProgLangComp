@@ -1,0 +1,50 @@
+Java->Go differences. Most have been fixed.
+
+Service One:
+    Java used Lambda Logger (Commented out)
+    Go uses encoding/csv reader vs. Java uses CSVReader to read file from S3
+        Can remove readcsv method from Java (very short)
+    Java's writecsv~=editRecords from Go
+        a csvreader is passed to writecsv vs. [][]string{} to editRecords
+        Java returns StringBuilder vs Go returning [][]string{}
+        Java converts id to integer when checking for duplicates
+        Java writecsv reads one record at a time from the csvreader
+    Java makes an input stream vs. Go doing some pipe magic
+    Java makes a second S3 client
+
+Service Two:
+    Java used Lambda Logger
+    Java uses saaf response objects 
+    Java gets a batch size in request vs golang has a variable in writeRecords
+    Service2 Java readcsv is different than Service1 readcsv
+        service2 readcsv is closer to golang read
+    Java has db.properties and golang has values in main.go (go would be much faster here)
+        maybe convert db information to env variables set in lambda
+    golang pings db before doing stuff
+    java create table has ENGINE = MyISAM vs. not present in go
+    golang skips first "record" because its the header vs. Java doesnt?
+    on data insertion, Java and Golang differ in batch strategy
+        for loops are a little different
+        Java creates one prepared statment and adds values to it and executes the ps every 1000 records
+        Golang creates a string that gets placeholders appended to the end and converted to a ps that
+            is combined with an array of arrays of "values" that is built up in time with the string
+
+
+    ##################################################################################
+
+    For Service 2, we need to remove the db.properties file from java and put the database credentials as environment variables in the lambda. Then all languages can retrieve them the same way.
+    We also still need to synchronize the loops for inserting data
+
+    ##################################################################################
+
+Service Three:
+    Java has local variables containing potential filterby and aggregateby values that are used to read the request
+        vs Go which reads those values dynamically
+    Constructing full query string is done in multiple steps in Java vs Golang which has one method
+    db.properties mismatch (same as service2)
+    reading result set:
+        Java uses json library and converts to a string 
+        Go scans rows into variables are all converted to strings and appended to [][]string{}
+    Java writes results as txt vs. Go which writes as csv (same as service1)
+    stress test consistency. to use or not to use (removed from both)
+    Java uses response object again

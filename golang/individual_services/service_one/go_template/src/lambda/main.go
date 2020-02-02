@@ -85,9 +85,6 @@ func HandleRequest(ctx context.Context, request saaf.Request) (map[string]interf
 }
 
 func editRecords(records [][]string) [][]string {
-	// records := [][]string{}
-	// k := copy(records, r)
-	// fmt.Printf("K = %d with len(records) = %d\n", k, len(records))
 	editedRecords := [][]string{}
 	editedRecords = append(editedRecords, append(records[0], "Order Processing Time", "Gross Margin"))
 
@@ -138,10 +135,7 @@ func editRecords(records [][]string) [][]string {
 		grossMargin := thing / thing2
 
 		editedRecords = append(editedRecords, append(record, strconv.Itoa(orderTime), strconv.FormatFloat(grossMargin, 'f', 2, 64)))
-		// editedRecords[i-duplicates] = []string{}
-		// editedRecords[i-duplicates] = append(record, strconv.Itoa(orderTime), strconv.FormatFloat(grossMargin, 'f', 2, 64))
 	}
-	fmt.Printf("# of duplicates %d and len(records)=%d", duplicates, len(editedRecords))
 
 	return editedRecords
 }

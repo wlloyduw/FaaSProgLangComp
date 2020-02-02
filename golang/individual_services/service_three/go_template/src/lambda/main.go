@@ -48,7 +48,7 @@ func HandleRequest(ctx context.Context, request saaf.Request) (map[string]interf
 
 	queryString := constructQueryString(request.FilterBy, request.AggegrateBy, tablename)
 
-	fmt.Println(queryString)
+	// fmt.Println(queryString)
 
 	results, err := doQuery(queryString, tablename)
 	if err != nil {
@@ -142,12 +142,6 @@ func doQuery(queryString, tablename string) ([][]string, error) {
 	}
 	defer db.Close()
 
-	err = db.Ping()
-	if err != nil {
-		return nil, err
-	}
-	// fmt.Println("Connection established")
-
 	rows, err := db.Query(queryString)
 	if err != nil {
 		return nil, err
@@ -158,7 +152,6 @@ func doQuery(queryString, tablename string) ([][]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	// fmt.Println(columnNames)
 
 	allThings := [][]string{columnNames}
 	for rows.Next() {
@@ -204,74 +197,21 @@ func stressTest(tablename string, iterations int) error {
 	}
 	defer db.Close()
 
-	err = db.Ping()
-	if err != nil {
-		return err
-	}
-	// fmt.Println("Connection established")
-
-	// rowsReturned := 0
 	for i := 0; i < iterations; i++ {
 		conn, err := db.Conn(context.Background())
 		if err != nil {
 			return nil
 		}
 
-		// rows, err := conn.QueryContext(context.Background(), fmt.Sprintf("SELECT * FROM %s;", tablename))
 		rows, err := conn.QueryContext(context.Background(), fmt.Sprintf("SELECT * FROM %s;", tablename))
 		if err != nil {
 			return err
 		}
+
 		for rows.Next() {
 		}
-		// for rows.Next() {
-		// 	row := &SalesDataRow{}
-		// 	err = rows.Scan(
-		// 		&row.Region,
-		// 		&row.Country,
-		// 		&row.ItemType,
-		// 		&row.SalesChannel,
-		// 		&row.OrderPriority,
-		// 		&row.OrderDate,
-		// 		&row.OrderID,
-		// 		&row.ShipDate,
-		// 		&row.UnitsSold,
-		// 		&row.UnitPrice,
-		// 		&row.UnitCost,
-		// 		&row.TotalRevenue,
-		// 		&row.TotalCost,
-		// 		&row.TotalProfit,
-		// 		&row.OrderProcessingTime,
-		// 		&row.GrossMargin)
-		// 	if err != nil {
-		// 		return err
-		// // 	}
-		// 	rowsReturned++
-		// 	// fmt.Printf("%#v\n", row)
-		// }
 		conn.Close()
 	}
 
-	// fmt.Printf("%d total rows returned\n", rowsReturned)
-
 	return nil
-}
-
-type SalesDataRow struct {
-	Region              string
-	Country             string
-	ItemType            string
-	SalesChannel        string
-	OrderPriority       string
-	OrderDate           string
-	OrderID             string
-	ShipDate            string
-	UnitsSold           string
-	UnitPrice           string
-	UnitCost            string
-	TotalRevenue        string
-	TotalCost           string
-	TotalProfit         string
-	OrderProcessingTime string
-	GrossMargin         string
 }
