@@ -1,5 +1,6 @@
 package saaf
 
+// Request ...
 type Request struct {
 	BucketName  string              `json:"bucketname"`
 	Key         string              `json:"key"`

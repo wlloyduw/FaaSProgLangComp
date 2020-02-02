@@ -4,19 +4,22 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"strconv"
 	"strings"
 	"time"
+
+	guid "github.com/google/uuid"
 )
 
 // DONT USE RUN COMMAND, just read the file (ok in Java but other languages is terrible)
 // or use whatevr you can to get 'uname -v' (low priority)
-// no bean stuff (only java uses)
-// inspectContainer is very important because it allows us to see if its a reused container
 // inspectPlatform is next
 // inspectMemory is ok
 // inspectLinux is last
 // Add check if previously inspected and if so, return
+
+// Inspector ...
 type Inspector struct {
 	startTime time.Time
 
@@ -30,57 +33,122 @@ type Inspector struct {
 	inspectedLinux     bool
 }
 
+// NewInspector - Initialize Inspector
 func NewInspector() Inspector {
 	inspector := Inspector{}
 
 	inspector.startTime = time.Now()
 	inspector.attributes = make(map[string]interface{})
+	inspector.privateAttributes = make(map[string]interface{})
 
 	inspector.attributes["version"] = 0.4
 	inspector.attributes["lang"] = "go"
-
-	inspector.privateAttributes = make(map[string]interface{})
+	inspector.attributes["startTime"] = inspector.startTime.Unix()
 
 	return inspector
 }
 
-func (inspector *Inspector) AddAttribute(key string, value interface{}) {
-	inspector.attributes[key] = value
-}
-
-func (inspector *Inspector) GetAttribute(key string) interface{} {
-	return inspector.attributes[key]
-}
-
+// InspectAll - Run all data collection methods and record framework runtime.
 func (inspector *Inspector) InspectAll() {
-	inspector.InspectContainer() // TODO
-	inspector.InspectPlatform()  // TODO
-	inspector.InspectLinux()     // TODO
-	inspector.InspectMemory()    // TODO
+	inspector.InspectContainer()
+	inspector.InspectPlatform() // TODO
+	inspector.InspectLinux()    // TODO
+	inspector.InspectMemory()   // TODO
 	inspector.InspectCPU()
 	inspector.AddTimeStamp("frameworkRuntime")
 }
 
+// InspectContainer - Collect information about the runtime container.
+// uuid:         A unique identifier assigned to a container if one does not already exist.
+// newcontainer: Whether a container is new (no assigned uuid) or if it has been used before.
+// vmuptime:     The time when the system started in Unix time.
 func (inspector *Inspector) InspectContainer() {
-	// Add check if previously inspected and if so, return
-	// TODO
+	if inspector.inspectedContainer {
+		inspector.attributes["SAAFContainerError"] = "Container already inspected!"
+		return
+	}
+	inspector.inspectedContainer = true
+
+	var (
+		filename     = "/tmp/container-id"
+		newContainer int
+		uuid         string
+	)
+
+	if _, err := os.Stat(filename); os.IsNotExist(err) { // check if the file exists, and if not, create it
+		newContainer = 1
+		uuid = guid.New().String()
+		err = ioutil.WriteFile(filename, []byte(uuid), 0644)
+		if err != nil {
+			fmt.Printf("Error writing file %s ... err = %s", filename, err.Error())
+			return
+		}
+	} else {
+		newContainer = 0
+		f, err := ioutil.ReadFile(filename)
+		if err != nil {
+			fmt.Printf("Error reading %s ... err = %s", filename, err.Error())
+			return
+		}
+		uuid = string(f)
+	}
+
+	inspector.attributes["uuid"] = uuid
+	inspector.attributes["newcontainer"] = newContainer
+
+	//Get VM Uptime
+	statMap, err := parseStatFile()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	inspector.attributes["vmuptime"] = statMap["btime"]
+
 }
 
+// InspectPlatform - Collect information about the current FaaS platform.
+// platform:        The FaaS platform hosting this function.
+// containerID:     A unique identifier for containers of a platform.
+// vmID:            A unique identifier for virtual machines of a platform.
+// functionName:    The name of the function.
+// functionMemory:  The memory setting of the function.
+// functionRegion:  The region the function is deployed onto.
 func (inspector *Inspector) InspectPlatform() {
 	// Add check if previously inspected and if so, return
 	// TODO
 }
 
+// InspectLinux - Collect information about the linux kernel.
+// linuxVersion: The version of the linux kernel.
 func (inspector *Inspector) InspectLinux() {
 	// Add check if previously inspected and if so, return
 	// TODO
 }
 
+// InspectMemory - Inspects /proc/meminfo and /proc/vmstat. Add memory specific attributes:
+// totalMemory:     Total memory allocated to the VM in kB.
+// freeMemory:      Current free memory in kB when inspectMemory is called.
+// pageFaults:      Total number of page faults experienced by the vm since boot.
+// majorPageFaults: Total number of major page faults experienced since boot.
 func (inspector *Inspector) InspectMemory() {
 	// Add check if previously inspected and if so, return
 	// TODO
 }
 
+// InspectCPU - Collect information about the CPU assigned to this function.
+// cpuType:    The model name of the CPU.
+// cpuModel:   The model number of the CPU.
+// cpuCores:   The total number of cpu cores.
+// cpuUsr:     Time spent normally executing in user mode.
+// cpuNice:    Time spent executing niced processes in user mode.
+// cpuKrn:     Time spent executing processes in kernel mode.
+// cpuIdle:    Time spent idle.
+// cpuIowait:  Time spent waiting for I/O to complete.
+// cpuIrq:     Time spent servicing interrupts.
+// cpuSoftIrq: Time spent servicing software interrupts.
+// vmcpusteal: Time spent waiting for real CPU while hypervisor is using another virtual CPU.
+// contextSwitches: Number of context switches.
 func (inspector *Inspector) InspectCPU() {
 	// Add check if previously inspected and if so, return
 	inspector.inspectedCPU = true
@@ -122,12 +190,103 @@ func (inspector *Inspector) InspectCPU() {
 	inspector.privateAttributes["contextSwitches"] = statMap["ctxt"]
 }
 
+// InspectAllDeltas - Run all delta collection methods add userRuntime attribute to further isolate use code runtime from time spent collecting data.
+func (inspector *Inspector) InspectAllDeltas() {
+	if val, ok := inspector.attributes["frameworkRuntime"]; ok {
+		frameworkRuntimeDuration, err := time.ParseDuration(fmt.Sprintf("%dms", val.(int64)))
+		if err != nil {
+			fmt.Printf("Error parsing frameworkRuntimeDuration ... err = %s", err.Error())
+		}
+		inspector.AddTimeStampFrom("userRuntime", inspector.startTime.Add(frameworkRuntimeDuration))
+		// inspector.attributes["userRuntime"] = time.Since(inspector.startTime).Milliseconds() - val.(int64) // manually get userRuntime
+	}
+
+	inspector.InspectCPUDelta()
+	inspector.InspectMemoryDelta() // TODO
+}
+
+// InspectCPUDelta - Compare information gained from inspectCPU to the current CPU metrics.
+// cpuUsrDelta:     Time spent normally executing in user mode.
+// cpuNiceDelta:    Time spent executing niced processes in user mode.
+// cpuKrnDelta:     Time spent executing processes in kernel mode.
+// cpuIdleDelta:    Time spent idle.
+// cpuIowaitDelta:  Time spent waiting for I/O to complete.
+// cpuIrqDelta:     Time spent servicing interrupts.
+// cpuSoftIrqDelta: Time spent servicing software interrupts.
+// vmcpustealDelta: Time spent waiting for real CPU while hypervisor is using another virtual CPU.
+// contextSwitchesDelta: Number of context switches.
+func (inspector *Inspector) InspectCPUDelta() {
+	if inspector.inspectedCPU {
+		statMap, err := parseStatFile()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		params := strings.Split(statMap["cpu"], " ")
+		metricNames := []string{"cpuUsr", "cpuNice", "cpuKrn", "cpuIdle", "cpuIowait", "cpuIrq", "cpuSoftIrq", "vmcpusteal"}
+		for i, val := range metricNames {
+			currentValue, _ := strconv.Atoi(params[i])
+			oldValue, _ := strconv.Atoi(inspector.privateAttributes[val].(string))
+			inspector.attributes[val+"Delta"] = currentValue - oldValue
+		}
+
+		currentContextSwitchesValue, _ := strconv.Atoi(statMap["ctxt"])
+		oldContextSwitches, _ := strconv.Atoi(inspector.privateAttributes["contextSwitches"].(string))
+		inspector.attributes["contextSwitchesDelta"] = currentContextSwitchesValue - oldContextSwitches
+	} else {
+		inspector.attributes["SAAFCPUDeltaError"] = "CPU not inspected before collecting deltas!"
+	}
+}
+
+// InspectMemoryDelta - Inspects /proc/vmstat to see how specific memory stats have changed.
+// pageFaultsDelta:     The number of page faults experienced since inspectMemory was called.
+// majorPageFaultsDelta: The number of major pafe faults since inspectMemory was called.
+func (inspector *Inspector) InspectMemoryDelta() {
+	// TODO
+}
+
+// Finish - Finalize the Inspector. Calculate the total runtime and return the HashMap object containing all attributes collected.
+func (inspector *Inspector) Finish() map[string]interface{} {
+	inspector.AddTimeStamp("runtime")
+	inspector.attributes["endTime"] = time.Now().Unix()
+	return inspector.attributes
+}
+
+// AddTimeStamp - Add custom time stamps to the output. The key value determines the name
+// of the attribute and the value will be the time from Inspector initialization to this function call.
+func (inspector *Inspector) AddTimeStamp(key string) {
+	inspector.attributes[key] = time.Since(inspector.startTime).Milliseconds()
+}
+
+// AddTimeStampFrom - Add a custom time stamp to the output. The key value determines the name
+// of the attribute and the value will be the time in milliseconds between the current time and the timeSince variable.
+func (inspector *Inspector) AddTimeStampFrom(key string, timeSince time.Time) {
+	inspector.attributes[key] = time.Since(timeSince).Milliseconds()
+}
+
+// AddAttribute - Add a custom attribute to the output.
+func (inspector *Inspector) AddAttribute(key string, value interface{}) {
+	inspector.attributes[key] = value
+}
+
+// GetAttribute - Gets a custom attribute from the attribute list.
+func (inspector *Inspector) GetAttribute(key string) interface{} {
+	return inspector.attributes[key]
+}
+
 func parseCPUInfoFile() (map[string]string, error) {
+	filename := "/proc/cpuinfo"
+
+	_, err := os.Stat(filename) // check if the file exists
+	if os.IsNotExist(err) {
+		return nil, fmt.Errorf("File %s not found", filename)
+	}
+
 	fileMap := map[string]string{}
-	f, err := ioutil.ReadFile("/proc/cpuinfo")
+	f, err := ioutil.ReadFile(filename)
 	if err != nil {
-		fmt.Printf("Error reading /proc/cpuinfo: err = %s", err)
-		return fileMap, err
+		return fileMap, fmt.Errorf("Error reading %s ... err = %s", filename, err.Error())
 	}
 
 	lines := bytes.Split(f, []byte("\n"))
@@ -148,11 +307,17 @@ func parseCPUInfoFile() (map[string]string, error) {
 }
 
 func parseStatFile() (map[string]string, error) {
+	filename := "/proc/stat"
+
+	_, err := os.Stat(filename) // check if the file exists
+	if os.IsNotExist(err) {
+		return nil, fmt.Errorf("File %s not found", filename)
+	}
+
 	fileMap := map[string]string{}
-	f, err := ioutil.ReadFile("/proc/stat")
+	f, err := ioutil.ReadFile(filename)
 	if err != nil {
-		fmt.Printf("Error reading /proc/stat: err = %s", err)
-		return fileMap, err
+		return fileMap, fmt.Errorf("Error reading %s ... err = %s", filename, err.Error())
 	}
 
 	lines := bytes.Split(f, []byte("\n"))
@@ -164,47 +329,4 @@ func parseStatFile() (map[string]string, error) {
 		}
 	}
 	return fileMap, nil
-}
-
-func (inspector *Inspector) InspectAllDeltas() {
-	if val, ok := inspector.attributes["frameworkRuntime"]; ok {
-		inspector.attributes["userRuntime"] = time.Since(inspector.startTime).Milliseconds() - val.(int64)
-	}
-
-	inspector.InspectCPUDelta()
-	inspector.InspectMemoryDelta() // TODO
-}
-
-func (inspector *Inspector) InspectCPUDelta() {
-	// Add check that value had previously been gotten to all inspect*deltas
-	statMap, err := parseStatFile()
-	if err != nil {
-		return
-	}
-
-	params := strings.Split(statMap["cpu"], " ")
-	metricNames := []string{"cpuUsr", "cpuNice", "cpuKrn", "cpuIdle", "cpuIowait", "cpuIrq", "cpuSoftIrq", "vmcpusteal"}
-	for i, val := range metricNames {
-		currentValue, _ := strconv.Atoi(params[i])
-		oldValue, _ := strconv.Atoi(inspector.privateAttributes[val].(string))
-		inspector.attributes[val+"Delta"] = currentValue - oldValue
-	}
-
-	currentContextSwitchesValue, _ := strconv.Atoi(statMap["ctxt"])
-	oldContextSwitches, _ := strconv.Atoi(inspector.privateAttributes["contextSwitches"].(string))
-	inspector.attributes["contextSwitchesDelta"] = currentContextSwitchesValue - oldContextSwitches
-}
-
-func (inspector *Inspector) InspectMemoryDelta() {
-	// TODO
-}
-
-// can we add another timestamp method that takes a timestamp and adds a timestamp in relation to one that is passed
-func (inspector *Inspector) AddTimeStamp(key string) {
-	inspector.attributes[key] = time.Since(inspector.startTime).Milliseconds()
-}
-
-func (inspector *Inspector) Finish() map[string]interface{} {
-	inspector.attributes["runtime"] = time.Since(inspector.startTime).Milliseconds()
-	return inspector.attributes
 }
