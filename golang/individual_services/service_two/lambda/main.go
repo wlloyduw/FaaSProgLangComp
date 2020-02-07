@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/csv"
 	"fmt"
+	"os"
 	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -15,18 +16,53 @@ import (
 	"github.com/wlloyduw/FaaSProgLangComp/golang/saaf"
 )
 
-var dbinfo = struct {
-	password string
-	dbname   string
-	username string
-}{
-	password: "tcss562group2",
-	dbname:   "tcp(service2rds.cluster-cwunkmk4eqtz.us-east-2.rds.amazonaws.com:3306)/service2db?multiStatements=true&interpolateParams=true",
-	username: "tcss562",
+const (
+	dbUsernameKey = "username"
+	dbPasswordKey = "password"
+	dbNameKey     = "databaseName"
+	dbEndpointKey = "databaseEndpoint"
+	dbParams      = "multiStatements=true&interpolateParams=true"
+)
+
+// DBInfo contains rds database information
+type DBInfo struct {
+	Username         string
+	Password         string
+	Name             string
+	Endpoint         string
+	ConnectionString string
 }
+
+var dbinfo DBInfo
 
 func main() {
 	lambda.Start(HandleRequest)
+}
+
+func setDBInfo() error {
+	var exists bool
+
+	dbinfo = DBInfo{}
+
+	if dbinfo.Username, exists = os.LookupEnv(dbUsernameKey); !exists {
+		return fmt.Errorf("%s env var not found", dbUsernameKey)
+	}
+
+	if dbinfo.Password, exists = os.LookupEnv(dbPasswordKey); !exists {
+		return fmt.Errorf("%s env var not found", dbPasswordKey)
+	}
+
+	if dbinfo.Name, exists = os.LookupEnv(dbNameKey); !exists {
+		return fmt.Errorf("%s env var not found", dbNameKey)
+	}
+
+	if dbinfo.Endpoint, exists = os.LookupEnv(dbEndpointKey); !exists {
+		return fmt.Errorf("%s env var not found", dbEndpointKey)
+	}
+
+	dbinfo.ConnectionString = fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?%s", dbinfo.Username, dbinfo.Password, dbinfo.Endpoint, dbinfo.Name, dbParams)
+
+	return nil
 }
 
 func HandleRequest(ctx context.Context, request saaf.Request) (map[string]interface{}, error) {
@@ -35,12 +71,11 @@ func HandleRequest(ctx context.Context, request saaf.Request) (map[string]interf
 
 	//****************START FUNCTION IMPLEMENTATION*************************
 
-	inspector.AddAttribute("message", "bucketname is = "+request.BucketName+"! This is an attributed added to the Inspector!")
+	inspector.AddAttribute("request", request)
 
-	bucketname := request.BucketName
-	key := request.Key
-	tablename := request.TableName
-	batchSize := request.BatchSize
+	if err := setDBInfo(); err != nil {
+		return nil, err
+	}
 
 	mySession, err := session.NewSession()
 	if err != nil {
@@ -48,7 +83,7 @@ func HandleRequest(ctx context.Context, request saaf.Request) (map[string]interf
 	}
 	s3client := s3.New(mySession)
 
-	s3object, err := s3client.GetObject(&s3.GetObjectInput{Bucket: &bucketname, Key: &key})
+	s3object, err := s3client.GetObject(&s3.GetObjectInput{Bucket: &request.BucketName, Key: &request.Key})
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +97,7 @@ func HandleRequest(ctx context.Context, request saaf.Request) (map[string]interf
 		return nil, err
 	}
 
-	err = writeRecords(records, tablename, batchSize)
+	err = writeRecords(records, request.TableName, request.BatchSize)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +110,11 @@ func HandleRequest(ctx context.Context, request saaf.Request) (map[string]interf
 }
 
 func writeRecords(records [][]string, tablename string, batchSize int) error {
-	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@%s", dbinfo.username, dbinfo.password, dbinfo.dbname))
+	if batchSize == 0 {
+		batchSize = 1000
+	}
+
+	db, err := sql.Open("mysql", dbinfo.ConnectionString)
 	if err != nil {
 		return err
 	}

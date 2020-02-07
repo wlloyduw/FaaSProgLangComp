@@ -8,8 +8,12 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"os"
 	"strconv"
 	"strings"
+	"time"
+
+	"github.com/google/uuid"
 
 	_ "github.com/go-sql-driver/mysql"
 
@@ -19,18 +23,53 @@ import (
 	"github.com/wlloyduw/FaaSProgLangComp/golang/saaf"
 )
 
-var dbinfo = struct {
-	password string
-	dbname   string
-	username string
-}{
-	password: "tcss562group2",
-	dbname:   "tcp(service2rds.cluster-cwunkmk4eqtz.us-east-2.rds.amazonaws.com:3306)/service2db?multiStatements=true&interpolateParams=true",
-	username: "tcss562",
+const (
+	dbUsernameKey = "username"
+	dbPasswordKey = "password"
+	dbNameKey     = "databaseName"
+	dbEndpointKey = "databaseEndpoint"
+	dbParams      = "multiStatements=true&interpolateParams=true"
+)
+
+// DBInfo contains rds database information
+type DBInfo struct {
+	Username         string
+	Password         string
+	Name             string
+	Endpoint         string
+	ConnectionString string
 }
+
+var dbinfo DBInfo
 
 func main() {
 	lambda.Start(HandleRequest)
+}
+
+func setDBInfo() error {
+	var exists bool
+
+	dbinfo = DBInfo{}
+
+	if dbinfo.Username, exists = os.LookupEnv(dbUsernameKey); !exists {
+		return fmt.Errorf("%s env var not found", dbUsernameKey)
+	}
+
+	if dbinfo.Password, exists = os.LookupEnv(dbPasswordKey); !exists {
+		return fmt.Errorf("%s env var not found", dbPasswordKey)
+	}
+
+	if dbinfo.Name, exists = os.LookupEnv(dbNameKey); !exists {
+		return fmt.Errorf("%s env var not found", dbNameKey)
+	}
+
+	if dbinfo.Endpoint, exists = os.LookupEnv(dbEndpointKey); !exists {
+		return fmt.Errorf("%s env var not found", dbEndpointKey)
+	}
+
+	dbinfo.ConnectionString = fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?%s", dbinfo.Username, dbinfo.Password, dbinfo.Endpoint, dbinfo.Name, dbParams)
+
+	return nil
 }
 
 func HandleRequest(ctx context.Context, request saaf.Request) (map[string]interface{}, error) {
@@ -42,15 +81,15 @@ func HandleRequest(ctx context.Context, request saaf.Request) (map[string]interf
 
 	inspector.AddAttribute("request", request)
 
-	bucketname := request.BucketName
-	key := request.Key
-	tablename := request.TableName
+	if err := setDBInfo(); err != nil {
+		return nil, err
+	}
 
-	queryString := constructQueryString(request.FilterBy, request.AggegrateBy, tablename)
+	queryString := constructQueryString(request.FilterBy, request.AggegrateBy, request.TableName)
 
 	// fmt.Println(queryString)
 
-	results, err := doQuery(queryString, tablename)
+	results, err := doQuery(queryString, request.TableName)
 	if err != nil {
 		return nil, err
 	}
@@ -78,19 +117,25 @@ func HandleRequest(ctx context.Context, request saaf.Request) (map[string]interf
 		return nil, err
 	}
 
-	// maybe write to a unique key if we run in parallel
-	// newKey := strings.TrimSuffix(key, ".csv") + "/" + strconv.FormatInt(time.Now().UnixNano(), 10) + ".csv"
+	// create a unique key and upload query results to S3
+	newKey := strings.TrimSuffix(request.Key, ".csv") + "/" + strings.TrimSuffix(request.Key, ".csv") + "_" + uuid.New().String() + ".csv"
 
-	_, err = s3client.PutObject(&s3.PutObjectInput{Body: bytes.NewReader(editedBody), Bucket: &bucketname, Key: &key})
+	_, err = s3client.PutObject(&s3.PutObjectInput{Body: bytes.NewReader(editedBody), Bucket: &request.BucketName, Key: &newKey})
 	if err != nil {
 		return nil, err
 	}
 
-	// do extra table queries
-	// err = stressTest(tablename, 100)
-	// if err != nil {
-	// 	return nil, err
-	// }
+	// do extra table queries if batchSize specified in request
+	if request.BatchSize > 0 {
+		startTime := time.Now()
+		err = stressTest(request.TableName, 100)
+		if err != nil {
+			return nil, err
+		}
+		stressTestRuntime := time.Since(startTime).Milliseconds()
+		fmt.Printf("Stress test runtime is %d", stressTestRuntime)
+		inspector.AddAttribute("stressTestRuntime", stressTestRuntime)
+	}
 
 	//****************END FUNCTION IMPLEMENTATION***************************
 
@@ -106,7 +151,8 @@ func constructQueryString(filters, aggregates map[string][]string, tablename str
 		for _, value := range v {
 			aggregateBuilder.WriteString(strings.ToUpper(k))
 			aggregateBuilder.WriteString("(`")
-			aggregateBuilder.WriteString(strings.ReplaceAll(value, "_", " "))
+			aggregateBuilder.WriteString(value)
+			// aggregateBuilder.WriteString(strings.ReplaceAll(value, "_", " "))
 			aggregateBuilder.WriteString("`), ")
 		}
 	}
@@ -118,15 +164,19 @@ func constructQueryString(filters, aggregates map[string][]string, tablename str
 			queryBuilder.WriteString("SELECT ")
 			queryBuilder.WriteString(aggregateString)
 			queryBuilder.WriteString("'WHERE ")
-			queryBuilder.WriteString(strings.ReplaceAll(k, "_", " "))
+			queryBuilder.WriteString(k)
+			// queryBuilder.WriteString(strings.ReplaceAll(k, "_", " "))
 			queryBuilder.WriteString("=")
-			queryBuilder.WriteString(strings.ReplaceAll(value, "_", " "))
+			queryBuilder.WriteString(value)
+			// queryBuilder.WriteString(strings.ReplaceAll(value, "_", " "))
 			queryBuilder.WriteString("' AS `Filtered By` FROM ")
 			queryBuilder.WriteString(tablename)
 			queryBuilder.WriteString(" WHERE `")
-			queryBuilder.WriteString(strings.ReplaceAll(k, "_", " "))
+			queryBuilder.WriteString(k)
+			// queryBuilder.WriteString(strings.ReplaceAll(k, "_", " "))
 			queryBuilder.WriteString("`='")
-			queryBuilder.WriteString(strings.ReplaceAll(value, "_", " "))
+			queryBuilder.WriteString(value)
+			// queryBuilder.WriteString(strings.ReplaceAll(value, "_", " "))
 			queryBuilder.WriteString("' UNION ")
 		}
 	}
@@ -136,7 +186,7 @@ func constructQueryString(filters, aggregates map[string][]string, tablename str
 }
 
 func doQuery(queryString, tablename string) ([][]string, error) {
-	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@%s", dbinfo.username, dbinfo.password, dbinfo.dbname))
+	db, err := sql.Open("mysql", dbinfo.ConnectionString)
 	if err != nil {
 		return nil, err
 	}
@@ -148,11 +198,13 @@ func doQuery(queryString, tablename string) ([][]string, error) {
 	}
 	defer rows.Close()
 
+	// this part needs some work because it fails around half the time.... something to do with the ordering of the columns
 	columnNames, err := rows.Columns()
 	if err != nil {
 		return nil, err
 	}
 
+	// this part needs some work because it fails around half the time.... something to do with the ordering of the columns
 	allThings := [][]string{columnNames}
 	for rows.Next() {
 		var (
@@ -167,6 +219,7 @@ func doQuery(queryString, tablename string) ([][]string, error) {
 			filteredBy             string
 		)
 
+		// this part needs some work because it fails around half the time.... something to do with the ordering of the columns
 		err = rows.Scan(&maxUnitSold, &minUnitSold, &avgOrderProcessingTime, &avgGrossMargin, &avgUnitsSold, &sumUnitSolds, &sumTotalRevenue, &sumTotalProfit, &filteredBy)
 		if err != nil {
 			return allThings, err
@@ -191,7 +244,7 @@ func doQuery(queryString, tablename string) ([][]string, error) {
 }
 
 func stressTest(tablename string, iterations int) error {
-	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@%s", dbinfo.username, dbinfo.password, dbinfo.dbname))
+	db, err := sql.Open("mysql", dbinfo.ConnectionString)
 	if err != nil {
 		return err
 	}
@@ -200,7 +253,7 @@ func stressTest(tablename string, iterations int) error {
 	for i := 0; i < iterations; i++ {
 		conn, err := db.Conn(context.Background())
 		if err != nil {
-			return nil
+			return err
 		}
 
 		rows, err := conn.QueryContext(context.Background(), fmt.Sprintf("SELECT * FROM %s;", tablename))
@@ -208,6 +261,7 @@ func stressTest(tablename string, iterations int) error {
 			return err
 		}
 
+		// NOTE: may need to actually read these files in order to transfer them over
 		for rows.Next() {
 		}
 		conn.Close()
