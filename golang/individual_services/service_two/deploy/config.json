@@ -1,18 +1,15 @@
 {
 	"README": "See ./deploy/README.md for help!",
-
-	"functionName":     "ServiceTwoGo",
-
+	"functionName": "ServiceTwoGo",
 	"lambdaHandler": "main",
 	"lambdaRoleARN": "arn:aws:iam::576608023434:role/lambda.with.everything",
 	"lambdaSubnets": "subnet-aabea6c2,subnet-9e9c25d2,subnet-0d085977",
 	"lambdaSecurityGroups": "sg-d1860cb3",
-
 	"memorySetting": "3008",
-
 	"test": {
 		"bucketname": "df.service.one",
-		"key": "edited_1500000_Sales_Records.csv",
-		"tablename": "SalesData"
+		"key": "edited_1000_Sales_Records.csv",
+		"tablename": "SalesData",
+		"batchSize": 1000
 	}
 }

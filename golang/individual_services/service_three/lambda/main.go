@@ -126,7 +126,7 @@ func HandleRequest(ctx context.Context, request saaf.Request) (map[string]interf
 	}
 
 	// do extra table queries if batchSize specified in request
-	if request.BatchSize > 0 {
+	if request.StressTestLoops > 0 {
 		startTime := time.Now()
 		err = stressTest(request.TableName, 100)
 		if err != nil {

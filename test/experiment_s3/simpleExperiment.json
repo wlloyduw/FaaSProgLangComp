@@ -4,7 +4,7 @@
   "payloads": [
     {
       "bucketname": "<bucket>",
-      "key": "QueryResults1000.csv",
+      "key": "QueryResults.csv",
       "tablename": "SalesData",
       "filterBy": {
         "Region": ["Australia and Oceania"],
