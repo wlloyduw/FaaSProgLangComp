@@ -1,0 +1,53 @@
+{
+  "callWithCLI": true,
+  "memorySettings": [],
+  "payloads": [
+    {
+      "bucketname": "<bucket>",
+      "key": "QueryResults5000.csv",
+      "tablename": "SalesData",
+      "filterBy": {
+        "Region": ["Australia and Oceania"],
+        "Item_Type": ["Office Supplies"],
+        "Sales_Channel": ["Offline"],
+        "Order_Priority": ["Medium"],
+        "Country": ["Fiji"]
+      },
+      "aggregateBy": {
+        "max": ["Units Sold"],
+        "min": ["Units Sold"],
+        "avg": ["Order Processing Time", "Gross Margin", "Units Sold"],
+        "sum": ["Units Sold", "Total Revenue", "Total Profit"]
+      },
+      "stressTestLoops": "0"
+    }
+  ],
+
+  "runs": 50,
+  "threads": 50,
+  "iterations": 1,
+  "sleepTime": 5,
+  "randomSeed": 42,
+
+  "outputGroups": ["cpuType", "containerID", "vmID", "zAll"],
+  "outputRawOfGroup": [],
+  "showAsList": [],
+  "showAsSum": ["newcontainer"],
+
+  "ignoreFromAll": ["zAll", "lang", "version", "linuxVersion", "platform", "hostname"],
+  "ignoreFromGroups": ["1_run_id", "2_thread_id", "cpuModel", "cpuIdle", "cpuIowait", "cpuIrq", "cpuKrn", "cpuNice", "cpuSoftIrq", "cpuUsr"],
+  "ignoreByGroup": {
+  "containerID": ["containerID"],
+  "cpuType": ["cpuType"],
+  "vmID": ["vmID"]
+  },
+  
+  "invalidators": {},
+  "removeDuplicateContainers": false,
+
+  "openCSV": true,
+  "combineSheets": true,
+  "warmupBuffer": 1
+} 
+
+

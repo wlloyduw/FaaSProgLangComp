@@ -1,0 +1,6 @@
+{
+	"function": "ServiceTwoGo",
+    "platform": "AWS Lambda",
+    "source": "",
+    "endpoint": ""
+}

@@ -1,0 +1,6 @@
+{
+	"function": "ServiceOnePython",
+    "platform": "AWS Lambda",
+    "source": "",
+    "endpoint": ""
+}

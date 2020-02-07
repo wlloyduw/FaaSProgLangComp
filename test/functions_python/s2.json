@@ -1,0 +1,6 @@
+{
+	"function": "ServiceTwoPython",
+    "platform": "AWS Lambda",
+    "source": "",
+    "endpoint": ""
+}

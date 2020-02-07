@@ -1,0 +1,6 @@
+{
+	"function": "ServiceThreePython",
+    "platform": "AWS Lambda",
+    "source": "",
+    "endpoint": ""
+}
