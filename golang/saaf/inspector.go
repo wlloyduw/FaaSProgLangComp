@@ -12,12 +12,28 @@ import (
 	guid "github.com/google/uuid"
 )
 
+const (
+	awsLambdaLogStreamNameKey      = "AWS_LAMBDA_LOG_STREAM_NAME"
+	awsLambdaFunctionNameKey       = "AWS_LAMBDA_FUNCTION_NAME"
+	awsLambdaFunctionMemorySizeKey = "AWS_LAMBDA_FUNCTION_MEMORY_SIZE"
+	awsLambdaRegionKey             = "AWS_REGION"
+
+	googleFunctionNameKey       = "X_GOOGLE_FUNCTION_NAME"
+	googleFunctionMemorySizeKey = "X_GOOGLE_FUNCTION_MEMORY_MB"
+	googleFunctionRegionKey     = "X_GOOGLE_FUNCTION_REGION"
+
+	ibmFunctionNameKey   = "__OW_ACTION_NAME"
+	ibmFunctionRegionKey = "__OW_API_HOST"
+
+	azureContainerIDKey    = "CONTAINER_NAME"
+	azureFunctionNameKey   = "WEBSITE_SITE_NAME"
+	azureFunctionRegionKey = "Location"
+)
+
 // DONT USE RUN COMMAND, just read the file (ok in Java but other languages is terrible)
 // or use whatevr you can to get 'uname -v' (low priority)
-// inspectPlatform is next
 // inspectMemory is ok
 // inspectLinux is last
-// Add check if previously inspected and if so, return
 
 // Inspector ...
 type Inspector struct {
@@ -51,9 +67,9 @@ func NewInspector() Inspector {
 // InspectAll - Run all data collection methods and record framework runtime.
 func (inspector *Inspector) InspectAll() {
 	inspector.InspectContainer()
-	inspector.InspectPlatform() // TODO
-	inspector.InspectLinux()    // TODO
-	inspector.InspectMemory()   // TODO
+	inspector.InspectPlatform()
+	inspector.InspectLinux()  // TODO
+	inspector.InspectMemory() // TODO
 	inspector.InspectCPU()
 	inspector.AddTimeStamp("frameworkRuntime")
 }
@@ -115,8 +131,48 @@ func (inspector *Inspector) InspectContainer() {
 // functionMemory:  The memory setting of the function.
 // functionRegion:  The region the function is deployed onto.
 func (inspector *Inspector) InspectPlatform() {
-	// Add check if previously inspected and if so, return
-	// TODO
+	if inspector.inspectedPlatform {
+		inspector.attributes["SAAFPlatformError"] = "Platform already inspected!"
+		return
+	}
+	inspector.inspectedPlatform = true
+
+	var (
+		key    string
+		exists bool
+	)
+
+	if key, exists = os.LookupEnv(awsLambdaLogStreamNameKey); exists { //AWS
+		inspector.attributes["platform"] = "AWS Lambda"
+		inspector.attributes["containerID"] = key
+		inspector.attributes["functionName"] = os.Getenv(awsLambdaFunctionNameKey)
+		inspector.attributes["functionMemory"] = os.Getenv(awsLambdaFunctionMemorySizeKey)
+		inspector.attributes["functionRegion"] = os.Getenv(awsLambdaRegionKey)
+
+		// TODO
+		// String vmID = runCommand(new String[]{"cat", "/proc/self/cgroup"});
+		// int index = vmID.indexOf("sandbox-root");
+		// attributes.put("vmID", vmID.substring(index + 13, index + 19));
+	} else if key, exists = os.LookupEnv(googleFunctionNameKey); exists { // Google Cloud
+		inspector.attributes["platform"] = "Google Cloud Functions"
+		inspector.attributes["functionName"] = key
+		inspector.attributes["functionMemory"] = os.Getenv(googleFunctionMemorySizeKey)
+		inspector.attributes["functionRegion"] = os.Getenv(googleFunctionRegionKey)
+	} else if key, exists = os.LookupEnv(googleFunctionNameKey); exists { // IBM
+		inspector.attributes["platform"] = "IBM Cloud Functions"
+		inspector.attributes["functionName"] = key
+		inspector.attributes["functionRegion"] = os.Getenv(ibmFunctionRegionKey)
+
+		//TODO
+		// attributes.put("vmID", runCommand(new String[]{"cat", "/sys/hypervisor/uuid"}).trim());
+	} else if key, exists = os.LookupEnv(azureContainerIDKey); exists { // Azure
+		inspector.attributes["platform"] = "Azure Functions"
+		inspector.attributes["containerID"] = key
+		inspector.attributes["functionName"] = azureFunctionNameKey // ? should this be os.Getenv(azureFunctionNameKey)?
+		inspector.attributes["functionRegion"] = os.Getenv(azureFunctionRegionKey)
+	} else {
+		inspector.attributes["platform"] = "Unknown Platform"
+	}
 }
 
 // InspectLinux - Collect information about the linux kernel.
@@ -151,6 +207,10 @@ func (inspector *Inspector) InspectMemory() {
 // contextSwitches: Number of context switches.
 func (inspector *Inspector) InspectCPU() {
 	// Add check if previously inspected and if so, return
+	if inspector.inspectedCPU {
+		inspector.attributes["SAAFCPUError"] = "CPU already inspected!"
+		return
+	}
 	inspector.inspectedCPU = true
 
 	cpuInfoMap, err := parseCPUInfoFile()

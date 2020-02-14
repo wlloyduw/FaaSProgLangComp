@@ -9,11 +9,11 @@ import (
 	"io/ioutil"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/google/uuid"
 	"github.com/wlloyduw/FaaSProgLangComp/golang/saaf"
 )
 
@@ -29,16 +29,13 @@ func HandleRequest(ctx context.Context, request saaf.Request) (map[string]interf
 
 	inspector.AddAttribute("message", "bucketname = "+request.BucketName+", key = "+request.Key)
 
-	bucketname := request.BucketName
-	key := request.Key
-
 	mySession, err := session.NewSession()
 	if err != nil {
 		return nil, err
 	}
 	s3client := s3.New(mySession)
 
-	s3object, err := s3client.GetObject(&s3.GetObjectInput{Bucket: &bucketname, Key: &key})
+	s3object, err := s3client.GetObject(&s3.GetObjectInput{Bucket: &request.BucketName, Key: &request.Key})
 	if err != nil {
 		return nil, err
 	}
@@ -70,9 +67,11 @@ func HandleRequest(ctx context.Context, request saaf.Request) (map[string]interf
 		return nil, err
 	}
 
-	newKey := strings.TrimSuffix(key, ".csv") + "/" + strconv.FormatInt(time.Now().UnixNano(), 10) + ".csv"
+	// updated key so that it will go into a folder and be more clear
+	newKey := "edited_" + strings.TrimSuffix(request.Key, ".csv") + "/" + "edited_" + strings.TrimSuffix(request.Key, ".csv") + "_" + uuid.New().String() + ".csv"
+	// newKey := strings.TrimSuffix(key, ".csv") + "/" + strconv.FormatInt(time.Now().UnixNano(), 10) + ".csv"
 
-	_, err = s3client.PutObject(&s3.PutObjectInput{Body: bytes.NewReader(editedBody), Bucket: &bucketname, Key: &newKey})
+	_, err = s3client.PutObject(&s3.PutObjectInput{Body: bytes.NewReader(editedBody), Bucket: &request.BucketName, Key: &newKey})
 	if err != nil {
 		return nil, err
 	}
