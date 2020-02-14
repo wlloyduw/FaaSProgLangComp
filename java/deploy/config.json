@@ -1,7 +1,7 @@
 {
 	"README": "See ./deploy/README.md for help!",
 
-	"functionName": "ServiceThree",
+	"functionName": "ServiceThreeJava",
 
 	"lambdaHandler": "lambda.ServiceThree::handleRequest",
 	"lambdaRoleARN": "arn:aws:iam::857205555574:role/lambda_basic_execution",

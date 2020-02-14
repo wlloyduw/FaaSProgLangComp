@@ -1,7 +1,7 @@
 {
 	"README": "See ./deploy/README.md for help!",
 
-	"functionName": "ServiceOne",
+	"functionName": "ServiceOneJava",
 
 	"lambdaHandler": "lambda.ServiceOne::handleRequest",
 	"lambdaRoleARN": "arn:aws:iam::857205555574:role/service-role/simple_microservice_role",

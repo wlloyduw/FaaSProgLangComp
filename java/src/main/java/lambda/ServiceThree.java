@@ -14,6 +14,7 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 
 
 import java.sql.Connection;
@@ -63,7 +64,7 @@ public class ServiceThree implements RequestHandler<Request, HashMap<String, Obj
                         for (String value : pair.getValue()) {
                             String whereString="WHERE ";
                             String filterVal = "`" + pair.getKey().replace('_', ' ') +"`";;
-                            whereString += filterVal +"=\"" + value.replace('_', ' ') + "`";
+                            whereString += filterVal +"=\"" + value.replace('_', ' ') + "\"";
                             filterBy[index] = whereString;
                             index++;
                         }
@@ -117,32 +118,7 @@ public class ServiceThree implements RequestHandler<Request, HashMap<String, Obj
         return fullQuery;
     }
   
-
-
-    /**
-    * This method will convert a resultset into a JSON string.
-    * @param rs is a ResultSet that will be converted to a json string.
-    */
-    public String convertRsToJSON(ResultSet rs) {
-        //JSONArray json = new JSONArray();
-        try { 
-            ResultSetMetaData rsmd = rs.getMetaData();
-            while(rs.next()) {
-              int numColumns = rsmd.getColumnCount();
-          //    JSONObject obj = new JSONObject();
-              for (int i=1; i<=numColumns; i++) {
-                String column_name = rsmd.getColumnName(i);
-                //obj.put(column_name, rs.getObject(column_name));
-              }
-            //  json.put(obj);
-            }
-        } catch (SQLException e) {
-            System.out.println("Sql exception while converting ResultSet to String");
-        }
-        //return json.toString();
-        return "temp";
-    }
-            
+      
     /**
      * Lambda Function Handler
      * 
@@ -185,15 +161,32 @@ public class ServiceThree implements RequestHandler<Request, HashMap<String, Obj
             Properties properties = new Properties();
             properties.load(new FileInputStream("db.properties")); 
             String url = properties.getProperty("url");
-            String username = properties.getProperty("username");
-            String password = properties.getProperty("password");
+            String username = System.getenv("username");   //
+            String password = System.getenv("password"); 	 //properties.getProperty("password");
+	    String databaseName = System.getenv("databaseName");
+	    String url = System.getenv("url");
+
+            //to be removed after added in the above environment variable through lambda or config/publish (easy)
+	    String username= properties.getProperty("username");
+	    String properties= properties.getProperty("password");
+            //
             String driver = properties.getProperty("driver");
+
+		
+
+
             Connection con = DriverManager.getConnection(url,username,password);
             PreparedStatement ps = con.prepareStatement(fullQuery);
             ResultSet rs = ps.executeQuery();
-           // String queryResults = convertRsToJSON(rs);
+            StringBuilder queryResults = convertRStoCSV(rs);
+            byte[] bytes = queryResults.toString().getBytes();
+            InputStream is = new ByteArrayInputStream(bytes);
+            ObjectMetadata meta = new ObjectMetadata();
+            meta.setContentLength(bytes.length);
+            meta.setContentType("text/plain");
+
             AmazonS3 s3Client = AmazonS3ClientBuilder.standard().build();  
-           // s3Client.putObject(bucketname, "QueryResults.txt", queryResults);
+            s3Client.putObject(bucketname, "QueryResults.csv", is, meta);
             //int iteration = 100;
             //for (int i = 0; i < iteration; i++) {
               //  String testQuery = "SELECT * from " + mytable + ";";
@@ -215,4 +208,25 @@ public class ServiceThree implements RequestHandler<Request, HashMap<String, Obj
         inspector.inspectAllDeltas();
         return inspector.finish();
     }
-}
+
+
+    private StringBuilder convertRStoCSV(ResultSet rs) throws  Exception{
+        StringBuilder sb = new StringBuilder();
+        try {
+        //List<String> resultSetAsList;
+            int numCols = rs.getMetaData().getColumnCount();
+            while(rs.next()) {
+                for (int i = 1; i <= numCols -1; i++) {
+                    sb.append(String.format(String.valueOf(rs.getString(i))) + ", ");
+
+                }
+                sb.append(String.format(String.valueOf(rs.getString(numCols))) + "\n");
+            }
+
+        } catch (SQLException e) {
+
+        }
+        return sb;
+
+    }
+ }
