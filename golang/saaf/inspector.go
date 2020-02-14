@@ -168,7 +168,7 @@ func (inspector *Inspector) InspectPlatform() {
 	} else if key, exists = os.LookupEnv(azureContainerIDKey); exists { // Azure
 		inspector.attributes["platform"] = "Azure Functions"
 		inspector.attributes["containerID"] = key
-		inspector.attributes["functionName"] = azureFunctionNameKey // ? should this be os.Getenv(azureFunctionNameKey)?
+		inspector.attributes["functionName"] = os.Getenv(azureFunctionNameKey)
 		inspector.attributes["functionRegion"] = os.Getenv(azureFunctionRegionKey)
 	} else {
 		inspector.attributes["platform"] = "Unknown Platform"
