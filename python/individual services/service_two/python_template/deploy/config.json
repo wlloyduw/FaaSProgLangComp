@@ -1,14 +1,11 @@
 {
 	"README": "See ./deploy/README.md for help!",
-
-	"functionName": "python-service-two",
-	
+	"functionName": "ServiceTwoPython",
 	"lambdaRoleARN": "arn:aws:iam::037262423719:role/service-role/python-service-two-role-zefb6psz",
 	"lambdaSubnets": "subnet-3d7b6155,subnet-7566de39,subnet-52431328",
 	"lambdaSecurityGroups": "sg-3949055b",
 	"memorySetting": "3008",	
 	"test": {
-		"name": "Bob",
 		"bucketname": "cvs.bucket.reh",
 		"key": "100_newdata.csv"
 	}

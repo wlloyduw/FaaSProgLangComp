@@ -10,9 +10,9 @@
     }
   ],
 
-  "runs": 1,
+  "runs": 6,
   "threads": 1,
-  "iterations": 6,
+  "iterations": 1,
   "sleepTime": 5,
   "randomSeed": 42,
 

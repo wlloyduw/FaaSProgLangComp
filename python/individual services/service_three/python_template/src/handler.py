@@ -51,6 +51,8 @@ def yourFunction(request, context):
 
     csv_result = convert_json_csv(query_result)
 
+    stressTest(request['stressTestLoops'], request['tablename'])
+
     #dest_object_name = "newjson.txt"
 
     #my_bytes = bytes(json_result.encode('UTF-8'))
@@ -158,4 +160,16 @@ def convert_json_csv(rows):
     file.write(str.encode(value))
 
     return file
+
+def stressTest(iterations, tablename):
+    con = pymysql.connect(host="tcss562group2.cluster-cj6rdxvm4ac3.us-east-2.rds.amazonaws.com", 
+    user="tscc562", password="m23j452345", db="562Group2DB", connect_timeout=1800, cursorclass=pymysql.cursors.DictCursor)
+    with con:
+        cur = con.cursor()
+
+        for i in range(0, iterations):
+            cur.execute("SELECT * FROM {}".format(tablename))
+            rows = cur.fetchall()
+
+
 
