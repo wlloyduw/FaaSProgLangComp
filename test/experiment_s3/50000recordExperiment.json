@@ -6,20 +6,7 @@
       "bucketname": "<bucket>",
       "key": "QueryResults50000.csv",
       "tablename": "SalesData",
-      "filterBy": {
-        "Region": ["Australia and Oceania"],
-        "Item_Type": ["Office Supplies"],
-        "Sales_Channel": ["Offline"],
-        "Order_Priority": ["Medium"],
-        "Country": ["Fiji"]
-      },
-      "aggregateBy": {
-        "max": ["Units Sold"],
-        "min": ["Units Sold"],
-        "avg": ["Order Processing Time", "Gross Margin", "Units Sold"],
-        "sum": ["Units Sold", "Total Revenue", "Total Profit"]
-      },
-      "stressTestLoops": "0"
+      "stressTestLoops": "200"
     }
   ],
 
