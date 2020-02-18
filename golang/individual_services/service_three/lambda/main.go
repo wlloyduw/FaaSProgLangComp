@@ -9,7 +9,6 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 
@@ -29,6 +28,23 @@ const (
 	dbNameKey     = "databaseName"
 	dbEndpointKey = "databaseEndpoint"
 	dbParams      = "multiStatements=true&interpolateParams=true"
+)
+
+var (
+	filterBy = map[string][]string{
+		"Region":         []string{"Australia and Oceania"},
+		"Item Type":      []string{"Office Supplies"},
+		"Sales Channel":  []string{"Offline"},
+		"Order Priority": []string{"Medium"},
+		"Country":        []string{"Fiji"},
+	}
+
+	aggregateBy = map[string][]string{
+		"max": []string{"Units Sold"},
+		"min": []string{"Units Sold"},
+		"avg": []string{"Order Processing Time", "Gross Margin", "Units Sold"},
+		"sum": []string{"Units Sold", "Total Revenue", "Total Profit"},
+	}
 )
 
 // DBInfo contains rds database information
@@ -85,7 +101,7 @@ func HandleRequest(ctx context.Context, request saaf.Request) (map[string]interf
 		return nil, err
 	}
 
-	queryString := constructQueryString(request.FilterBy, request.AggegrateBy, request.TableName)
+	queryString := constructQueryString(filterBy, aggregateBy, request.TableName)
 
 	// fmt.Println(queryString)
 
@@ -128,7 +144,7 @@ func HandleRequest(ctx context.Context, request saaf.Request) (map[string]interf
 	// do extra table queries if batchSize specified in request
 	if request.StressTestLoops > 0 {
 		startTime := time.Now()
-		err = stressTest(request.TableName, 100)
+		err = stressTest(request.TableName, request.StressTestLoops)
 		if err != nil {
 			return nil, err
 		}
@@ -152,7 +168,6 @@ func constructQueryString(filters, aggregates map[string][]string, tablename str
 			aggregateBuilder.WriteString(strings.ToUpper(k))
 			aggregateBuilder.WriteString("(`")
 			aggregateBuilder.WriteString(value)
-			// aggregateBuilder.WriteString(strings.ReplaceAll(value, "_", " "))
 			aggregateBuilder.WriteString("`), ")
 		}
 	}
@@ -165,18 +180,14 @@ func constructQueryString(filters, aggregates map[string][]string, tablename str
 			queryBuilder.WriteString(aggregateString)
 			queryBuilder.WriteString("'WHERE ")
 			queryBuilder.WriteString(k)
-			// queryBuilder.WriteString(strings.ReplaceAll(k, "_", " "))
 			queryBuilder.WriteString("=")
 			queryBuilder.WriteString(value)
-			// queryBuilder.WriteString(strings.ReplaceAll(value, "_", " "))
 			queryBuilder.WriteString("' AS `Filtered By` FROM ")
 			queryBuilder.WriteString(tablename)
 			queryBuilder.WriteString(" WHERE `")
 			queryBuilder.WriteString(k)
-			// queryBuilder.WriteString(strings.ReplaceAll(k, "_", " "))
 			queryBuilder.WriteString("`='")
 			queryBuilder.WriteString(value)
-			// queryBuilder.WriteString(strings.ReplaceAll(value, "_", " "))
 			queryBuilder.WriteString("' UNION ")
 		}
 	}
@@ -198,74 +209,103 @@ func doQuery(queryString, tablename string) ([][]string, error) {
 	}
 	defer rows.Close()
 
-	// this part needs some work because it fails around half the time.... something to do with the ordering of the columns
 	columnNames, err := rows.Columns()
 	if err != nil {
 		return nil, err
 	}
+	// fmt.Printf("%#v\n", columnNames)
 
-	// this part needs some work because it fails around half the time.... something to do with the ordering of the columns
 	allThings := [][]string{columnNames}
+
+	colValuesBase := []string{}
+	for i := 0; i < len(columnNames); i++ {
+		colValuesBase = append(colValuesBase, "")
+	}
+
 	for rows.Next() {
-		var (
-			avgOrderProcessingTime float64
-			avgGrossMargin         float64
-			avgUnitsSold           float64
-			sumUnitSolds           int
-			sumTotalRevenue        float64
-			maxUnitSold            int
-			minUnitSold            int
-			sumTotalProfit         float64
-			filteredBy             string
-		)
+		// var (
+		// 	avgOrderProcessingTime float64
+		// 	avgGrossMargin         float64
+		// 	avgUnitsSold           float64
+		// 	sumUnitSolds           int
+		// 	sumTotalRevenue        float64
+		// 	maxUnitSold            int
+		// 	minUnitSold            int
+		// 	sumTotalProfit         float64
+		// 	filteredBy             string
+		// )
 
-		// this part needs some work because it fails around half the time.... something to do with the ordering of the columns
-		err = rows.Scan(&maxUnitSold, &minUnitSold, &avgOrderProcessingTime, &avgGrossMargin, &avgUnitsSold, &sumUnitSolds, &sumTotalRevenue, &sumTotalProfit, &filteredBy)
+		// // this part needs some work because it fails around half the time.... something to do with the ordering of the columns
+		// err = rows.Scan(&maxUnitSold, &minUnitSold, &avgOrderProcessingTime, &avgGrossMargin, &avgUnitsSold, &sumUnitSolds, &sumTotalRevenue, &sumTotalProfit, &filteredBy)
+		// if err != nil {
+		// 	return allThings, err
+		// }
+
+		// row := []string{
+		// 	strconv.Itoa(maxUnitSold),
+		// 	strconv.Itoa(minUnitSold),
+		// 	strconv.FormatFloat(avgOrderProcessingTime, 'f', 2, 64),
+		// 	strconv.FormatFloat(avgGrossMargin, 'f', 2, 64),
+		// 	strconv.FormatFloat(avgUnitsSold, 'f', 2, 64),
+		// 	strconv.Itoa(sumUnitSolds),
+		// 	strconv.FormatFloat(sumTotalRevenue, 'f', 2, 64),
+		// 	strconv.FormatFloat(sumTotalProfit, 'f', 2, 64),
+		// 	filteredBy,
+		// }
+
+		colValues := colValuesBase
+		err = rows.Scan(&colValues[0], &colValues[1], &colValues[2], &colValues[3], &colValues[4], &colValues[5], &colValues[6], &colValues[7], &colValues[8])
 		if err != nil {
-			return allThings, err
+			return nil, err
 		}
 
-		row := []string{
-			strconv.Itoa(maxUnitSold),
-			strconv.Itoa(minUnitSold),
-			strconv.FormatFloat(avgOrderProcessingTime, 'f', 2, 64),
-			strconv.FormatFloat(avgGrossMargin, 'f', 2, 64),
-			strconv.FormatFloat(avgUnitsSold, 'f', 2, 64),
-			strconv.Itoa(sumUnitSolds),
-			strconv.FormatFloat(sumTotalRevenue, 'f', 2, 64),
-			strconv.FormatFloat(sumTotalProfit, 'f', 2, 64),
-			filteredBy,
-		}
-
-		allThings = append(allThings, row)
+		allThings = append(allThings, colValues)
 	}
 
 	return allThings, nil
 }
 
 func stressTest(tablename string, iterations int) error {
+	var rows *sql.Rows
 	db, err := sql.Open("mysql", dbinfo.ConnectionString)
 	if err != nil {
 		return err
 	}
 	defer db.Close()
 
+	// times := map[int]int64{}
+
 	for i := 0; i < iterations; i++ {
+		// rowsScanned := 0
+		// startTime := time.Now()
 		conn, err := db.Conn(context.Background())
 		if err != nil {
 			return err
 		}
 
-		rows, err := conn.QueryContext(context.Background(), fmt.Sprintf("SELECT * FROM %s;", tablename))
+		rows, err = conn.QueryContext(context.Background(), fmt.Sprintf("SELECT * FROM %s;", tablename))
 		if err != nil {
 			return err
 		}
 
-		// NOTE: may need to actually read these files in order to transfer them over
+		// NOTE: scanning rows takes the same amount of time as just an empty rows.Next loop
+
+		// row := []string{"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""}
 		for rows.Next() {
+			// err := rows.Scan(&row[0], &row[1], &row[2], &row[3], &row[4], &row[5], &row[6], &row[7], &row[8], &row[9], &row[10], &row[11], &row[12], &row[13], &row[14], &row[15])
+			// if err != nil {
+			// 	rows.Close()
+			// 	return err
+			// }
+			// rowsScanned++
 		}
+		rows.Close()
 		conn.Close()
+
+		// times[i] = time.Since(startTime).Milliseconds()
+		// fmt.Printf("Test loop #%d took %s. Scanned %d rows\n", i, time.Since(startTime), rowsScanned)
 	}
 
+	// fmt.Printf("Times = %#v\n", times)
 	return nil
 }

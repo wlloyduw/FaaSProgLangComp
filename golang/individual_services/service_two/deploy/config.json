@@ -8,7 +8,7 @@
 	"memorySetting": "3008",
 	"test": {
 		"bucketname": "df.service.one",
-		"key": "edited_1000_Sales_Records.csv",
+		"key": "edited_1000000_Sales_Records.csv",
 		"tablename": "SalesData",
 		"batchSize": 1000
 	}
