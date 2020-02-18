@@ -37,12 +37,15 @@ import java.util.*;
  */
 public class ServiceThree implements RequestHandler<Request, HashMap<String, Object>> {
 
+	
+	
+	    
     public int hashSize(HashMap<String, String[]> theHashMap) {
             int count = 0;
             Iterator<Entry<String, String[]>> it = theHashMap.entrySet().iterator();
-            while (it.hasNext()) {
-                    Map.Entry<String, String[]> pair = (Map.Entry<String, String[]>) it.next();
-                    count += pair.getValue().length;
+
+            for(Entry<String, String[]> e : theHashMap.entrySet()) {
+                count += e.getValue().length;
             }
             return count;
     }
@@ -55,23 +58,28 @@ public class ServiceThree implements RequestHandler<Request, HashMap<String, Obj
     */
     public String[] createWhereString(HashMap<String, String[]> filter_values, int size) {
 
-		String[] filterBy = new String[size];
-		int index =0;
-                
-                Iterator<Entry<String, String[]>> it = filter_values.entrySet().iterator();
-                while (it.hasNext()) {
-			Map.Entry<String, String[]> pair = (Map.Entry<String, String[]>) it.next();
-                        for (String value : pair.getValue()) {
-                            String whereString="WHERE ";
-                            String filterVal = "`" + pair.getKey().replace('_', ' ') +"`";;
-                            whereString += filterVal +"=\"" + value.replace('_', ' ') + "\"";
-                            filterBy[index] = whereString;
-                            index++;
-                        }
-                }
-                
-		return filterBy;
+        String[] filterBy = new String[size];
+        int index =0;
+
+        //Iterator<Entry<String, String[]>> it = filter_values.entrySet().iterator();
+
+        for(Entry<String, String[]> e : filter_values.entrySet()) {
+
+            String key = e.getKey();
+            String[] filterArray = e.getValue();
+            for (String value : filterArray) {
+                String whereString="WHERE ";
+                String filterVal = "`" + key +"`";;
+                whereString += filterVal +"=\"" + value + "\"";
+                filterBy[index] = whereString;
+                index++;
+            }
+        }
+        return filterBy;
+
     }
+
+    
     
     public String[] createAggFunctionStrings(HashMap<String, String[]> aggregateValues, String mytable, String[] filterBy, int size) {
         String[] aggregateBy = new String[size];
@@ -81,20 +89,23 @@ public class ServiceThree implements RequestHandler<Request, HashMap<String, Obj
             String filterByString = filterBy[i];
             String aggString="SELECT ";
 
-            Iterator<Entry<String, String[]>> it = aggregateValues.entrySet().iterator();
-            while (it.hasNext()) {
-                    Map.Entry<String, String[]> pair = (Map.Entry<String, String[]>) it.next();
-                    for (String value : pair.getValue()) {
-                        aggString += pair.getKey() + "(`";
-                        aggString += value.replace('_', ' ') + "`), ";
-                    }
+
+            for(Entry<String, String[]> e : aggregateValues.entrySet()) {
+
+                String key = e.getKey();
+                String[] aggregateArray = e.getValue();
+                for (String value : aggregateArray) {
+                    aggString += key + "(`";
+                    aggString += value + "`), ";
+                }
+
             }
             aggString+=" \"" + filterByString.replace('"', ' ')  + "\" ";
             aggString+="AS `Filtered By` ";
             aggString+="FROM " + mytable + " ";
-            aggString+=filterByString +";";
+            aggString+=filterByString;
             aggregateBy[index] = aggString;
-            index++;			
+            index++;	            		
         }
                
         return aggregateBy;
@@ -109,7 +120,7 @@ public class ServiceThree implements RequestHandler<Request, HashMap<String, Obj
     public String Union_Queries(String[] queries) {
         String fullQuery = "";
         for (int i = 0; i < queries.length; i++) {
-            fullQuery += queries[i].replace(';', ' ');
+            fullQuery += queries[i];
             if ( i != queries.length -1) {
                 fullQuery += " UNION ";
             }
@@ -134,14 +145,28 @@ public class ServiceThree implements RequestHandler<Request, HashMap<String, Obj
         Inspector inspector = new Inspector();
         inspector.inspectAll();
         inspector.addTimeStamp("frameworkRuntime");
+
+
+        HashMap<String, String[]> filterByMap = new HashMap<String, String[]>();
+	filterByMap.put("Region", new String[]{"Australia and Oceania"});
+	filterByMap.put("Item Type", new String[]{"Office Supplies"});
+	filterByMap.put("Sales Channel", new String[]{"Office Supplies"});
+	filterByMap.put("Order Priority", new String[]{"Offline"});
+	filterByMap.put("Country", new String[]{"Fiji"});
+
+	HashMap<String, String[]> aggregateByMap = new HashMap<String, String[]>();
+	aggregateByMap.put("max", new String[]{"Units Sold"});
+	aggregateByMap.put("min", new String[]{"Units Sold"});
+	aggregateByMap.put("avg", new String[]{"Order Processing Time", "Gross Margin", "Units Sold"});
+	aggregateByMap.put("sum", new String[]{"Units Sold", "Total Revenue", "Total Profit"});
+
+
         //****************START FUNCTION IMPLEMENTATION*************************
         //Create and populate a separate response object for function output. (OPTIONAL)
         String bucketname = request.getBucketName();
         String key = request.getKey();
         Response r = new Response();
         String mytable = request.getTableName();
-	HashMap<String, String[]> filterByMap = request.getFilterBy();
-	HashMap<String, String[]> aggregateByMap = request.getAggregateBy();	
         String myTable = request.getTableName();
         int size = hashSize(filterByMap);
 	String[] whereStrings = createWhereString(filterByMap, size);
@@ -160,16 +185,12 @@ public class ServiceThree implements RequestHandler<Request, HashMap<String, Obj
         { 
             Properties properties = new Properties();
             properties.load(new FileInputStream("db.properties")); 
-            String url = properties.getProperty("url");
+            //String url = properties.getProperty("url");
             String username = System.getenv("username");   //
             String password = System.getenv("password"); 	 //properties.getProperty("password");
-	    String databaseName = System.getenv("databaseName");
+	    //String databaseName = System.getenv("databaseName");
 	    String url = System.getenv("url");
 
-            //to be removed after added in the above environment variable through lambda or config/publish (easy)
-	    String username= properties.getProperty("username");
-	    String properties= properties.getProperty("password");
-            //
             String driver = properties.getProperty("driver");
 
 		
@@ -209,6 +230,8 @@ public class ServiceThree implements RequestHandler<Request, HashMap<String, Obj
         return inspector.finish();
     }
 
+   
+
 
     private StringBuilder convertRStoCSV(ResultSet rs) throws  Exception{
         StringBuilder sb = new StringBuilder();
@@ -229,4 +252,28 @@ public class ServiceThree implements RequestHandler<Request, HashMap<String, Obj
         return sb;
 
     }
- }
+
+    public static void stressTest(String tablename,  int iterations, String mytable) {
+        try {
+        Connection con = DriverManager.getConnection(System.getenv("url"),System.getenv("username"),System.getenv("password"));
+
+            for (int i = 0; i < iterations; i++) {
+                String testQuery = "SELECT * from " + mytable + ";";
+                PreparedStatement ps =  con.prepareStatement(testQuery);
+                ResultSet rs = ps.executeQuery();
+                //rs.next() iterates over the rows of the table
+                //the for loop within the rs.next() iterates for the items within the row.
+                //16 is the hardcoded number of elements that will be in each row. This 16 can be replaced if there is a method to determine # of items
+                //in a row within a resultset.
+                while (rs.next()) {
+                    for (int j = 0; j < 16; j++) {
+                        rs.getString(j);
+                    }
+                }
+            }
+        con.close();
+        } catch (SQLException e) {
+
+        } 
+    }
+}

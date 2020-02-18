@@ -18,17 +18,17 @@
 	    	
 
 		"filterBy": {
-			"Region": ["Australia_and_Oceania"],
-			"Item_Type": ["Office_Supplies"],
-			"Sales_Channel": ["Offline"],
-			"Order_Priority": ["Medium"],
+			"Region": ["Australia and Oceania"],
+			"Item Type": ["Office Supplies"],
+			"Sales Channel": ["Offline"],
+			"Order Priority": ["Medium"],
 			"Country": ["Fiji"]
 		},
 		"aggregateBy": {
-			"max": ["Units_Sold"],
-			"min": ["Units_Sold"],
-			"avg": ["Order_Processing_Time", "Gross_Margin", "Units_Sold"],
-			"sum": ["Units_Sold", "Total_Revenue", "Total_Profit"]
+			"max": ["Units Sold"],
+			"min": ["Units Sold"],
+			"avg": ["Order Processing Time", "Gross Margin", "Units Sold"],
+			"sum": ["Units Sold", "Total Revenue", "Total Profit"]
 		}
 	    
 	}

@@ -29,6 +29,9 @@ json=`cat config.json | jq -c '.test'`
 ibmjson=`cat config.json | jq '.test' | tr -d '"' | tr -d '{' | tr -d '}' | tr -d ':'`
 
 echo
+echo $json
+echo
+echo
 echo Deploying $function....
 echo
 
