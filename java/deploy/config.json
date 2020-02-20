@@ -8,6 +8,16 @@
 	"lambdaSubnets": "subnet-1c2a7d66,subnet-0a514862,subnet-1b6ed157",
 	"lambdaSecurityGroups": "sg-12ae6d70",
 
+	"test": {
+
+		"bucketname": "testbucketohiodap",
+		"key": "562sales_10000.csv",
+		"tablename" : "mytable_10000",
+		"batchsize" :1000
+	    	
+	    
+	}
+
 }
 
 
