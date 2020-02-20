@@ -152,10 +152,12 @@ public class ServiceTwoSQL implements RequestHandler<Request, HashMap<String, Ob
         {
             Properties properties = new Properties();
             properties.load(new FileInputStream("db.properties"));
-            String url = properties.getProperty("url");
-            String username = properties.getProperty("username");
-            String password = properties.getProperty("password");
             String driver = properties.getProperty("driver");
+	    String username = System.getenv("username");  
+            String password = System.getenv("password"); 	 
+	    String databaseName = System.getenv("databaseName");
+	    String url = System.getenv("url");
+
             List<String[]> records = readcsv(objectData, TEMP_DIRECTORY + key, logger);
             write_csv(records, url, username, password, mytable, batchsize, logger);
          

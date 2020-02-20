@@ -1,7 +1,7 @@
 {
 	"README": "See ./deploy/README.md for help!",
 
-	"functionName": "ServiceThree",
+	"functionName": "ServiceThreeJava",
 
 	"lambdaHandler": "lambda.ServiceThree::handleRequest",
 	"lambdaRoleARN": "arn:aws:iam::857205555574:role/lambda_basic_execution",
@@ -12,25 +12,10 @@
 	"test": {
 
 		"bucketname": "testbucketohiodap",
-		"key": "562sales_1000_new.csv",
-		"tablename" : "mytable_1000",
-		"batchsize" :1000,
+		"key": "562sales_100000_new.csv",
+		"tablename" : "mytable_100000",
+		"batchsize" :1000
 	    	
-
-		"filterBy": {
-			"Region": ["Australia_and_Oceania"],
-			"Item_Type": ["Office_Supplies"],
-			"Sales_Channel": ["Offline"],
-			"Order_Priority": ["Medium"],
-			"Country": ["Fiji"]
-		},
-		"aggregateBy": {
-			"max": ["Units_Sold"],
-			"min": ["Units_Sold"],
-			"avg": ["Order_Processing_Time", "Gross_Margin", "Units_Sold"],
-			"sum": ["Units_Sold", "Total_Revenue", "Total_Profit"]
-		}
-	    
 	}
 }
 
