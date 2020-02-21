@@ -1,27 +1,24 @@
 {
 	"README": "See ./deploy/README.md for help!",
 
-	"functionName": "ServiceThreeJava",
+	"functionName": "ServiceOneJava",
 
-	"lambdaHandler": "lambda.ServiceThree::handleRequest",
-	"lambdaRoleARN": "arn:aws:iam::857205555574:role/lambda_basic_execution",
+	"lambdaHandler": "lambda.ServiceOne::handleRequest",
+	"lambdaRoleARN": "arn:aws:iam::857205555574:role/service-role/simple_microservice_role",
 	"lambdaSubnets": "subnet-1c2a7d66,subnet-0a514862,subnet-1b6ed157",
 	"lambdaSecurityGroups": "sg-12ae6d70",
-
 
 	"test": {
 
 		"bucketname": "testbucketohiodap",
-		"key": "562sales_1000_new.csv",
-		"tablename" : "mytable_1000",
+		"key": "562sales_10000.csv",
+		"tablename" : "mytable_10000",
 		"batchsize" :1000
 	    	
-
-
+	    
 	}
+
 }
-
-
 
 
 

@@ -208,12 +208,7 @@ public class ServiceThree implements RequestHandler<Request, HashMap<String, Obj
 
             AmazonS3 s3Client = AmazonS3ClientBuilder.standard().build();  
             s3Client.putObject(bucketname, "QueryResults.csv", is, meta);
-            //int iteration = 100;
-            //for (int i = 0; i < iteration; i++) {
-              //  String testQuery = "SELECT * from " + mytable + ";";
-               // ps =  con.prepareStatement(fullQuery);
-               // ps.executeQuery();
-           // }
+	    stressTest(10, mytable);
 	    con.close();
         }
         catch (Exception e) 
@@ -253,7 +248,7 @@ public class ServiceThree implements RequestHandler<Request, HashMap<String, Obj
 
     }
 
-    public static void stressTest(String tablename,  int iterations, String mytable) {
+    public static void stressTest( int iterations, String mytable) {
         try {
         Connection con = DriverManager.getConnection(System.getenv("url"),System.getenv("username"),System.getenv("password"));
 
