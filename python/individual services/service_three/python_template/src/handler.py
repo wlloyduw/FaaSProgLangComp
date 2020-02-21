@@ -42,32 +42,32 @@ def yourFunction(request, context):
     csv_data = csv.DictReader(csvcontent)
 
     test_val=""
+    
+    request['filterBy'] = dict()
+    request['filterBy']["Region"] = ["Australia and Oceania"]
+    request['filterBy']["Item Type"] = ["Office Supplies"]
+    request['filterBy']["Sales Channel"] = ["Office Supplies"]
+    request['filterBy']["Order Priority"] = ["Offline"]
+    request['filterBy']["Country"] = ["Fiji"]
+    
+    request['aggregateBy'] = dict()
+    request['aggregateBy']["max"] = ["Units Sold"]
+    request['aggregateBy']["min"] = ["Units Sold"]
+    request['aggregateBy']["avg"] = ["Order Processing Time", "Gross Margin", "Units Sold"]
+    request['aggregateBy']["sum"] = ["Units Sold", "Total Revenue", "Total Profit"]
 
     query_string = contstruct_query_string(request['filterBy'], request['aggregateBy'], request['tablename'])
 
     query_result = exexute_query(query_string)
-
-    json_result = convert_query_to_json(query_result)
-
-    csv_result = convert_json_csv(query_result)
-
     stressTest(request['stressTestLoops'], request['tablename'])
 
-    #dest_object_name = "newjson.txt"
-
-    #my_bytes = bytes(json_result.encode('UTF-8'))
-
-    #s3.put_object(Bucket=bucketname, Key=dest_object_name,Body=(my_bytes))
-
-    my_bytes = bytes(csv_result.getvalue())
-
     key_split = str(request['key']).split('_')[0]
-
     result_key = "{0}_results.csv".format(key_split)
+    csv_content = convert_rs_to_csv(query_result)
+    s3.put_object(Bucket=bucketname, Key=result_key, Body=(csv_content))
+
     
-    s3.put_object(Bucket=bucketname, Key=result_key,Body=(my_bytes))
-    
-    #bytes = csv_result.getvalue()
+    return inspector.finish()
 
     # Add custom message and finish the function
     if ('key' in request):
@@ -78,6 +78,19 @@ def yourFunction(request, context):
     inspector.inspectCPUDelta()
     return inspector.finish()
 
+def convert_rs_to_csv(result_set):
+    
+    csv_content = ""
+    for row in result_set:
+        for item in row:
+            if item == None:
+                csv_content = csv_content + ','
+            elif isinstance(item, float):
+                csv_content = csv_content + str(item) + ','
+            else:
+                csv_content = csv_content + item + ','
+        csv_content = csv_content + "\n"
+    return csv_content
 
 def contstruct_query_string(filterBy, aggregateBy, tablename):
     aggr = ""
@@ -116,8 +129,7 @@ def exexute_query(query_string):
     try:
         print("Connecting...")
         
-        con = pymysql.connect(host="tcss562group2.cluster-cj6rdxvm4ac3.us-east-2.rds.amazonaws.com", 
-        user="tscc562", password="m23j452345", db="562Group2DB", connect_timeout=1800, cursorclass=pymysql.cursors.DictCursor)
+        con = pymysql.connect(host=os.getenv('databaseEndpoint'), user=os.getenv('username'), password=os.getenv('password'), db=os.getenv('databaseName'), connect_timeout=350000)
         
         print("Connected to db") 
         
@@ -144,7 +156,7 @@ def convert_query_to_json(rows):
 def convert_json_csv(rows):
     file = io.BytesIO()
 
-    file.write(str.encode(",".join(rows[0].keys())))
+    file.write(str(rows[0])[1:-1].replace(" ", ""))
 
     file.write(b'\n')
 
@@ -162,8 +174,8 @@ def convert_json_csv(rows):
     return file
 
 def stressTest(iterations, tablename):
-    con = pymysql.connect(host="tcss562group2.cluster-cj6rdxvm4ac3.us-east-2.rds.amazonaws.com", 
-    user="tscc562", password="m23j452345", db="562Group2DB", connect_timeout=1800, cursorclass=pymysql.cursors.DictCursor)
+    con = pymysql.connect(host=os.getenv('databaseEndpoint'), user=os.getenv('username'), password=os.getenv('password'), db=os.getenv('databaseName'), connect_timeout=350000)
+    
     with con:
         cur = con.cursor()
 

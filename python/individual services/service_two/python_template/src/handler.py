@@ -78,11 +78,11 @@ def write_output(content, batchSize, tablename):
 
             print("Removed " + tablename)
 
-            insert_query=("INSERT INTO " + tablename + " (Region, Country, `Item Type` , `Sales Channel` , `Order Priority` ,`Order Date`,  `Order ID`, `Ship Date`, `Units Sold`, `Unit Price`, `Unit Cost`, `Total Revenue`, `Total Cost`, `Total Profit`, `Oder Processing Time`, `Gross Margin`) VALUES (%s, %s, %s, %s, %s,%s, %s, %s, %s, %s,%s, %s, %s, %s, %s, %s)")
+            insert_query=("INSERT INTO " + tablename + " (Region, Country, `Item Type` , `Sales Channel` , `Order Priority` ,`Order Date`,  `Order ID`, `Ship Date`, `Units Sold`, `Unit Price`, `Unit Cost`, `Total Revenue`, `Total Cost`, `Total Profit`, `Order Processing Time`, `Gross Margin`) VALUES (%s, %s, %s, %s, %s,%s, %s, %s, %s, %s,%s, %s, %s, %s, %s, %s)")
             
             print("Connecting to DB")
             
-            cursor.execute("CREATE TABLE " + tablename + "(Region VARCHAR(50), Country VARCHAR(50), `Item Type` VARCHAR(50), `Sales Channel` VARCHAR(50), `Order Priority` VARCHAR(50),`Order Date` VARCHAR(50), `Order ID` int, `Ship Date` VARCHAR(50), `Units Sold` DOUBLE, `Unit Price` DOUBLE, `Unit Cost` DOUBLE, `Total Revenue` DOUBLE, `Total Cost` DOUBLE, `Total Profit` DOUBLE, `Oder Processing Time` DOUBLE, `Gross Margin` DOUBLE )  ")
+            cursor.execute("CREATE TABLE " + tablename + "(Region VARCHAR(50), Country VARCHAR(50), `Item Type` VARCHAR(50), `Sales Channel` VARCHAR(50), `Order Priority` VARCHAR(50),`Order Date` VARCHAR(50), `Order ID` int, `Ship Date` VARCHAR(50), `Units Sold` DOUBLE, `Unit Price` DOUBLE, `Unit Cost` DOUBLE, `Total Revenue` DOUBLE, `Total Cost` DOUBLE, `Total Profit` DOUBLE, `Order Processing Time` DOUBLE, `Gross Margin` DOUBLE )  ")
 
             print("Connection is OPEN")
             
