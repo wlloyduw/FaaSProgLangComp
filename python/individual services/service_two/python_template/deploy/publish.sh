@@ -32,7 +32,7 @@ json=`cat config.json | jq -c '.test'`
 ibmjson=`cat config.json | jq '.test' | tr -d '"' | tr -d '{' | tr -d '}' | tr -d ':'`
 
 echo
-echo Deploying $function...
+echo Deploying "C" $function...
 echo
 
 #Define the memory value.
@@ -41,6 +41,8 @@ if [[ ! -z $5 ]]
 then
 	memory=$5
 fi
+
+echo "-------got this far---------"
 
 # Deploy onto AWS Lambda.
 if [[ ! -z $1 && $1 -eq 1 ]]
@@ -53,13 +55,26 @@ then
 	rm -rf build
 	mkdir build
 
+	echo "------Removed the Build folder ------"
+
 	# Copy files to build folder.
 	cp -R ../src/* ./build
 	cp -R ../platforms/aws/* ./build
-	cp -R ./package/* ./build
+
+	echo 
+	echo "+++++ Copied files to build folder +++++"
+	echo
+
+	# add dependencies into the zip file
+	#rm -rf ./package
+	#pip install --target ./package pymysql
+	#pip install --target ./package MySQL-python
+	cp -r ./package/* ./build/
+
 	# Zip and submit to AWS Lambda.
 	cd ./build
 	zip -X -r ./index.zip *
+
 	aws lambda create-function --function-name $function --runtime python3.7 --role $lambdaRole --timeout 900 --handler lambda_function.lambda_handler --zip-file fileb://index.zip
 	aws lambda update-function-code --function-name $function --zip-file fileb://index.zip
 	aws lambda update-function-configuration --function-name $function --memory-size $memory --runtime python3.7 \
@@ -67,8 +82,14 @@ then
 	cd ..
 
 	echo
+	echo "+++++ created index.zp +++++"
+
+	echo
 	echo Testing function on AWS Lambda...
-	aws lambda invoke --invocation-type RequestResponse --cli-read-timeout 900 --function-name $function --payload $json /dev/stdout
+	echo aws lambda invoke --invocation-type RequestResponse --cli-read-timeout 900 --function-name $function --payload "$json" /dev/stdout
+        aws lambda invoke --invocation-type RequestResponse --cli-read-timeout 900 --function-name $function --payload "$json" /dev/stdout
+
+	echo "%%%%%%%% Complete %%%%%%%%%%"
 fi
 
 # Deploy onto Google Cloud Functions

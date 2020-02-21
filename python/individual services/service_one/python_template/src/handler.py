@@ -45,7 +45,7 @@ def read_csv(csv_reader):
     list_of_rows = []
     try:
         for line in csv_reader:
-            list_of_rows.append(line.split(","))
+            list_of_rows.append(line[:-1].split(","))
     
     except Exception as ex:
         print(ex.__str__())
@@ -67,8 +67,7 @@ def write_csv_to_BytesIO(file1, my_list):
         if count+1 != len(my_list[0]):
             result += ","
         else:
-            result += ",Order Processing Time,Gross Margin"
-            result += "\n"
+            result += ",Order Processing Time,Gross Margin\n"
             
     ids = set()
 
