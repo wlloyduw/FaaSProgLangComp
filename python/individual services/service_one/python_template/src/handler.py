@@ -41,20 +41,13 @@ def addColumn(filename):
         file1.close()
         file2.close()
 
-def read_csv(file_path): 
+def read_csv(csv_reader):
     list_of_rows = []
-    file_reader = None
     try:
-        file_reader = open(file_path, 'r')
-        while True:
-            line = file_reader.readline()
-            if not line:
-                break
-            list_of_rows.append(line)
+        for line in csv_reader:
+            list_of_rows.append(line.split(","))
     
-        file_reader.close()
     except Exception as ex:
-        file_reader.close()
         print(ex.__str__())
 
     return list_of_rows
@@ -71,14 +64,10 @@ def write_csv_to_BytesIO(file1, my_list):
     result = ""
     for count,row in enumerate(my_list[0]):
         result += str(row)
-        #file1.write(str.encode(row))
         if count+1 != len(my_list[0]):
             result += ","
-            #file1.write(b",")
         else:
-            #file1.write(b', Oder Processing Time, Gross Margin')
-            #file1.write(b'\n')
-            result += ",OrderProcessingTime,GrossMargin"
+            result += ",Order Processing Time,Gross Margin"
             result += "\n"
             
     ids = set()
@@ -86,25 +75,26 @@ def write_csv_to_BytesIO(file1, my_list):
     for i in range(1, len(my_list)-1):
 
         col = len(my_list[i])
-
-        uid = my_list[i][6]
+      
+        uid = int(my_list[i][6])
 
         if ids.__contains__(uid) == False:
             for j in range(col):
                 if j == 4:
-                    if my_list[i][4] == "C":
+                    val = my_list[i][4]
+                    if val == "C":
                         #file1.write(b"Critical")
                         result += "Critical"
-                    elif my_list[i][4] == "L":
+                    elif val == "L":
                         #file1.write(b'Low')
                         result += "Low"
-                    elif my_list[i][4] == "M":
+                    elif val == "M":
                         #file1.write(b'Medium')
                         result += "Medium"
-                    elif my_list[i][4] == "H":
+                    elif val == "H":
                         #file1.write(b'High')
                         result += "High"
-                else:
+                else :
                     #file1.write(str.encode(my_list[i][j]))
                     result += my_list[i][j]
 
@@ -131,10 +121,11 @@ def write_csv_to_BytesIO(file1, my_list):
 
                     #file1.write(b',' + str.encode(str(order_time)) + b', ' + str.encode(str(gross_margin)))
                     #file1.write(b'\n')
-                    result += ",{},{}\n".format(order_time, gross_margin)
+                    result += ", {0}, {1}".format(order_time, gross_margin)
+                    result += "\n"
                     
         else:
-            ids.add(uid)
+            ids.add(int(uid))
     file1.write(str.encode(result))
     
 
@@ -166,6 +157,7 @@ def yourFunction(request, context):
     bytes = output.getvalue();
 
     record_size = str(request['key']).split("_")
+
    
     dest_object_name = "{0}_newdata.csv".format(record_size[0])
 
@@ -176,6 +168,8 @@ def yourFunction(request, context):
         inspector.addAttribute("bucketname", "bucketname " + str(request['bucketname']) + "!")
         inspector.addAttribute("key", str(request['key']))
         inspector.addAttribute("test val", csvcontent[0])
+
+
     
     inspector.inspectCPUDelta()
     return inspector.finish()

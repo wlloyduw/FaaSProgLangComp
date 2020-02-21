@@ -1,12 +1,12 @@
 {
 	"README": "See ./deploy/README.md for help!",
 	"functionName": "ServiceOnePython",
-	"lambdaRoleARN": "arn:aws:iam::037262423719:role/role_lamba_full_access_everything",
-	"lambdaSubnets": "subnet-3d7b6155,subnet-7566de39,subnet-52431328",
-	"lambdaSecurityGroups": "sg-3949055b",
+	"lambdaRoleARN": "arn:aws:iam::951661633871:role/tcss562_project",
+	"lambdaSubnets": "subnet-595e3a3e",
+	"lambdaSecurityGroups": "sg-a58caae7",
 	"memorySetting": "3008",
 	"test": {
-		"bucketname": "cvs.bucket.reh",
+		"bucketname": "project.bucket.tcss562.vmp",
 		"key": "5000_Sales_Records.csv"
 	}
 }
