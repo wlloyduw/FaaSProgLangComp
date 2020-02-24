@@ -1,5 +1,9 @@
 # This is just to support Azure.
 # If you are not deploying there this can be removed.
+import time
+from Inspector import *
+import logging
+import json
 import os
 import sys
 import boto3
@@ -9,26 +13,22 @@ import io
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__))))
 
-import json
-import logging
 #import pandas as pd
-from Inspector import *
 
-import time
 
 #
 # Define your FaaS F    unction here.
 # Each platform handler will call and pass parameters to this function.
-# 
+#
 # @param request A JSON object provided by the platform handler.
 # @param context A platform specific object used to communicate with the cloud platform.
 # @returns A JSON object to use as a response.
 #
+
 def yourFunction(request, context):
     # Import the module and collect data
     inspector = Inspector()
     inspector.inspectAll()
-    inspector.addTimeStamp("frameworkRuntime")
     bucketname = str(request['bucketname'])
     key = str(request['key'])
 
@@ -41,22 +41,25 @@ def yourFunction(request, context):
         i = i+1
     csv_data = csv.DictReader(csvcontent)
 
-    test_val=""
-    
+    test_val = ""
+
     request['filterBy'] = dict()
     request['filterBy']["Region"] = ["Australia and Oceania"]
     request['filterBy']["Item Type"] = ["Office Supplies"]
     request['filterBy']["Sales Channel"] = ["Office Supplies"]
     request['filterBy']["Order Priority"] = ["Offline"]
     request['filterBy']["Country"] = ["Fiji"]
-    
+
     request['aggregateBy'] = dict()
     request['aggregateBy']["max"] = ["Units Sold"]
     request['aggregateBy']["min"] = ["Units Sold"]
-    request['aggregateBy']["avg"] = ["Order Processing Time", "Gross Margin", "Units Sold"]
-    request['aggregateBy']["sum"] = ["Units Sold", "Total Revenue", "Total Profit"]
+    request['aggregateBy']["avg"] = [
+        "Order Processing Time", "Gross Margin", "Units Sold"]
+    request['aggregateBy']["sum"] = [
+        "Units Sold", "Total Revenue", "Total Profit"]
 
-    query_string = contstruct_query_string(request['filterBy'], request['aggregateBy'], request['tablename'])
+    query_string = contstruct_query_string(
+        request['filterBy'], request['aggregateBy'], request['tablename'])
 
     query_result = exexute_query(query_string)
     stressTest(request['stressTestLoops'], request['tablename'])
@@ -66,20 +69,21 @@ def yourFunction(request, context):
     csv_content = convert_rs_to_csv(query_result)
     s3.put_object(Bucket=bucketname, Key=result_key, Body=(csv_content))
 
-    
-    return inspector.finish()
+    #return inspector.finish()
 
     # Add custom message and finish the function
     if ('key' in request):
-        inspector.addAttribute("bucketname", "bucketname " + str(request['bucketname']) + "!")
+        inspector.addAttribute(
+            "bucketname", "bucketname " + str(request['bucketname']) + "!")
         inspector.addAttribute("key", str(request['key']))
         inspector.addAttribute("test val", csvcontent[0])
 
-    inspector.inspectCPUDelta()
+    inspector.inspectAllDeltas()
     return inspector.finish()
 
+
 def convert_rs_to_csv(result_set):
-    
+
     csv_content = ""
     for row in result_set:
         for item in row:
@@ -91,6 +95,7 @@ def convert_rs_to_csv(result_set):
                 csv_content = csv_content + item + ','
         csv_content = csv_content + "\n"
     return csv_content
+
 
 def contstruct_query_string(filterBy, aggregateBy, tablename):
     aggr = ""
@@ -107,7 +112,7 @@ def contstruct_query_string(filterBy, aggregateBy, tablename):
             fil += "SELECT "
             fil += aggr
             fil += "'WHERE "
-            temp_key = str.replace(key, "_", " " )
+            temp_key = str.replace(key, "_", " ")
             fil += temp_key
             fil += "="
             temp_val = str.replace(val, "_", " ")
@@ -121,37 +126,40 @@ def contstruct_query_string(filterBy, aggregateBy, tablename):
             fil += "' UNION "
     k = fil.rfind(" UNION ")
     result = fil[:k]
-    result += ";"   
+    result += ";"
     return result
+
 
 def exexute_query(query_string):
     rows = {}
     try:
         print("Connecting...")
-        
-        con = pymysql.connect(host=os.getenv('databaseEndpoint'), user=os.getenv('username'), password=os.getenv('password'), db=os.getenv('databaseName'), connect_timeout=350000)
-        
-        print("Connected to db") 
-        
+
+        con = pymysql.connect(host=os.getenv('databaseEndpoint'), user=os.getenv(
+            'username'), password=os.getenv('password'), db=os.getenv('databaseName'), connect_timeout=350000)
+
+        print("Connected to db")
+
         cursor = con.cursor()
-        
+
         print("Executing Long Running Query")
-        
+
         cursor.execute(query_string)
 
         rows = cursor.fetchall()
 
-
     except Exception as ex:
         print(ex.args)
     finally:
-        print("Closed DB Connection") 
-        con.close()  
+        print("Closed DB Connection")
+        con.close()
     return rows
+
 
 def convert_query_to_json(rows):
     json_result = json.dumps(rows)
-    return json_result       
+    return json_result
+
 
 def convert_json_csv(rows):
     file = io.BytesIO()
@@ -173,15 +181,14 @@ def convert_json_csv(rows):
 
     return file
 
+
 def stressTest(iterations, tablename):
-    con = pymysql.connect(host=os.getenv('databaseEndpoint'), user=os.getenv('username'), password=os.getenv('password'), db=os.getenv('databaseName'), connect_timeout=350000)
-    
+    con = pymysql.connect(host=os.getenv('databaseEndpoint'), user=os.getenv(
+        'username'), password=os.getenv('password'), db=os.getenv('databaseName'), connect_timeout=350000)
+
     with con:
         cur = con.cursor()
 
         for i in range(0, iterations):
             cur.execute("SELECT * FROM {}".format(tablename))
             rows = cur.fetchall()
-
-
-
