@@ -34,9 +34,10 @@ public class ServiceThree implements RequestHandler<Request, HashMap<String, Obj
         return count;
     }
 
-    public String[] createWhereString(HashMap<String, String[]> filter_values, int size) {
+/*
+    public String[] createWhereString(HashMap<String, String[]> filter_values) {
 
-        String[] filterBy = new String[size];
+        String[] filterBy = new String[hashSize(filter_values)];
         int index = 0;
 
         for (Entry<String, String[]> e : filter_values.entrySet()) {
@@ -94,7 +95,9 @@ public class ServiceThree implements RequestHandler<Request, HashMap<String, Obj
         fullQuery += ";";
         return fullQuery;
     }
+*/
 
+    
     public HashMap<String, Object> handleRequest(Request request, Context context) {
         Inspector inspector = new Inspector();
         inspector.inspectAll();
@@ -115,12 +118,13 @@ public class ServiceThree implements RequestHandler<Request, HashMap<String, Obj
         String bucketname = request.getBucketName();
         String mytable = request.getTableName();
         String myTable = request.getTableName();
-        int size = hashSize(filterByMap);
-        String[] whereStrings = createWhereString(filterByMap, size);
-        String[] queryStrings = createAggFunctionStrings(aggregateByMap, myTable, whereStrings, size);
+        //int size = hashSize(filterByMap);
+        //String[] whereStrings = createWhereString(filterByMap);
+        //String[] queryStrings = createAggFunctionStrings(aggregateByMap, myTable, whereStrings, size);
+        //String fullQuery = Union_Queries(queryStrings);
 
-        String fullQuery = Union_Queries(queryStrings);
 
+        String fullQuery = constructQueryString(aggregateByMap, filterByMap, myTable);
         try {
             Properties properties = new Properties();
             properties.load(new FileInputStream("db.properties"));
@@ -152,6 +156,47 @@ public class ServiceThree implements RequestHandler<Request, HashMap<String, Obj
         return inspector.finish();
     }
 
+    public String constructQueryString(HashMap<String, String[]> aggregateValues, HashMap<String, String[]> filterValues, String tablename) {
+        String aggr = "";
+        for (Entry<String, String[]> e : aggregateValues.entrySet()) {
+            for (String val: e.getValue()) {
+                aggr += e.getKey().toUpperCase();
+                aggr += "(`";
+                String temp = val;
+                aggr += temp;
+                aggr += "`), ";
+
+            }
+        }
+        String fil = "";
+        for (Entry<String, String[]> e : filterValues.entrySet()) {
+            for (String val : e.getValue()) {
+                fil += "SELECT ";
+                fil += aggr;
+                fil += "'WHERE ";
+                String temp_key = e.getKey();
+                fil += temp_key;
+                fil += "=";
+                String temp_val = val;
+                fil += temp_val;
+                fil += "' AS `Filtered By` FROM ";
+                fil += tablename;
+                fil += " WHERE `";
+                fil += temp_key;
+                fil += "`='";
+                fil += temp_val;
+                fil += "' UNION ";
+
+                
+            }
+        }
+        String strippedWord = " UNION "; 
+        StringBuilder strb=new StringBuilder(fil);    
+        int index=strb.lastIndexOf(strippedWord); 
+        strb.replace(index,strippedWord.length()+index,";");   
+ 
+        return strb.toString();
+    }
     private StringBuilder convertRStoCSV(ResultSet rs) throws Exception {
         StringBuilder sb = new StringBuilder();
         try {
@@ -175,13 +220,14 @@ public class ServiceThree implements RequestHandler<Request, HashMap<String, Obj
         try {
             Connection con = DriverManager.getConnection(System.getenv("url"), System.getenv("username"),
                     System.getenv("password"));
+            
             for (int i = 0; i < iterations; i++) {
                 String testQuery = "SELECT * from " + mytable + ";";
                 PreparedStatement ps = con.prepareStatement(testQuery);
                 ResultSet rs = ps.executeQuery();
                 int numCols = rs.getMetaData().getColumnCount();
                 while (rs.next()) {
-                    for (int j = 0; j < numCols; j++) {
+                    for (int j = 1; j <= numCols; j++) {
                         rs.getString(j);
                     }
                 }

@@ -12,8 +12,8 @@
 	"test": {
 
 		"bucketname": "testbucketohiodap",
-		"key": "562sales_100000_new.csv",
-		"tablename" : "mytable_100000",
+		"key": "562sales_100_new.csv",
+		"tablename" : "mytable_100",
 		"batchsize" :1000
 	    	
 	}

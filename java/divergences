@@ -3,7 +3,7 @@ Java->Go differences. Most have been fixed.
 Service One:
     Java used Lambda Logger (Commented out)
     Go uses encoding/csv reader vs. Java uses CSVReader to read file from S3
-        Can remove readcsv method from Java (very short)
+      	XX  Can remove readcsv method from Java (very short)
     Java's writecsv~=editRecords from Go
         a csvreader is passed to writecsv vs. [][]string{} to editRecords
         Java returns StringBuilder vs Go returning [][]string{}
