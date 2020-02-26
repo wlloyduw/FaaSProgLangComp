@@ -29,6 +29,7 @@ def yourFunction(request, context):
     inspector = Inspector()
     inspector.inspectAll()
     inspector.addTimeStamp("frameworkRuntime")
+    inspector.addAttribute("endpoint", os.getenv('databaseEndpoint'))
     bucketname = str(request['bucketname'])
     key = str(request['key'])
 
@@ -41,33 +42,32 @@ def yourFunction(request, context):
         i = i+1
     csv_data = csv.DictReader(csvcontent)
     test_val=""
-    content = read_content(csvcontent)
-    output = write_output(content, request["batchSize"], request["tablename"])
+    content = read_content(csvcontent, inspector)
+    output = write_output(content, request["batchSize"], request["tablename"], inspector)
 
     # Add custom message and finish the function
     if ('key' in request):
-        inspector.addAttribute("bucketname", "bucketname " + str(request['bucketname']) + "!")
+        inspector.addAttribute("bucketname", str(request['bucketname']))
         inspector.addAttribute("key", str(request['key']))
-        inspector.addAttribute("test val", csvcontent[0])
     
     inspector.inspectCPUDelta()
     return inspector.finish()
 
-def read_content(content):
+def read_content(content, inspector):
     list_of_rows = []
     try:
         for line in content:
             list_of_rows.append(line.split(","))
     
     except Exception as ex:
+        inspector.addAttribute("error1", ex.args)
         print(ex.__str__())
 
     return list_of_rows
 
-def write_output(content, batchSize, tablename):
+def write_output(content, batchSize, tablename, inspector):
     try:
         print("Connecting...")
-
         con = pymysql.connect(host=os.getenv('databaseEndpoint'), user=os.getenv('username'), password=os.getenv('password'), db=os.getenv('databaseName'), connect_timeout=350000)
         
         print("Connected to db")
@@ -97,14 +97,15 @@ def write_output(content, batchSize, tablename):
                     cursor.executemany(insert_query, my_data)
                     my_data = []
             
-            cursor.executemany(insert_query, my_data)
+            if len(my_data) != 0:
+                cursor.executemany(insert_query, my_data)
         
-            cursor.execute("ALTER TABLE " + tablename + " ORDER BY `Order ID`") 
+            cursor.execute("ALTER TABLE " + tablename + " ORDER BY `Order ID`")
 
             con.commit()
             cursor.close()
-            con.close()
     except Exception as ex:
+        inspector.addAttribute("error2", ex.args)
         print(ex.args)
     
       

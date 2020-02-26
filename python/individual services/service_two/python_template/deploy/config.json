@@ -7,8 +7,7 @@
 	"memorySetting": "3008",
 	"test": {
 		"bucketname": "project.bucket.tcss562.vmp",
-		"key_FROM_SERVICE_1": "5000_Sales_Records.csv",
-		"key": "100_newdata.csv",
+		"key": "5000_Sales_Records.csv",
 		"batchSize": 10000,
 		"tablename" : "mytable_1000",
 		"stressTestLoops" :1000

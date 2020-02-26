@@ -1,13 +1,12 @@
 {
 	"README": "See ./deploy/README.md for help!",
-	"functionName": "ServiceTwoPython",
+	"functionName": "ServiceThreePython",
 	"lambdaRoleARN": "arn:aws:iam::951661633871:role/tcss562_project",
 	"lambdaSubnets": "subnet-595e3a3e,subnet-c5b5d6eb",
 	"lambdaSecurityGroups": "sg-a58caae7",
 	"memorySetting": "3008",
 	"test": {
 		"bucketname": "project.bucket.tcss562.vmp",
-		"key_FROM_SERVICE_1": "5000_Sales_Records.csv",
 		"key": "100_newdata.csv",
 		"batchSize": 10000,
 		"tablename" : "mytable_1000",

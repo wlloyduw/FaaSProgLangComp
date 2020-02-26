@@ -147,8 +147,6 @@ def yourFunction(request, context):
     
     csvcontent = csvfile['Body'].read().decode('utf-8').split("\n")
 
-    test_val=""
-
     content = read_csv(csvcontent)
 
     output = write_csv(content)

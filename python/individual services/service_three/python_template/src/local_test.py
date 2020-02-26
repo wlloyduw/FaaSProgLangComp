@@ -11,9 +11,9 @@ my_request = dict()
 # http://faculty.washington.edu/wlloyd/courses/tcss562/project/etl/sales_data/
 
 my_request["bucketname"] = "project.bucket.tcss562.vmp"
-my_request['key'] = "100_newdata.csv" # "100_Sales_Records.csv"
+my_request['key'] = "10000_newdata.csv" # "100_Sales_Records.csv"
 my_request["batchSize"] = 10000
-my_request['tablename'] = "mytable_1000"
+my_request['tablename'] = "mytable_10000"
 my_request["stressTestLoops"] = 1000
 
 os.environ["databaseEndpoint"] = "localhost"

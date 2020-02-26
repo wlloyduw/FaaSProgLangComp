@@ -29,6 +29,7 @@ def yourFunction(request, context):
     inspector = Inspector()
     inspector.inspectAll()
     inspector.addTimeStamp("frameworkRuntime")
+    inspector.addAttribute("endpoint", os.getenv('databaseEndpoint'))
     bucketname = str(request['bucketname'])
     key = str(request['key'])
 
@@ -128,25 +129,20 @@ def exexute_query(query_string):
     rows = {}
     try:
         print("Connecting...")
-        
         con = pymysql.connect(host=os.getenv('databaseEndpoint'), user=os.getenv('username'), password=os.getenv('password'), db=os.getenv('databaseName'), connect_timeout=350000)
-        
+    
         print("Connected to db") 
-        
         cursor = con.cursor()
         
         print("Executing Long Running Query")
-        
         cursor.execute(query_string)
-
         rows = cursor.fetchall()
-
+        con.close()
 
     except Exception as ex:
         print(ex.args)
     finally:
         print("Closed DB Connection") 
-        con.close()  
     return rows
 
 def convert_query_to_json(rows):
