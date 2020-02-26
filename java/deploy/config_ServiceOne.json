@@ -1,0 +1,16 @@
+{
+	"README": "See ./deploy/README.md for help!",
+
+	"functionName":     "ServiceOne",
+
+	"lambdaHandler": "lambda.ServiceOne::handleRequest",
+	"lambdaRoleARN": "arn:aws:iam::857205555574:role/service-role/simple_microservice_role",
+	"lambdaSubnets": "",
+	"lambdaSecurityGroups": "",
+
+
+
+	"test": {
+ 		"bucketname": "testbucketohiodap", "key": "562sales_1000000.csv" }
+	}
+

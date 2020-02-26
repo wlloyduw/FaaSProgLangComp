@@ -1,0 +1,27 @@
+2019-12-14 19:50:37.465252 - Python Partest Version 0.5
+Setting up test: runsperthread=1 threads=1 totalruns=1 payload=[{'bucketname': 'cvs.bucket.reh' 'key': '100_newdata.csv' 'tablename': 'mytable'}]
+
+Raw results of each run:
+1_run_id,2_thread_id,bucketname,containerID,cpuIdle,cpuIdleDelta,cpuIowait,cpuIowaitDelta,cpuIrq,cpuIrqDelta,cpuKrn,cpuKrnDelta,cpuModel,cpuNice,cpuNiceDelta,cpuSoftIrq,cpuSoftIrqDelta,cpuType,cpuUsr,cpuUsrDelta,frameworkRuntime,key,latency,newcontainer,payload,roundTripTime,runtime,test val,uuid,vmID,vmcpusteal,vmcpustealDelta,vmuptime
+0,0,bucketname cvs.bucket.reh!,2019/12/15/[$LATEST]1c2c6ec56bea481cad023c3efd5e543a,1038042,60,3,0,0,0,113,1,Intel(R) Xeon(R) Processor @ 2.50GHz,0,0,1,1,Intel(R) Xeon(R) Processor @ 2.50GHz - Model Intel(R) Xeon(R) Processor @ 2.50GHz,77,3,22.17,100_newdata.csv,1618.15,0,{'bucketname': 'cvs.bucket.reh'; 'key': '100_newdata.csv'; 'tablename': 'mytable'},1949.15,331.19,Region;Country;Item Type;Sales Channel;Order Priority;Order Date;Order ID;Ship Date;Units Sold;Unit Price;Unit Cost;Total Revenue;Total Cost;Total Profit; Oder Processing Time; Gross Margin,6882e317-750d-4572-b28d-bbee62cf8084,xzqjpV,33,0,1576376648
+Successful Runs: 1
+
+Category containerID:
+containerID,uses,avg_cpuIdleDelta,avg_cpuIowaitDelta,avg_cpuIrqDelta,avg_cpuKrnDelta,avg_cpuNiceDelta,avg_cpuSoftIrqDelta,avg_cpuUsrDelta,avg_frameworkRuntime,avg_latency,sum_newcontainer,avg_roundTripTime,avg_runtime,avg_vmcpusteal,avg_vmcpustealDelta,avg_vmuptime
+2019/12/15/[$LATEST]1c2c6ec56bea481cad023c3efd5e543a,1,60.00,0.00,0.00,1.00,0.00,1.00,3.00,22.17,1618.15,0,1949.15,331.19,33.00,0.00,1576376648.00
+Total number of unique containerIDs: 1
+
+Category cpuType:
+cpuType,uses,avg_cpuIdleDelta,avg_cpuIowaitDelta,avg_cpuIrqDelta,avg_cpuKrnDelta,avg_cpuNiceDelta,avg_cpuSoftIrqDelta,avg_cpuUsrDelta,avg_frameworkRuntime,avg_latency,sum_newcontainer,avg_roundTripTime,avg_runtime,avg_vmcpusteal,avg_vmcpustealDelta,avg_vmuptime
+Intel(R) Xeon(R) Processor @ 2.50GHz - Model Intel(R) Xeon(R) Processor @ 2.50GHz,1,60.00,0.00,0.00,1.00,0.00,1.00,3.00,22.17,1618.15,0,1949.15,331.19,33.00,0.00,1576376648.00
+Total number of unique cpuTypes: 1
+
+Category vmID:
+vmID,uses,avg_cpuIdleDelta,avg_cpuIowaitDelta,avg_cpuIrqDelta,avg_cpuKrnDelta,avg_cpuNiceDelta,avg_cpuSoftIrqDelta,avg_cpuUsrDelta,avg_frameworkRuntime,avg_latency,sum_newcontainer,avg_roundTripTime,avg_runtime,avg_vmcpusteal,avg_vmcpustealDelta,avg_vmuptime
+xzqjpV,1,60.00,0.00,0.00,1.00,0.00,1.00,3.00,22.17,1618.15,0,1949.15,331.19,33.00,0.00,1576376648.00
+Total number of unique vmIDs: 1
+
+Category zAll:
+zAll,uses,avg_cpuIdleDelta,avg_cpuIowaitDelta,avg_cpuIrqDelta,avg_cpuKrnDelta,avg_cpuNiceDelta,avg_cpuSoftIrqDelta,avg_cpuUsrDelta,avg_frameworkRuntime,avg_latency,sum_newcontainer,avg_roundTripTime,avg_runtime,avg_vmcpusteal,avg_vmcpustealDelta,avg_vmuptime
+Final Results:,1,60.00,0.00,0.00,1.00,0.00,1.00,3.00,22.17,1618.15,0,1949.15,331.19,33.00,0.00,1576376648.00
+Total number of unique zAlls: 1

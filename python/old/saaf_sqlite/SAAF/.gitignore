@@ -1,0 +1,9 @@
+/**/.DS_Store
+*.prefs
+java_template/.classpath
+java_template/.project
+.vscode/tags
+bash_template/deploy/build
+*.class
+__pycache__
+bash_template/deploy/build/function.zip
