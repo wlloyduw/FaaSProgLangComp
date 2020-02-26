@@ -26,79 +26,8 @@ import java.util.*;
  */
 public class ServiceThree implements RequestHandler<Request, HashMap<String, Object>> {
 
-    public int hashSize(HashMap<String, String[]> theHashMap) {
-        int count = 0;
-        for (Entry<String, String[]> e : theHashMap.entrySet()) {
-            count += e.getValue().length;
-        }
-        return count;
-    }
 
-/*
-    public String[] createWhereString(HashMap<String, String[]> filter_values) {
-
-        String[] filterBy = new String[hashSize(filter_values)];
-        int index = 0;
-
-        for (Entry<String, String[]> e : filter_values.entrySet()) {
-            String key = e.getKey();
-            String[] filterArray = e.getValue();
-            for (String value : filterArray) {
-                String whereString = "WHERE ";
-                String filterVal = "`" + key + "`";
-                ;
-                whereString += filterVal + "=\"" + value + "\"";
-                filterBy[index] = whereString;
-                index++;
-            }
-        }
-        return filterBy;
-    }
-
-    public String[] createAggFunctionStrings(HashMap<String, String[]> aggregateValues, String mytable,
-        String[] filterBy, int size) {
-        String[] aggregateBy = new String[size];
-        int index = 0;
-
-        for (int i = 0; i < filterBy.length; i++) {
-            String filterByString = filterBy[i];
-            String aggString = "SELECT ";
-            for (Entry<String, String[]> e : aggregateValues.entrySet()) {
-
-                String key = e.getKey();
-                String[] aggregateArray = e.getValue();
-                for (String value : aggregateArray) {
-                    aggString += key + "(`";
-                    aggString += value + "`), ";
-                }
-            }
-
-            aggString += " \"" + filterByString.replace('"', ' ') + "\" ";
-            aggString += "AS `Filtered By` ";
-            aggString += "FROM " + mytable + " ";
-            aggString += filterByString;
-            aggregateBy[index] = aggString;
-            index++;
-        }
-
-        return aggregateBy;
-    }
-
-    public String Union_Queries(String[] queries) {
-        String fullQuery = "";
-        for (int i = 0; i < queries.length; i++) {
-            fullQuery += queries[i];
-            if (i != queries.length - 1) {
-                fullQuery += " UNION ";
-            }
-        }
-        fullQuery += ";";
-        return fullQuery;
-    }
-*/
-
-    
-    public HashMap<String, Object> handleRequest(Request request, Context context) {
+        public HashMap<String, Object> handleRequest(Request request, Context context) {
         Inspector inspector = new Inspector();
         inspector.inspectAll();
 
