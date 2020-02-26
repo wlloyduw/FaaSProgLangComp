@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/csv"
 	"fmt"
+	"io"
 	"os"
 	"strings"
 
@@ -68,9 +69,6 @@ func setDBInfo() error {
 func HandleRequest(ctx context.Context, request saaf.Request) (map[string]interface{}, error) {
 	inspector := saaf.NewInspector()
 	inspector.InspectAll()
-
-	//****************START FUNCTION IMPLEMENTATION*************************
-
 	inspector.AddAttribute("request", request)
 
 	if err := setDBInfo(); err != nil {
@@ -88,11 +86,7 @@ func HandleRequest(ctx context.Context, request saaf.Request) (map[string]interf
 		return nil, err
 	}
 
-	body := s3object.Body
-
-	reader := csv.NewReader(body)
-
-	records, err := reader.ReadAll()
+	records, err := readCSV(s3object.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -102,13 +96,20 @@ func HandleRequest(ctx context.Context, request saaf.Request) (map[string]interf
 		return nil, err
 	}
 
-	//****************END FUNCTION IMPLEMENTATION***************************
-
-	//Collect final information such as total runtime and cpu deltas.
 	inspector.InspectAllDeltas()
 	return inspector.Finish(), nil
 }
 
+func readCSV(body io.ReadCloser) ([][]string, error) {
+	reader := csv.NewReader(body)
+
+	records, err := reader.ReadAll()
+	if err != nil {
+		return nil, err
+	}
+
+	return records, nil
+}
 func writeRecords(records [][]string, tablename string, batchSize int) error {
 	if batchSize == 0 {
 		batchSize = 1000

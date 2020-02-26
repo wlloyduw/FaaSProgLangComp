@@ -31,6 +31,8 @@ const (
 )
 
 var (
+	dbinfo DBInfo
+
 	filterBy = map[string][]string{
 		"Region":         []string{"Australia and Oceania"},
 		"Item Type":      []string{"Office Supplies"},
@@ -47,7 +49,7 @@ var (
 	}
 )
 
-// DBInfo contains rds database information
+// DBInfo contains rds database info
 type DBInfo struct {
 	Username         string
 	Password         string
@@ -55,8 +57,6 @@ type DBInfo struct {
 	Endpoint         string
 	ConnectionString string
 }
-
-var dbinfo DBInfo
 
 func main() {
 	lambda.Start(HandleRequest)
@@ -89,12 +89,8 @@ func setDBInfo() error {
 }
 
 func HandleRequest(ctx context.Context, request saaf.Request) (map[string]interface{}, error) {
-
 	inspector := saaf.NewInspector()
 	inspector.InspectAll()
-
-	//****************START FUNCTION IMPLEMENTATION*************************
-
 	inspector.AddAttribute("request", request)
 
 	if err := setDBInfo(); err != nil {
@@ -103,14 +99,10 @@ func HandleRequest(ctx context.Context, request saaf.Request) (map[string]interf
 
 	queryString := constructQueryString(filterBy, aggregateBy, request.TableName)
 
-	// fmt.Println(queryString)
-
 	results, err := doQuery(queryString, request.TableName)
 	if err != nil {
 		return nil, err
 	}
-	// fmt.Printf("Results = %#v", results)
-
 	mySession, err := session.NewSession()
 	if err != nil {
 		return nil, err
@@ -133,15 +125,16 @@ func HandleRequest(ctx context.Context, request saaf.Request) (map[string]interf
 		return nil, err
 	}
 
-	// create a unique key and upload query results to S3
+	// example: QueryResults/QueryResults_<uuid>.csv
 	newKey := strings.TrimSuffix(request.Key, ".csv") + "/" + strings.TrimSuffix(request.Key, ".csv") + "_" + uuid.New().String() + ".csv"
+
+	inspector.AddAttribute("newKey", newKey)
 
 	_, err = s3client.PutObject(&s3.PutObjectInput{Body: bytes.NewReader(editedBody), Bucket: &request.BucketName, Key: &newKey})
 	if err != nil {
 		return nil, err
 	}
 
-	// do extra table queries if batchSize specified in request
 	if request.StressTestLoops > 0 {
 		startTime := time.Now()
 		err = stressTest(request.TableName, request.StressTestLoops)
@@ -149,13 +142,9 @@ func HandleRequest(ctx context.Context, request saaf.Request) (map[string]interf
 			return nil, err
 		}
 		stressTestRuntime := time.Since(startTime).Milliseconds()
-		fmt.Printf("Stress test runtime is %d", stressTestRuntime)
 		inspector.AddAttribute("stressTestRuntime", stressTestRuntime)
 	}
 
-	//****************END FUNCTION IMPLEMENTATION***************************
-
-	//Collect final information such as total runtime and cpu deltas.
 	inspector.InspectAllDeltas()
 	return inspector.Finish(), nil
 }
@@ -213,7 +202,6 @@ func doQuery(queryString, tablename string) ([][]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	// fmt.Printf("%#v\n", columnNames)
 
 	allThings := [][]string{columnNames}
 
@@ -223,36 +211,6 @@ func doQuery(queryString, tablename string) ([][]string, error) {
 	}
 
 	for rows.Next() {
-		// var (
-		// 	avgOrderProcessingTime float64
-		// 	avgGrossMargin         float64
-		// 	avgUnitsSold           float64
-		// 	sumUnitSolds           int
-		// 	sumTotalRevenue        float64
-		// 	maxUnitSold            int
-		// 	minUnitSold            int
-		// 	sumTotalProfit         float64
-		// 	filteredBy             string
-		// )
-
-		// // this part needs some work because it fails around half the time.... something to do with the ordering of the columns
-		// err = rows.Scan(&maxUnitSold, &minUnitSold, &avgOrderProcessingTime, &avgGrossMargin, &avgUnitsSold, &sumUnitSolds, &sumTotalRevenue, &sumTotalProfit, &filteredBy)
-		// if err != nil {
-		// 	return allThings, err
-		// }
-
-		// row := []string{
-		// 	strconv.Itoa(maxUnitSold),
-		// 	strconv.Itoa(minUnitSold),
-		// 	strconv.FormatFloat(avgOrderProcessingTime, 'f', 2, 64),
-		// 	strconv.FormatFloat(avgGrossMargin, 'f', 2, 64),
-		// 	strconv.FormatFloat(avgUnitsSold, 'f', 2, 64),
-		// 	strconv.Itoa(sumUnitSolds),
-		// 	strconv.FormatFloat(sumTotalRevenue, 'f', 2, 64),
-		// 	strconv.FormatFloat(sumTotalProfit, 'f', 2, 64),
-		// 	filteredBy,
-		// }
-
 		colValues := colValuesBase
 		err = rows.Scan(&colValues[0], &colValues[1], &colValues[2], &colValues[3], &colValues[4], &colValues[5], &colValues[6], &colValues[7], &colValues[8])
 		if err != nil {
@@ -273,39 +231,35 @@ func stressTest(tablename string, iterations int) error {
 	}
 	defer db.Close()
 
-	// times := map[int]int64{}
+	times := map[int]int64{}
 
 	for i := 0; i < iterations; i++ {
-		// rowsScanned := 0
-		// startTime := time.Now()
-		conn, err := db.Conn(context.Background())
-		if err != nil {
-			return err
-		}
+		rowsScanned := 0
+		startTime := time.Now()
 
-		rows, err = conn.QueryContext(context.Background(), fmt.Sprintf("SELECT * FROM %s;", tablename))
+		rows, err = db.QueryContext(context.Background(), fmt.Sprintf("SELECT * FROM %s;", tablename))
 		if err != nil {
 			return err
 		}
 
 		// NOTE: scanning rows takes the same amount of time as just an empty rows.Next loop
 
-		// row := []string{"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""}
+		row := []string{"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""}
 		for rows.Next() {
-			// err := rows.Scan(&row[0], &row[1], &row[2], &row[3], &row[4], &row[5], &row[6], &row[7], &row[8], &row[9], &row[10], &row[11], &row[12], &row[13], &row[14], &row[15])
-			// if err != nil {
-			// 	rows.Close()
-			// 	return err
-			// }
-			// rowsScanned++
+			err := rows.Scan(&row[0], &row[1], &row[2], &row[3], &row[4], &row[5], &row[6], &row[7], &row[8], &row[9], &row[10], &row[11], &row[12], &row[13], &row[14], &row[15])
+			if err != nil {
+				rows.Close()
+				return err
+			}
+			rowsScanned++
 		}
 		rows.Close()
-		conn.Close()
 
-		// times[i] = time.Since(startTime).Milliseconds()
-		// fmt.Printf("Test loop #%d took %s. Scanned %d rows\n", i, time.Since(startTime), rowsScanned)
+		times[i] = time.Since(startTime).Milliseconds()
+		fmt.Printf("Test loop #%d took %s. Scanned %d rows\n", i, time.Since(startTime), rowsScanned)
 	}
 
-	// fmt.Printf("Times = %#v\n", times)
+	fmt.Printf("All Stress Test times = %#v\n", times)
+
 	return nil
 }

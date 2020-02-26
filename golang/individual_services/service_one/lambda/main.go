@@ -24,10 +24,7 @@ func main() {
 func HandleRequest(ctx context.Context, request saaf.Request) (map[string]interface{}, error) {
 	inspector := saaf.NewInspector()
 	inspector.InspectAll()
-
-	//****************START FUNCTION IMPLEMENTATION*************************
-
-	inspector.AddAttribute("message", "bucketname = "+request.BucketName+", key = "+request.Key)
+	inspector.AddAttribute("request", request)
 
 	mySession, err := session.NewSession()
 	if err != nil {
@@ -40,16 +37,12 @@ func HandleRequest(ctx context.Context, request saaf.Request) (map[string]interf
 		return nil, err
 	}
 
-	body := s3object.Body
-
-	reader := csv.NewReader(body)
-
-	records, err := reader.ReadAll()
+	records, err := readCSV(s3object.Body)
 	if err != nil {
 		return nil, err
 	}
 
-	editedRecords := editRecords(records)
+	editedRecords := writeCSV(records)
 
 	pr, pw := io.Pipe()
 	csvWriter := csv.NewWriter(pw)
@@ -67,23 +60,32 @@ func HandleRequest(ctx context.Context, request saaf.Request) (map[string]interf
 		return nil, err
 	}
 
-	// updated key so that it will go into a folder and be more clear
+	// example: edited_100_Sales_Records/edited_100_Sales_Records_<uuid>.csv
 	newKey := "edited_" + strings.TrimSuffix(request.Key, ".csv") + "/" + "edited_" + strings.TrimSuffix(request.Key, ".csv") + "_" + uuid.New().String() + ".csv"
-	// newKey := strings.TrimSuffix(key, ".csv") + "/" + strconv.FormatInt(time.Now().UnixNano(), 10) + ".csv"
+
+	inspector.AddAttribute("newKey", newKey)
 
 	_, err = s3client.PutObject(&s3.PutObjectInput{Body: bytes.NewReader(editedBody), Bucket: &request.BucketName, Key: &newKey})
 	if err != nil {
 		return nil, err
 	}
 
-	//****************END FUNCTION IMPLEMENTATION***************************
-
-	//Collect final information such as total runtime and cpu deltas.
 	inspector.InspectAllDeltas()
 	return inspector.Finish(), nil
 }
 
-func editRecords(records [][]string) [][]string {
+func readCSV(body io.ReadCloser) ([][]string, error) {
+	reader := csv.NewReader(body)
+
+	records, err := reader.ReadAll()
+	if err != nil {
+		return nil, err
+	}
+
+	return records, nil
+}
+
+func writeCSV(records [][]string) [][]string {
 	editedRecords := [][]string{}
 	editedRecords = append(editedRecords, append(records[0], "Order Processing Time", "Gross Margin"))
 
@@ -112,8 +114,6 @@ func editRecords(records [][]string) [][]string {
 		} else if record[4] == "H" {
 			record[4] = "High"
 		}
-
-		// 5/28/2010 6/27/2010 9925 255.28 159.42 2533654.00 1582243.50 951410.50]
 
 		orderDate := strings.Split(record[5], "/")
 		shipDate := strings.Split(record[7], "/")
