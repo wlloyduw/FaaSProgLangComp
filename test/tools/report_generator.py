@@ -17,14 +17,13 @@ from decimal import Decimal
 #
 # @author Robert Cordingly
 #
-def report(responses, exp, addCPUModel):
+def report(responses, exp):
     output = ""
-
     threads = exp['threads']
     total_runs = exp['runs']
     runs_per_thread = int(total_runs / threads)
+
     payload = exp['payloads']
-    useCLI = exp['callWithCLI']
 
     # After runs all are finished, runs will be divided into categories based on this list.
     categories = exp['outputGroups']
@@ -52,6 +51,8 @@ def report(responses, exp, addCPUModel):
     # If a container is reused during one experiment (non-concurrent calls) they will be removed from the report.
     removeDuplicateContainers = exp['removeDuplicateContainers']
 
+    overlapFilter = exp['overlapFilter']
+
     for dictionary in responses:
         if 'vmID' in dictionary and 'vmuptime' in categories:
             categories.remove('vmuptime')
@@ -63,13 +64,32 @@ def report(responses, exp, addCPUModel):
             if 'uuid' in list_category:
                 list_category.remove('uuid')
 
-        if addCPUModel:
-            if 'cpuType' in dictionary:
-                dictionary['cpuType'] = dictionary['cpuType'] + " - Model " + str(dictionary['cpuModel'])
-                if 'platform' in dictionary:
-                    dictionary['cpuType'] = dictionary['cpuType']
-
     run_results = responses
+
+    #
+    # Insert runtimeOverlap into runs.  
+    #
+    if 'startTime' in run_results[0] and 'endTime' in run_results[0]:
+        for i in range(len(run_results)):
+            run1 = run_results[i]
+            start1 = int(run1['startTime'])
+            end1 = int(run1['endTime'])
+            length1 = end1 - start1
+            totalDist = 0
+            for j in range(len(run_results)):
+                if i == j: continue
+                run2 = run_results[j]
+                if (overlapFilter != "" and overlapFilter != None):
+                    if (overlapFilter in run1 and overlapFilter in run2):
+                        if (run1[overlapFilter] != run2[overlapFilter]):
+                            continue
+                    else:
+                        continue
+                start2 = max(min(int(run2['startTime']), end1), start1)
+                end2 = max(min(int(run2['endTime']), end1), start1)
+                length2 = end2 - start2
+                totalDist += length2 / length1
+            run1['runtimeOverlap'] = str(round(totalDist, 2))
 
     #
     # Print starter information
@@ -94,7 +114,10 @@ def report(responses, exp, addCPUModel):
         run = run_results[i]
         for i in range(len(key_list)):
             if key_list[i] not in ignore_attributes:
-                line += str(run[key_list[i]]) + ","
+                if key_list[i] in run:
+                    line += str(run[key_list[i]]) + ","
+                else:
+                    line += "NONE,"
         line = line[:-1]
         output += line + "\n"
     output += "Successful Runs: " + str(len(run_results)) + "\n"
@@ -318,6 +341,71 @@ def report(responses, exp, addCPUModel):
                                 line += str(run[attribute]) + ","
                         line = line[:-1]
                         output += line + "\n"
-
-
     return output
+
+#
+# Generate a report based off of a folder of payloads.
+#
+def report_from_folder(path, exp):
+    if (not os.path.isdir(path)):
+        print("Directory does not exist!")
+        return ""
+
+    run_list = []
+    for filename in os.listdir(path):
+        if filename.endswith(".json"):
+            try:
+                run = json.load(open(path + '/' + str(filename)))
+                run_list.append(run)
+            except Exception as e:
+                print("Error loading: " + path + '/' + str(filename) + " with exception " + str(e))
+                pass
+        else:
+            continue
+
+    print(str(run_list))
+    return report(run_list, exp)
+
+#
+# Write the output file of a report, print a folder of runs if needed.
+#
+def write_file(baseFileName, data, openFile, runList = []):
+    try:
+        if (os.path.isfile(baseFileName + ".csv")):
+            duplicates = 1
+            while (os.path.isfile(baseFileName + "-" + str(duplicates) + ".csv")):
+                duplicates += 1
+            baseFileName += "-" + str(duplicates)
+
+        # Write runs to folder if needed.
+        if (len(runList) > 0):
+            print("Writing raw runs to folder " + baseFileName)
+            if not os.path.exists(baseFileName):
+                os.makedirs(baseFileName)
+                for i, run in enumerate(runList):
+                    file = open(baseFileName + '/run' + str(i) + '.json', 'w') 
+                    file.write(json.dumps(run)) 
+                    file.close() 
+
+        baseFileName += ".csv"
+        text = open(baseFileName, "w")
+        text.write(str(data))
+        text.close()
+
+        if (openFile):
+            print("Opening results...")
+            if sys.platform == "linux" or sys.platform == "linux2":
+                # linux
+                subprocess.call(["xdg-open", baseFileName])
+            elif sys.platform == "darwin":
+                # MacOS
+                subprocess.call(["open", baseFileName])
+            elif sys.platform == "win32":
+                # Windows...
+                print("File created: " + str(baseFileName))
+                pass
+            else:
+                print("Partest complete. " + str(baseFileName) + " created.")
+    except Exception as e:
+        print("Exception occurred: " + str(e))
+        pass
