@@ -33,4 +33,4 @@ do
     done
 done
 
-echo "Experiments done"
+echo "Experiments Done!"
