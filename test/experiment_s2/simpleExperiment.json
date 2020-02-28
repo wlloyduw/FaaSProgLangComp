@@ -5,7 +5,9 @@
     {
       "bucketname": "<bucket>",
       "key": "edited_1000_Sales_Records.csv",
-      "tablename": "SalesData"
+      "tablename": "SalesData",
+      "dbEndpoint": "",
+		  "dbName": ""
     }
   ],
 

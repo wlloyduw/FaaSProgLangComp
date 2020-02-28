@@ -6,7 +6,9 @@
       "bucketname": "<bucket>",
       "key": "edited_1000000_Sales_Records.csv",
       "tablename": "SalesData",
-      "batchSize": "1000"
+      "batchSize": "1000",
+      "dbEndpoint": "",
+		  "dbName": ""
     }
   ],
 

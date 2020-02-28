@@ -6,7 +6,9 @@
       "bucketname": "<bucket>",
       "key": "QueryResults10000.csv",
       "tablename": "SalesData",
-      "stressTestLoops": "1000"
+      "stressTestLoops": "1000",
+      "dbEndpoint": "",
+		  "dbName": ""
     }
   ],
 
