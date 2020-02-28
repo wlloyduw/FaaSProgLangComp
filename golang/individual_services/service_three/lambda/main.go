@@ -62,7 +62,7 @@ func main() {
 	lambda.Start(HandleRequest)
 }
 
-func setDBInfo() error {
+func setDBInfo(request saaf.Request) error {
 	var exists bool
 
 	dbinfo = DBInfo{}
@@ -75,12 +75,20 @@ func setDBInfo() error {
 		return fmt.Errorf("%s env var not found", dbPasswordKey)
 	}
 
-	if dbinfo.Name, exists = os.LookupEnv(dbNameKey); !exists {
-		return fmt.Errorf("%s env var not found", dbNameKey)
+	if len(request.DatabaseEndpoint) > 0 {
+		dbinfo.Endpoint = request.DatabaseEndpoint
+	} else {
+		if dbinfo.Endpoint, exists = os.LookupEnv(dbEndpointKey); !exists {
+			return fmt.Errorf("%s env var not found", dbEndpointKey)
+		}
 	}
 
-	if dbinfo.Endpoint, exists = os.LookupEnv(dbEndpointKey); !exists {
-		return fmt.Errorf("%s env var not found", dbEndpointKey)
+	if len(request.DatabaseName) > 0 {
+		dbinfo.Name = request.DatabaseName
+	} else {
+		if dbinfo.Name, exists = os.LookupEnv(dbNameKey); !exists {
+			return fmt.Errorf("%s env var not found", dbNameKey)
+		}
 	}
 
 	dbinfo.ConnectionString = fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?%s", dbinfo.Username, dbinfo.Password, dbinfo.Endpoint, dbinfo.Name, dbParams)
@@ -93,7 +101,7 @@ func HandleRequest(ctx context.Context, request saaf.Request) (map[string]interf
 	inspector.InspectAll()
 	inspector.AddAttribute("request", request)
 
-	if err := setDBInfo(); err != nil {
+	if err := setDBInfo(request); err != nil {
 		return nil, err
 	}
 

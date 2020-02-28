@@ -10,6 +10,8 @@
 		"bucketname": "df.service.one",
 		"key": "QueryResults.csv",
 		"tablename": "SalesData",
-		"stressTestLoops": 10
+		"stressTestLoops": 10,
+		"dbEndpoint": "",
+		"dbName": ""
 	}
 }
