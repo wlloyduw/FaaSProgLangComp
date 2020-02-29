@@ -46,15 +46,8 @@ def write_csv(my_list):
 def write_csv_to_BytesIO(file1, my_list):
 
     result = ""
-    for count,row in enumerate(my_list[0]):
-        result += str(row)
-        if count+1 != len(my_list[0]):
-            result += ","
-        else:
-            result += ",Order Processing Time,Gross Margin\n"
-            
     ids = set()
-#     result += my_list[0] + ",Order Processing Time, Gross Margin\n"
+    result += my_list[0][0] + ",Order Processing Time, Gross Margin\n"
     for i in range(1, len(my_list)-1):
 
         col = len(my_list[i])
