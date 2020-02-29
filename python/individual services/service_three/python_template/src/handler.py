@@ -7,7 +7,6 @@ import json
 import os
 import sys
 import boto3
-import csv
 import pymysql
 import io
 
@@ -17,7 +16,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__))))
 
 
 #
-# Define your FaaS F    unction here.
+# Define your FaaS Function here.
 # Each platform handler will call and pass parameters to this function.
 #
 # @param request A JSON object provided by the platform handler.
@@ -26,10 +25,19 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__))))
 #
 
 def yourFunction(request, context):
+    
+    dbEndPoint = os.getenv('databaseEndpoint')
+    if 'dbEndPoint' in request:
+        dbEndPoint = request['dbEndPoint']
+    
+    dbName = os.getenv('databaseName')
+    if 'dbName' in request:
+        dbName = request['dbName']
+
     # Import the module and collect data
     inspector = Inspector()
     inspector.inspectAll()
-    inspector.addAttribute("endpoint", os.getenv('databaseEndpoint'))
+    inspector.addAttribute("endpoint", dbEndPoint)
     bucketname = str(request['bucketname'])
     key = str(request['key'])
 
@@ -40,9 +48,6 @@ def yourFunction(request, context):
     for line in csvcontent:
         csvcontent[i] = line.decode("utf-8")
         i = i+1
-    csv_data = csv.DictReader(csvcontent)
-
-    test_val = ""
 
     request['filterBy'] = dict()
     request['filterBy']["Region"] = ["Australia and Oceania"]
@@ -62,8 +67,8 @@ def yourFunction(request, context):
     query_string = contstruct_query_string(
         request['filterBy'], request['aggregateBy'], request['tablename'])
 
-    query_result = exexute_query(query_string)
-    stressTest(request['stressTestLoops'], request['tablename'])
+    query_result = exexute_query(query_string, dbEndPoint, dbName)
+    stressTest(request['stressTestLoops'], request['tablename'], dbEndPoint, dbName)
 
     key_split = str(request['key']).split('_')[0]
     result_key = "{0}_results.csv".format(key_split)
@@ -74,8 +79,7 @@ def yourFunction(request, context):
 
     # Add custom message and finish the function
     if ('key' in request):
-        inspector.addAttribute(
-            "bucketname", "bucketname " + str(request['bucketname']) + "!")
+        inspector.addAttribute("bucketname", "bucketname " + str(request['bucketname']) + "!")
         inspector.addAttribute("key", str(request['key']))
         inspector.addAttribute("test val", csvcontent[0])
 
@@ -100,16 +104,16 @@ def convert_rs_to_csv(result_set):
 
 def contstruct_query_string(filterBy, aggregateBy, tablename):
     aggr = ""
-    for i, key in enumerate(aggregateBy):
-        for j, val in enumerate(aggregateBy[str(key)]):
+    for _i, key in enumerate(aggregateBy):
+        for _j, val in enumerate(aggregateBy[str(key)]):
             aggr += key.upper()
             aggr += "(`"
             temp = str.replace(val, "_", " ")
             aggr += str(temp)
             aggr += "`), "
     fil = ""
-    for i, key in enumerate(filterBy):
-        for j, val in enumerate(filterBy[str(key)]):
+    for _i, key in enumerate(filterBy):
+        for _j, val in enumerate(filterBy[str(key)]):
             fil += "SELECT "
             fil += aggr
             fil += "'WHERE "
@@ -131,13 +135,12 @@ def contstruct_query_string(filterBy, aggregateBy, tablename):
     return result
 
 
-def exexute_query(query_string):
+def exexute_query(query_string, dbEndPoint, dbName):
     rows = {}
     try:
         print("Connecting...")
 
-        con = pymysql.connect(host=os.getenv('databaseEndpoint'), user=os.getenv(
-            'username'), password=os.getenv('password'), db=os.getenv('databaseName'), connect_timeout=350000)
+        con = pymysql.connect(host=dbEndPoint, user=os.getenv('username'), password=os.getenv('password'), db=dbName, connect_timeout=350000)
 
         print("Connected to db")
         cursor = con.cursor()
@@ -181,13 +184,12 @@ def convert_json_csv(rows):
     return file
 
 
-def stressTest(iterations, tablename):
-    con = pymysql.connect(host=os.getenv('databaseEndpoint'), user=os.getenv(
-        'username'), password=os.getenv('password'), db=os.getenv('databaseName'), connect_timeout=350000)
+def stressTest(iterations, tablename, dbEndPoint, dbName):
+    con = pymysql.connect(host=dbEndPoint, user=os.getenv('username'), password=os.getenv('password'), db=dbName, connect_timeout=350000)
 
     with con:
         cur = con.cursor()
 
-        for i in range(0, iterations):
+        for _i in range(0, iterations):
             cur.execute("SELECT * FROM {}".format(tablename))
-            rows = cur.fetchall()
+            cur.fetchall()

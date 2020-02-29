@@ -8,16 +8,14 @@ import json
 import os
 import sys
 import boto3
-import csv
 
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__))))
 
 #import pandas as pd
 
-
 #
-# Define your FaaS F    unction here.
+# Define your FaaS Function here.
 # Each platform handler will call and pass parameters to this function.
 #
 # @param request A JSON object provided by the platform handler.
@@ -25,10 +23,19 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__))))
 # @returns A JSON object to use as a response.
 #
 def yourFunction(request, context):
+    
+    dbEndPoint = os.getenv('databaseEndpoint')
+    if 'dbEndPoint' in request:
+        dbEndPoint = request['dbEndPoint']
+    
+    dbName = os.getenv('databaseName')
+    if 'dbName' in request:
+        dbName = request['dbName']
+    
     # Import the module and collect data
     inspector = Inspector()
     inspector.inspectAll()
-    inspector.addAttribute("endpoint", os.getenv('databaseEndpoint'))
+    inspector.addAttribute("endpoint", dbEndPoint)
     bucketname = str(request['bucketname'])
     key = str(request['key'])
 
@@ -39,16 +46,13 @@ def yourFunction(request, context):
     for line in csvcontent:
         csvcontent[i] = line.decode("utf-8")
         i += 1
-    csv_data = csv.DictReader(csvcontent)
 
-    test_val = ""
     content = read_csv(csvcontent, inspector)
-    output = write_output(content, request["batchSize"], request["tablename"], inspector)
+    write_output(content, request["batchSize"], request["tablename"], dbEndPoint, dbName, inspector)
 
     # Add custom message and finish the function
     if ('key' in request):
-        inspector.addAttribute(
-            "bucketname", "bucketname " + str(request['bucketname']) + "!")
+        inspector.addAttribute("bucketname", "bucketname " + str(request['bucketname']) + "!")
         inspector.addAttribute("key", str(request['key']))
         inspector.addAttribute("test val", csvcontent[0])
 
@@ -68,11 +72,11 @@ def read_csv(content, inspector):
 
     return list_of_rows
 
-def write_output(content, batchSize, tablename, inspector):
+def write_output(content, batchSize, tablename, dbEndPoint, dbName, inspector):
     try:
         print("Connecting...")
-        con = pymysql.connect(host=os.getenv('databaseEndpoint'), user=os.getenv('username'), password=os.getenv('password'), db=os.getenv('databaseName'), connect_timeout=350000)
-        
+        con = pymysql.connect(host=dbEndPoint, user=os.getenv('username'), password=os.getenv('password'), db=dbName, connect_timeout=350000)
+
         print("Connected to db")
 
         with con:
@@ -88,11 +92,9 @@ def write_output(content, batchSize, tablename, inspector):
                                 content[i][4], content[i][5], content[i][6], content[i][7],
                                 content[i][8], content[i][9], content[i][10], content[i][11],
                                 content[i][12], content[i][13], content[i][14], content[i][15]))
-
                 if i % batchSize == 0:
                     cursor.executemany(insert_query, my_data)
                     my_data = []
- 
             if len(my_data) != 0:
                 cursor.executemany(insert_query, my_data)
 

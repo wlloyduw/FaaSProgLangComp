@@ -103,7 +103,7 @@ def yourFunction(request, context):
     output = write_csv(content)
     _bytes = output.getvalue()
     record_size = str(request['key']).split("_")
-    dest_object_name = "{0}_newdata.csv".format(record_size[0])
+    dest_object_name = "edited_{0}_Sales_Records.csv".format(record_size[0])
     s3.put_object(Bucket=bucketname, Key=dest_object_name, Body=_bytes)
 
     # Add custom message and finish the function
