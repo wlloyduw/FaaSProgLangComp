@@ -28,7 +28,6 @@ def yourFunction(request, context):
     # Import the module and collect data
     inspector = Inspector()
     inspector.inspectAll()
-    inspector.addTimeStamp("frameworkRuntime")
     inspector.addAttribute("endpoint", os.getenv('databaseEndpoint'))
     bucketname = str(request['bucketname'])
     key = str(request['key'])
