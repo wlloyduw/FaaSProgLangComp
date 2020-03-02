@@ -46,6 +46,9 @@ public class ServiceThree implements RequestHandler<Request, HashMap<String, Obj
         aggregateByMap.put("avg", new String[] { "Order Processing Time", "Gross Margin", "Units Sold" });
         aggregateByMap.put("sum", new String[] { "Units Sold", "Total Revenue", "Total Profit" });
 
+
+
+
         String bucketname = request.getBucketName();
         String mytable = request.getTableName();
         String myTable = request.getTableName();
@@ -66,13 +69,14 @@ public class ServiceThree implements RequestHandler<Request, HashMap<String, Obj
             //String databaseName = System.getenv("dbName");
             //String dbEndPoint = System.getEnv("dbEndPoint");
             String databaseName = request.getDbName();
-            String dbEndPoint = request.getDbEndPoint();
+            String dbEndpoint = request.getDbEndpoint();
             
-            String url = "jdbc:mysql://" + dbEndPoint + ":3306/" + databaseName + "?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true";
+            String url = "jdbc:mysql://" + dbEndpoint + ":3306/" + databaseName + "?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true";
             LambdaLogger logger = context.getLogger();
-            logger.log(request.getDbEndPoint());
-            logger.log(request.getDbName());
-            logger.log(String.valueOf(request.getStressSize()));
+            logger.log("dbendpoint = " +request.getDbEndpoint());
+            logger.log("dbname = " + request.getDbName());
+            int stressTestLoops = request.getStressTestLoops();
+            logger.log("stress test loops = " +String.valueOf(stressTestLoops));
             logger.log("url = " + url);
 
 
@@ -88,7 +92,7 @@ public class ServiceThree implements RequestHandler<Request, HashMap<String, Obj
 
             AmazonS3 s3Client = AmazonS3ClientBuilder.standard().build();
             s3Client.putObject(bucketname, "QueryResults.csv", is, meta);
-            stressTest(10, mytable, url, logger);
+            stressTest(stressTestLoops, mytable, url, logger);
             con.close();
         } catch (Exception e) {
             System.out.println("Got an exception working with MySQL! " + e.getMessage());
