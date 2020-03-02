@@ -47,7 +47,7 @@ def write_csv_to_BytesIO(file1, my_list):
 
     result = ""
     ids = set()
-    result += (','.join(map(str, my_list[0]))  + ",Order Processing Time, Gross Margin\n")
+    result +=(','.join(map(str, my_list[0]))  + ",Order Processing Time, Gross Margin\n")
     for i in range(1, len(my_list)-1):
 
         col = len(my_list[i])
