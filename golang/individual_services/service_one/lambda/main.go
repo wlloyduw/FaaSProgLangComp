@@ -24,7 +24,9 @@ func main() {
 func HandleRequest(ctx context.Context, request saaf.Request) (map[string]interface{}, error) {
 	inspector := saaf.NewInspector()
 	inspector.InspectAll()
-	inspector.AddAttribute("request", request)
+	// inspector.AddAttribute("request", request)
+	inspector.AddAttribute("bucketname", request.BucketName)
+	inspector.AddAttribute("key", request.Key)
 
 	mySession, err := session.NewSession()
 	if err != nil {

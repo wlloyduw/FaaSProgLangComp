@@ -99,7 +99,10 @@ func setDBInfo(request saaf.Request) error {
 func HandleRequest(ctx context.Context, request saaf.Request) (map[string]interface{}, error) {
 	inspector := saaf.NewInspector()
 	inspector.InspectAll()
-	inspector.AddAttribute("request", request)
+	// inspector.AddAttribute("request", request)
+	inspector.AddAttribute("bucketname", request.BucketName)
+	inspector.AddAttribute("key", request.Key)
+	inspector.AddAttribute("dbEndpoint", request.DatabaseEndpoint)
 
 	if err := setDBInfo(request); err != nil {
 		return nil, err
