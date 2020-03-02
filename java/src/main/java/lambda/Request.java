@@ -18,6 +18,10 @@ public class Request {
     String bucketname;
     String key;
     String tablename;
+    String dbName;
+    String dbEndPoint;
+    int stressSize;
+    String clusterName;
 
     public String getBucketName() {
         return this.bucketname;
@@ -65,32 +69,62 @@ public class Request {
         this.batchsize = theBatchsize;
     }
     
+    public int getStressSize() {
+            return this.stressSize;
+    }
+    public void setStressSize(int theStressSize) {
+            this.stressSize = theStressSize;
+    }
 
-	public HashMap<String, String[]> getFilterBy() {
-		return this.filterBy;
-	}
+    public String getDbName() {
+            return this.dbName;
+    }
 
-	public HashMap<String, String[]> getAggregateBy() {
-		return this.aggregateBy;
-	}
+    public void setDbName(String theDbName) {
+            this.dbName = theDbName;
+    }
 
-	public void setFilterBy(HashMap<String, String[]> theFilterBy) {
-		this.filterBy = theFilterBy;
-	}
+    public String getDbEndPoint() {
+        return this.dbEndPoint;
+    }
+    public void setDbEndPoint(String theDbEndPoint) {
+        this.dbEndPoint = theDbEndPoint;
+    }
+    public HashMap<String, String[]> getFilterBy() {
+            return this.filterBy;
+    }
 
-	public void setAggregateBy(HashMap<String, String[]> theAggregateBy) {
-		this.aggregateBy = theAggregateBy;
-	}
+    public HashMap<String, String[]> getAggregateBy() {
+            return this.aggregateBy;
+    }
+
+    public void setFilterBy(HashMap<String, String[]> theFilterBy) {
+            this.filterBy = theFilterBy;
+    }
+    public void setClusterName(String theClusterName) {
+        this.clusterName = theClusterName;
+    }
+    public String getClusterName() {
+        return this.clusterName;
+    }
+
+    public void setAggregateBy(HashMap<String, String[]> theAggregateBy) {
+            this.aggregateBy = theAggregateBy;
+    }
 
 
 	//constructor
-    public Request(HashMap<String, String[]> filterBy, HashMap<String, String[]> aggregateBy, String key, String bucketname, String tablename, int batchsize) {
+    public Request(HashMap<String, String[]> filterBy, HashMap<String, String[]> aggregateBy, String key, String bucketname, String tablename, int batchsize, int stressSize, String dbName, String dbEndPoint, String clusterName) {
         this.setFilterBy(filterBy);
         this.setAggregateBy(aggregateBy);
         this.setBucketname(bucketname);
         this.setKey(key);
-		this.setTablename(tablename);
+        this.setTablename(tablename);
     	this.setBatchsize(batchsize);
+        this.setStressSize(stressSize);
+        this.setDbName(dbName);
+        this.setDbEndPoint(dbEndPoint);
+        this.setClusterName(clusterName);
     }
 
 

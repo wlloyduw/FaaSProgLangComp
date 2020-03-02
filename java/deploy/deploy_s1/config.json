@@ -1,24 +1,19 @@
 {
 	"README": "See ./deploy/README.md for help!",
 
-	"functionName": "ServiceOneJava",
+	"functionName":     "ServiceOneJava",
 
 	"lambdaHandler": "lambda.ServiceOne::handleRequest",
-	"lambdaRoleARN": "arn:aws:iam::857205555574:role/service-role/simple_microservice_role",
-	"lambdaSubnets": "subnet-1c2a7d66,subnet-0a514862,subnet-1b6ed157",
-	"lambdaSecurityGroups": "sg-12ae6d70",
+	"lambdaRoleARN": "arn:aws:iam::622221243234:role/saaf_proglangstudy",
+	"lambdaSubnets": "",
+	"lambdaSecurityGroups": "",
+
+
 
 	"test": {
 
-		"bucketname": "testbucketohiodap",
-		"key": "562sales_10000.csv",
-		"tablename" : "mytable_10000",
-		"batchsize" :1000
+		"bucketname": "project.fall19.tcss562.vmp",
+		"key": "edited_100000_Sales_Records.csv"
 	    	
-	    
 	}
-
 }
-
-
-

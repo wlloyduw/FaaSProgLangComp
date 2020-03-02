@@ -6,6 +6,8 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.lambda.runtime.LambdaLogger;
+
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -34,8 +36,8 @@ public class ServiceThree implements RequestHandler<Request, HashMap<String, Obj
         HashMap<String, String[]> filterByMap = new HashMap<String, String[]>();
         filterByMap.put("Region", new String[] { "Australia and Oceania" });
         filterByMap.put("Item Type", new String[] { "Office Supplies" });
-        filterByMap.put("Sales Channel", new String[] { "Office Supplies" });
-        filterByMap.put("Order Priority", new String[] { "Offline" });
+        filterByMap.put("Sales Channel", new String[] { "Offline" });
+        filterByMap.put("Order Priority", new String[] { "Critical" });
         filterByMap.put("Country", new String[] { "Fiji" });
 
         HashMap<String, String[]> aggregateByMap = new HashMap<String, String[]>();
@@ -47,6 +49,8 @@ public class ServiceThree implements RequestHandler<Request, HashMap<String, Obj
         String bucketname = request.getBucketName();
         String mytable = request.getTableName();
         String myTable = request.getTableName();
+
+
         //int size = hashSize(filterByMap);
         //String[] whereStrings = createWhereString(filterByMap);
         //String[] queryStrings = createAggFunctionStrings(aggregateByMap, myTable, whereStrings, size);
@@ -59,8 +63,18 @@ public class ServiceThree implements RequestHandler<Request, HashMap<String, Obj
             properties.load(new FileInputStream("db.properties"));
             String username = System.getenv("username"); 
             String password = System.getenv("password"); 
-            // String databaseName = System.getenv("databaseName");
-            String url = System.getenv("url");
+            //String databaseName = System.getenv("dbName");
+            //String dbEndPoint = System.getEnv("dbEndPoint");
+            String databaseName = request.getDbName();
+            String dbEndPoint = request.getDbEndPoint();
+            
+            String url = "jdbc:mysql://" + dbEndPoint + ":3306/" + databaseName + "?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true";
+            LambdaLogger logger = context.getLogger();
+            logger.log(request.getDbEndPoint());
+            logger.log(request.getDbName());
+            logger.log(String.valueOf(request.getStressSize()));
+            logger.log("url = " + url);
+
 
             Connection con = DriverManager.getConnection(url, username, password);
             PreparedStatement ps = con.prepareStatement(fullQuery);
@@ -74,7 +88,7 @@ public class ServiceThree implements RequestHandler<Request, HashMap<String, Obj
 
             AmazonS3 s3Client = AmazonS3ClientBuilder.standard().build();
             s3Client.putObject(bucketname, "QueryResults.csv", is, meta);
-            stressTest(10, mytable);
+            stressTest(10, mytable, url, logger);
             con.close();
         } catch (Exception e) {
             System.out.println("Got an exception working with MySQL! " + e.getMessage());
@@ -145,23 +159,29 @@ public class ServiceThree implements RequestHandler<Request, HashMap<String, Obj
 
     }
 
-    public static void stressTest(int iterations, String mytable) {
+    public static void stressTest(int iterations, String mytable, String url, LambdaLogger logger) {
+
         try {
-            Connection con = DriverManager.getConnection(System.getenv("url"), System.getenv("username"),
+            Connection con = DriverManager.getConnection(url, System.getenv("username"),
                     System.getenv("password"));
             
             for (int i = 0; i < iterations; i++) {
+                logger.log(String.valueOf(i));
                 String testQuery = "SELECT * from " + mytable + ";";
                 PreparedStatement ps = con.prepareStatement(testQuery);
                 ResultSet rs = ps.executeQuery();
-                int numCols = rs.getMetaData().getColumnCount();
-                while (rs.next()) {
-                    for (int j = 1; j <= numCols; j++) {
-                        rs.getString(j);
-                    }
-                }
+                //int numCols = rs.getMetaData().getColumnCount();
+                //while (rs.next()) {
+                //    for (int j = 1; j <= numCols; j++) {
+                        //rs.getString(j);
+                //    }
+                //}
+		logger.log(  String.valueOf(Runtime.getRuntime().freeMemory()));
+                rs.close();
+
             }
             con.close();
+	   
         } catch (SQLException e) {
             System.out.println("Got an exception working with stressTest! " + e.getMessage());
         }

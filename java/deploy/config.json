@@ -1,24 +1,24 @@
 {
 	"README": "See ./deploy/README.md for help!",
 
-	"functionName": "ServiceOneJava",
+	"functionName": "ServiceThreeJava",
 
-	"lambdaHandler": "lambda.ServiceOne::handleRequest",
-	"lambdaRoleARN": "arn:aws:iam::857205555574:role/service-role/simple_microservice_role",
-	"lambdaSubnets": "subnet-1c2a7d66,subnet-0a514862,subnet-1b6ed157",
-	"lambdaSecurityGroups": "sg-12ae6d70",
+	"lambdaHandler": "lambda.ServiceThree::handleRequest",
+	"lambdaRoleARN": "arn:aws:iam::622221243234:role/saaf_proglangstudy",
+	"lambdaSubnets": "subnet-3ea4bb10,subnet-9f0919f8",
+	"lambdaSecurityGroups": "sg-840ab7ad",
+
 
 	"test": {
 
-		"bucketname": "testbucketohiodap",
-		"key": "562sales_10000.csv",
-		"tablename" : "mytable_10000",
-		"batchsize" :1000
+		"bucketname": "project.fall19.tcss562.vmp",
+		"key": "edited_100000_Sales_Records.csv",
+		"tablename" : "mytable_100000",
+		"batchsize" :1000,
+		"stressSize" : 10,
+		"dbName" : "DB_TCSS562",
+		"dbEndPoint" : "java.cluster-ctutcfcxozkc.us-east-1.rds.amazonaws.com"
 	    	
-	    
 	}
-
 }
-
-
 

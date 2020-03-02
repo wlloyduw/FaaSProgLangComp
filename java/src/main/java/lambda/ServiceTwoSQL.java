@@ -97,8 +97,13 @@ public class ServiceTwoSQL implements RequestHandler<Request, HashMap<String, Ob
         try {
             String username = System.getenv("username");
             String password = System.getenv("password");
-            // String databaseName = System.getenv("databaseName");
-            String url = System.getenv("url");
+            //String databaseName = System.getenv("dbName");
+            //String dbEndPoint = System.getEnv("dbEndPoint");
+            String databaseName = request.getDbName();
+            String dbEndPoint = request.getDbEndPoint();
+            
+            String url = "jdbc:mysql://" + dbEndPoint + ":3306/" + databaseName + "?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true";
+
 
             List<String[]> records = readCsv(objectData);
             writeRecords(records, url, username, password, mytable, batchsize);
