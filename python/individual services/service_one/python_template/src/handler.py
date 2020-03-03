@@ -17,7 +17,7 @@ import time
 import io
 
 #
-# Define your FaaS F    unction here.
+# Define your FaaS Function here.
 # Each platform handler will call and pass parameters to this function.
 # 
 # @param request A JSON object provided by the platform handler.
@@ -30,17 +30,13 @@ def read_csv(csv_reader):
     try:
         for line in csv_reader:
             list_of_rows.append(line[:-1].split(","))
-    
     except Exception as ex:
         print(ex.__str__())
-
     return list_of_rows
 
 def write_csv(my_list):
-
     file1 = io.BytesIO()
     write_csv_to_BytesIO(file1, my_list)
-    
     return file1
 
 def write_csv_to_BytesIO(file1, my_list):
@@ -91,25 +87,25 @@ def write_csv_to_BytesIO(file1, my_list):
     file1.write(str.encode(result))
 
 def yourFunction(request, context):
+    
+    key = str(request['key'])
+    bucketname = str(request['bucketname'])
+    
     # Import the module and collect data
     inspector = Inspector()
     inspector.inspectAll()
-    bucketname = str(request['bucketname'])
-    key = str(request['key'])
+    inspector.addAttribute("bucketname", bucketname)
+    inspector.addAttribute("key", key)
+    
     s3 = boto3.client('s3')
     csvfile = s3.get_object(Bucket=bucketname, Key=key)
     csvcontent = csvfile['Body'].read().decode('utf-8').split("\n")
     content = read_csv(csvcontent)
     output = write_csv(content)
     _bytes = output.getvalue()
-    record_size = str(request['key']).split("_")
+    record_size = key.split("_")
     dest_object_name = "edited_{0}_Sales_Records.csv".format(record_size[0])
     s3.put_object(Bucket=bucketname, Key=dest_object_name, Body=_bytes)
-
-    # Add custom message and finish the function
-    if ('key' in request):
-        inspector.addAttribute("bucketname", "bucketname " + str(request['bucketname']) + "!")
-        inspector.addAttribute("key", str(request['key']))
 
     inspector.inspectAllDeltas()
     return inspector.finish()

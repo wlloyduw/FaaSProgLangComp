@@ -25,29 +25,28 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__))))
 #
 
 def yourFunction(request, context):
-    
-    dbEndPoint = os.getenv('databaseEndpoint')
-    if 'dbEndPoint' in request:
-        dbEndPoint = request['dbEndPoint']
+
+    dbEndpoint = os.getenv('databaseEndpoint')
+    if 'dbEndpoint' in request:
+        dbEndpoint = request['dbEndpoint']
     
     dbName = os.getenv('databaseName')
     if 'dbName' in request:
         dbName = request['dbName']
+        
+    key = str(request['key'])
+    bucketname = str(request['bucketname'])
+    tablename = str(request['tablename'])
+    stressTestLoops = request['stressTestLoops']
 
-    # Import the module and collect data
+    # import the module and collect data
     inspector = Inspector()
     inspector.inspectAll()
-    inspector.addAttribute("endpoint", dbEndPoint)
-    bucketname = str(request['bucketname'])
-    key = str(request['key'])
+    inspector.addAttribute("endpoint", dbEndpoint)
+    inspector.addAttribute("bucketname", bucketname)
+    inspector.addAttribute("key", key)
 
     s3 = boto3.client('s3')
-    csvfile = s3.get_object(Bucket=bucketname, Key=key)
-    csvcontent = csvfile['Body'].read().split(b'\n')
-    i = 0
-    for line in csvcontent:
-        csvcontent[i] = line.decode("utf-8")
-        i = i+1
 
     request['filterBy'] = dict()
     request['filterBy']["Region"] = ["Australia and Oceania"]
@@ -59,29 +58,17 @@ def yourFunction(request, context):
     request['aggregateBy'] = dict()
     request['aggregateBy']["max"] = ["Units Sold"]
     request['aggregateBy']["min"] = ["Units Sold"]
-    request['aggregateBy']["avg"] = [
-        "Order Processing Time", "Gross Margin", "Units Sold"]
-    request['aggregateBy']["sum"] = [
-        "Units Sold", "Total Revenue", "Total Profit"]
+    request['aggregateBy']["avg"] = ["Order Processing Time", "Gross Margin", "Units Sold"]
+    request['aggregateBy']["sum"] = ["Units Sold", "Total Revenue", "Total Profit"]
 
-    query_string = contstruct_query_string(
-        request['filterBy'], request['aggregateBy'], request['tablename'])
-
-    query_result = exexute_query(query_string, dbEndPoint, dbName)
-    stressTest(request['stressTestLoops'], request['tablename'], dbEndPoint, dbName)
+    query_string = contstruct_query_string(request['filterBy'], request['aggregateBy'], request['tablename'])
+    query_result = exexute_query(query_string, dbEndpoint, dbName)
+    stressTest(stressTestLoops, tablename, dbEndpoint, dbName)
 
     key_split = str(request['key']).split('_')[0]
     result_key = "{0}_results.csv".format(key_split)
     csv_content = convert_rs_to_csv(query_result)
     s3.put_object(Bucket=bucketname, Key=result_key, Body=(csv_content))
-
-    #return inspector.finish()
-
-    # Add custom message and finish the function
-    if ('key' in request):
-        inspector.addAttribute("bucketname", "bucketname " + str(request['bucketname']) + "!")
-        inspector.addAttribute("key", str(request['key']))
-        inspector.addAttribute("test val", csvcontent[0])
 
     inspector.inspectAllDeltas()
     return inspector.finish()
@@ -184,8 +171,8 @@ def convert_json_csv(rows):
     return file
 
 
-def stressTest(iterations, tablename, dbEndPoint, dbName):
-    con = pymysql.connect(host=dbEndPoint, user=os.getenv('username'), password=os.getenv('password'), db=dbName, connect_timeout=350000)
+def stressTest(iterations, tablename, dbEndpoint, dbName):
+    con = pymysql.connect(host=dbEndpoint, user=os.getenv('username'), password=os.getenv('password'), db=dbName, connect_timeout=350000)
 
     with con:
         cur = con.cursor()
