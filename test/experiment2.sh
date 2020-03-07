@@ -79,7 +79,7 @@ do
             mkdir ./$sub_results_folder/$test_file/$lang/concurrency_$con/iteration_$i/ServiceOne 
             for con_i in $(seq 1 $con)
             do
-                ./faas_runner.py -e ./$sub_configs_folder/experiment_s1/$test_file/${test_file}_admin$((50+$con_i)).json -o ./$sub_results_folder/$test_file/$lang/concurrency_$con/iteration_$i/ServiceOne --function ServiceOne$lang $args &    
+                ./faas_runner.py -e ./$sub_configs_folder/experiment_s1/$test_file/${test_file}_admin$(($con_i)).json -o ./$sub_results_folder/$test_file/$lang/concurrency_$con/iteration_$i/ServiceOne --function ServiceOne$lang $args &    
             done
 
             # Check if ServiceOne is done
@@ -99,7 +99,7 @@ do
             mkdir ./$sub_results_folder/$test_file/$lang/concurrency_$con/iteration_$i/ServiceTwo
             for con_i in $(seq 1 $con)
             do 
-                ./faas_runner.py -e ./$sub_configs_folder/experiment_s2/$test_file/${test_file}_admin$((50+$con_i)).json -o ./$sub_results_folder/$test_file/$lang/concurrency_$con/iteration_$i/ServiceTwo --function ServiceTwo$lang $args &
+                ./faas_runner.py -e ./$sub_configs_folder/experiment_s2/$test_file/${test_file}_admin$(($con_i)).json -o ./$sub_results_folder/$test_file/$lang/concurrency_$con/iteration_$i/ServiceTwo --function ServiceTwo$lang $args &
             done
 
             # Check if ServiceTwo is done
@@ -119,7 +119,7 @@ do
             mkdir ./$sub_results_folder/$test_file/$lang/concurrency_$con/iteration_$i/ServiceThree
             for con_i in $(seq 1 $con)
             do 
-                ./faas_runner.py -e ./$sub_configs_folder/experiment_s3/$test_file/${test_file}_admin$((50+$con_i)).json -o ./$sub_results_folder/$test_file/$lang/concurrency_$con/iteration_$i/ServiceThree --function ServiceThree$lang $args &
+                ./faas_runner.py -e ./$sub_configs_folder/experiment_s3/$test_file/${test_file}_admin$(($con_i)).json -o ./$sub_results_folder/$test_file/$lang/concurrency_$con/iteration_$i/ServiceThree --function ServiceThree$lang $args &
             done
 
             # Check if ServiceThree is done
