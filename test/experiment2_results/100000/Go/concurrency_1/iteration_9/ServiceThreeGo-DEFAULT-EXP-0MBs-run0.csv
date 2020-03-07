@@ -1,0 +1,7 @@
+2020-03-07 09:11:10.285825 - Python Partest Version 0.5
+Setting up test: runsperthread=1 threads=1 totalruns=1 payload=[{'bucketname': 'project.bucket.tcss562.sps' 'key': 'QueryResults.csv' 'tablename': 'SalesData' 'stressTestLoops': 1 'dbEndpoint': 'admin1.cluster-cftyxgwyrild.us-east-1.rds.amazonaws.com' 'dbName': 'DB_TCSS562'}]
+
+Raw results of each run:
+1_run_id,2_thread_id,bucketname,containerID,contextSwitchesDelta,cpuCores,cpuIdleDelta,cpuIowaitDelta,cpuIrqDelta,cpuKrnDelta,cpuModel,cpuNiceDelta,cpuSoftIrqDelta,cpuType,cpuUsrDelta,dbEndpoint,endTime,frameworkRuntime,functionMemory,functionName,functionRegion,key,lang,latency,newKey,newcontainer,payload,platform,roundTripTime,runtime,runtimeOverlap,startTime,stressTestRuntime,userRuntime,uuid,version,vmcpustealDelta,vmuptime,zAll
+0,0,project.bucket.tcss562.sps,2020/03/07/[$LATEST]393611a94514464aae32a8d4198dd2c5,9303,2,118,0,0,3,62,0,5,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,29,admin1.cluster-cftyxgwyrild.us-east-1.rds.amazonaws.com,1583572270,0,3008,ServiceThreeGo,us-east-1,QueryResults.csv,go,376.46,QueryResults/QueryResults_68a68159-05d6-4923-85ec-61268c3c1734.csv,0,{"bucketname": "project.bucket.tcss562.sps"; "key": "QueryResults.csv"; "tablename": "SalesData"; "stressTestLoops": 1; "dbEndpoint": "admin1.cluster-cftyxgwyrild.us-east-1.rds.amazonaws.com"; "dbName": "DB_TCSS562"},AWS Lambda,1176.46,800,0,1583572269,465,800,1fe9663e-4216-4713-9828-7479f337dc09,0.4,2,1583570241,Final Results:
+Successful Runs: 1

@@ -35,7 +35,7 @@ parentPayload3="{\"bucketname\":\"$BUCKET_NAME\",\"key\":\"QueryResults.csv\",\"
 for lang in Python Java Go
 do
     mkdir ./$sub_results_folder/$test_size/$lang
-    for con in 1 10 20 30 40 50 # Current limitation is 50 instances, should be 100 instances
+    for con in 1 5 10 15 20 25 30 35 40 45 50 # Current limitation is 50 instances, should be 100 instances
     do
         mkdir ./$sub_results_folder/$test_size/$lang/concurrency_$con
 
