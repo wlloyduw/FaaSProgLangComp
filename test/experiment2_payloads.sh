@@ -28,9 +28,9 @@ test_file="100000recordExperiment.json"
 mkdir ./$sub_results_folder/$test_size
 
 # Father payloads
-parentPayload1="[{\"bucketname\":\"$BUCKET_NAME\",\"key\":\"${test_size}_Sales_Records.csv\"}]"
-parentPayload2="[{\"bucketname\":\"$BUCKET_NAME\",\"key\":\"edited_${test_size}_Sales_Records.csv\",\"tablename\":\"SalesData\",\"batchSize\":1000,\"dbEndpoint\":\"admin${DB_ENDPOINT}\",\"dbName\":\"$DB_NAME\"}]"
-parentPayload3="[{\"bucketname\":\"$BUCKET_NAME\",\"key\":\"QueryResults.csv\",\"tablename\":\"SalesData\",\"stressTestLoops\":1,\"dbEndpoint\":\"admin${DB_ENDPOINT}\",\"dbName\":\"$DB_NAME\"}]"            
+parentPayload1="{\"bucketname\":\"$BUCKET_NAME\",\"key\":\"${test_size}_Sales_Records.csv\"}"
+parentPayload2="[\"bucketname\":\"$BUCKET_NAME\",\"key\":\"edited_${test_size}_Sales_Records.csv\",\"tablename\":\"SalesData\",\"batchSize\":1000,\"dbEndpoint\":\"admin${DB_ENDPOINT}\",\"dbName\":\"$DB_NAME\"}]"
+parentPayload3="{\"bucketname\":\"$BUCKET_NAME\",\"key\":\"QueryResults.csv\",\"tablename\":\"SalesData\",\"stressTestLoops\":1,\"dbEndpoint\":\"admin${DB_ENDPOINT}\",\"dbName\":\"$DB_NAME\"}"            
 
 for lang in Python Java Go
 do
@@ -61,6 +61,11 @@ do
                 payloads3="$payloads3]"
             fi
         done
+        
+        echo "payloads1: $payloads2"
+        echo "parentPayloads1: $parentPayload2"
+
+        exit
 
         # Repeat each concurrency number for 11 times
         for i in $(seq 1 11)
