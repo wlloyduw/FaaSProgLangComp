@@ -46,9 +46,9 @@ do
 
         for con_i in $(seq 1 $con)
         do
-            payloads1="$payloads1{\“dbEndpoint\“:\“admin${con_i}${DB_ENDPOINT}\“}"
-            payloads2="$payloads2{\“dbEndpoint\“:\“admin${con_i}${DB_ENDPOINT}\“}"
-            payloads3="$payloads3{\“dbEndpoint\“:\“admin${con_i}${DB_ENDPOINT}\“}"
+            payloads1="$payloads1{\"dbEndpoint\":\"admin${con_i}${DB_ENDPOINT}\"}"
+            payloads2="$payloads2{\"dbEndpoint\":\"admin${con_i}${DB_ENDPOINT}\"}"
+            payloads3="$payloads3{\"dbEndpoint\":\"admin${con_i}${DB_ENDPOINT}\"}"
         
             if [ "$con_i" -lt "$con" ]
             then
@@ -61,7 +61,7 @@ do
                 payloads3="$payloads3]"
             fi
         done
-        
+
         # Repeat each concurrency number for 11 times
         for i in $(seq 1 11)
         do
