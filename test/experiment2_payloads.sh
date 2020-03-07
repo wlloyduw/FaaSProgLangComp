@@ -62,11 +62,6 @@ do
             fi
         done
         
-        echo "payloads1: $payloads2"
-        echo "parentPayloads1: $parentPayload2"
-
-        exit
-
         # Repeat each concurrency number for 11 times
         for i in $(seq 1 11)
         do
