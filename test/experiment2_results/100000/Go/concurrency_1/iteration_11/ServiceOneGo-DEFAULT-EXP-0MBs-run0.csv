@@ -1,7 +1,7 @@
-2020-03-07 09:11:24.290322 - Python Partest Version 0.5
+2020-03-08 05:35:05.734470 - Python Partest Version 0.5
 Setting up test: runsperthread=1 threads=1 totalruns=1 payload=[{'bucketname': 'project.bucket.tcss562.sps' 'key': '100000_Sales_Records.csv' 'dbEndpoint': 'admin1.cluster-cftyxgwyrild.us-east-1.rds.amazonaws.com'}]
 
 Raw results of each run:
 1_run_id,2_thread_id,bucketname,containerID,contextSwitchesDelta,cpuCores,cpuIdleDelta,cpuIowaitDelta,cpuIrqDelta,cpuKrnDelta,cpuModel,cpuNiceDelta,cpuSoftIrqDelta,cpuType,cpuUsrDelta,endTime,frameworkRuntime,functionMemory,functionName,functionRegion,key,lang,latency,newKey,newcontainer,payload,platform,roundTripTime,runtime,runtimeOverlap,startTime,userRuntime,uuid,version,vmcpustealDelta,vmuptime,zAll
-0,0,project.bucket.tcss562.sps,2020/03/07/[$LATEST]6d19f6beb7784b0c89a96bdb3351b08b,8356,2,103,0,0,4,62,0,8,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,57,1583572284,0,3008,ServiceOneGo,us-east-1,100000_Sales_Records.csv,go,389.32,edited_100000_Sales_Records/edited_100000_Sales_Records_a938232e-edad-406e-930a-6b994b6656ed.csv,0,{"bucketname": "project.bucket.tcss562.sps"; "key": "100000_Sales_Records.csv"; "dbEndpoint": "admin1.cluster-cftyxgwyrild.us-east-1.rds.amazonaws.com"},AWS Lambda,1270.32,881,0,1583572283,881,8e10b96a-7cb5-4b59-ac81-59e8e976b387,0.4,1,1583567785,Final Results:
+0,0,project.bucket.tcss562.sps,2020/03/08/[$LATEST]a65b931dbaf943ba9fda41029eb6a33e,7847,2,147,0,0,3,62,0,4,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,66,1583645705,0,3008,ServiceOneGo,us-east-1,100000_Sales_Records.csv,go,386.13,edited_100000_Sales_Records/edited_100000_Sales_Records_ed0a609c-24b7-4246-ba57-06d8fd87fe35.csv,0,{"bucketname": "project.bucket.tcss562.sps"; "key": "100000_Sales_Records.csv"; "dbEndpoint": "admin1.cluster-cftyxgwyrild.us-east-1.rds.amazonaws.com"},AWS Lambda,1512.13,1126,0,1583645704,1126,6be13569-ad7b-4b69-ac2c-e6ddf8beb526,0.4,2,1583639859,Final Results:
 Successful Runs: 1
