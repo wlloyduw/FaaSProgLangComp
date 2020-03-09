@@ -1,7 +1,0 @@
-2020-03-08 08:26:34.853788 - Python Partest Version 0.5
-Setting up test: runsperthread=1 threads=1 totalruns=1 payload=[{'bucketname': 'project.bucket.tcss562.sps' 'key': '100000_Sales_Records.csv' 'dbEndpoint': 'admin1.cluster-cftyxgwyrild.us-east-1.rds.amazonaws.com'}]
-
-Raw results of each run:
-1_run_id,2_thread_id,bucketname,containerID,contextSwitches,contextSwitchesDelta,cpuIdle,cpuIdleDelta,cpuIowait,cpuIowaitDelta,cpuIrq,cpuIrqDelta,cpuKrn,cpuKrnDelta,cpuModel,cpuNice,cpuNiceDelta,cpuSoftIrq,cpuSoftIrqDelta,cpuType,cpuUsr,cpuUsrDelta,endTime,frameworkRuntime,frameworkRuntimeDeltas,freeMemory,functionMemory,functionName,functionRegion,key,lang,latency,linuxVersion,newcontainer,pageFaults,pageFaultsDelta,payload,platform,roundTripTime,runtime,runtimeOverlap,startTime,totalMemory,userRuntime,uuid,version,vmID,vmcpusteal,vmcpustealDelta,vmuptime,zAll
-0,0,project.bucket.tcss562.sps,2020/03/08/[$LATEST]0b38e6f51d99469e8be4dba6758f5d77,133600,2707,1743708,214,5,0,0,0,920,11,62,0,0,251,1,Intel(R) Xeon(R) Processor @ 2.50GHz - Model 62,6468,127,1583655994740,26,15,3051896,3008,ServiceOnePython,us-east-1,100000_Sales_Records.csv,python,469.35,#1 SMP Tue Aug 20 23:10:42 UTC 2019,0,4221250,53754,{"bucketname": "project.bucket.tcss562.sps"; "key": "100000_Sales_Records.csv"; "dbEndpoint": "admin1.cluster-cftyxgwyrild.us-east-1.rds.amazonaws.com"},AWS Lambda,2323.35,1854,0,1583655992886,3230668,1813,2268d2b4-e3ce-4498-95b7-c91ff79b3182,0.5,f0i23n,80,0,1583647234,Final Results:
-Successful Runs: 1
