@@ -12,7 +12,6 @@ files="100recordExperiment 1000recordExperiment 5000recordExperiment
     10000recordExperiment 50000recordExperiment 100000recordExperiment
     500000recordExperiment 1000000recordExperiment 1500000recordExperiment"
 
-args="--runs 1 --threads 1 --warmupBuffer 0 --combineSheets 0 --sleepTime 0 --openCSV 0"
 
 sub_results_folder="experiment2_results"
 if [ -d "./$sub_results_folder" ]
@@ -37,6 +36,8 @@ do
     mkdir ./$sub_results_folder/$test_size/$lang
     for con in 1 5 10 15 20 25 30 35 40 45 50 # Current limitation is 50 instances, should be 100 instances
     do
+        args="--runs $con --threads $con --warmupBuffer 0 --combineSheets 0 --sleepTime 0 --openCSV 0"
+        
         mkdir ./$sub_results_folder/$test_size/$lang/concurrency_$con
 
         # Generate payloads
