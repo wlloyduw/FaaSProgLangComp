@@ -6,7 +6,6 @@
 .DS_Store
 test.sh
 data_analysis.sh
-experiment2_configs
-#experiment2_results
+experiment2_results
 experiment2_results_analysis
-
+experiment2_results.zip
