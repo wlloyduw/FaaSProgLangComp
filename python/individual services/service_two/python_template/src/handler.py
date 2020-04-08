@@ -24,20 +24,25 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__))))
 #
 def yourFunction(request, context):
     
-    dbEndPoint = os.getenv('databaseEndpoint')
-    if 'dbEndPoint' in request:
-        dbEndPoint = request['dbEndPoint']
+    dbEndpoint = os.getenv('databaseEndpoint')
+    if 'dbEndpoint' in request:
+        dbEndpoint = request['dbEndpoint']
     
     dbName = os.getenv('databaseName')
     if 'dbName' in request:
         dbName = request['dbName']
     
-    # Import the module and collect data
+    key = str(request['key'])
+    bucketname = str(request['bucketname'])
+    tablename = str(request['tablename'])
+    batchSize = request['batchSize']
+    
+    # import the module and collect data
     inspector = Inspector()
     inspector.inspectAll()
-    inspector.addAttribute("endpoint", dbEndPoint)
-    bucketname = str(request['bucketname'])
-    key = str(request['key'])
+    inspector.addAttribute("endpoint", dbEndpoint)
+    inspector.addAttribute("bucketname", bucketname)
+    inspector.addAttribute("key", key)
 
     s3 = boto3.client('s3')
     csvfile = s3.get_object(Bucket=bucketname, Key=key)
@@ -48,13 +53,7 @@ def yourFunction(request, context):
         i += 1
 
     content = read_csv(csvcontent, inspector)
-    write_output(content, request["batchSize"], request["tablename"], dbEndPoint, dbName, inspector)
-
-    # Add custom message and finish the function
-    if ('key' in request):
-        inspector.addAttribute("bucketname", "bucketname " + str(request['bucketname']) + "!")
-        inspector.addAttribute("key", str(request['key']))
-        inspector.addAttribute("test val", csvcontent[0])
+    write_output(content, batchSize, tablename, dbEndpoint, dbName, inspector)
 
     inspector.inspectAllDeltas()
     return inspector.finish()

@@ -98,11 +98,11 @@ public class ServiceTwoSQL implements RequestHandler<Request, HashMap<String, Ob
             String username = System.getenv("username");
             String password = System.getenv("password");
             //String databaseName = System.getenv("dbName");
-            //String dbEndPoint = System.getEnv("dbEndPoint");
+            //String dbEndpoint = System.getEnv("dbEndpoint");
             String databaseName = request.getDbName();
-            String dbEndPoint = request.getDbEndPoint();
+            String dbEndpoint = request.getDbEndpoint();
             
-            String url = "jdbc:mysql://" + dbEndPoint + ":3306/" + databaseName + "?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true";
+            String url = "jdbc:mysql://" + dbEndpoint + ":3306/" + databaseName + "?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true";
 
 
             List<String[]> records = readCsv(objectData);

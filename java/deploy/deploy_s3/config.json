@@ -14,10 +14,10 @@
 		"bucketname": "project.fall19.tcss562.vmp",
 		"key": "edited_100000_Sales_Records.csv",
 		"tablename" : "mytable_100000",
-		"batchsize" :1000,
-		"stressSize" : 10,
+		"batchSize" :1000,
+		"stressTestLoops" : 10,
 		"dbName" : "DB_TCSS562",
-		"dbEndPoint" : "java.cluster-ctutcfcxozkc.us-east-1.rds.amazonaws.com"
+		"dbEndpoint" : "java.cluster-ctutcfcxozkc.us-east-1.rds.amazonaws.com"
 	    	
 	}
 }

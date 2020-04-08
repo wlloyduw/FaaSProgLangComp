@@ -1,0 +1,24 @@
+{
+	"README": "See ./deploy/README.md for help!",
+
+	"functionName": "ServiceTwoJava",
+
+	"lambdaHandler": "lambda.ServiceTwoSQL::handleRequest",
+	"lambdaRoleARN": "arn:aws:iam::857205555574:role/lambda_basic_execution",
+	"lambdaSubnets": "subnet-1c2a7d66,subnet-0a514862,subnet-1b6ed157",
+	"lambdaSecurityGroups": "sg-12ae6d70",
+
+
+	"test": {
+
+		"bucketname": "testbucketohiodap",
+		"key": "562sales_100000_new.csv",
+		"tablename" : "mytable_1000000",
+		"batchsize" :1000,
+		"stressSize" : 10,
+		"dbName" : "someDbName",
+		"dbEndPoint" : "SomeDbEndpoint"
+	    	
+	}
+}
+

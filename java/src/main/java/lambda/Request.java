@@ -14,13 +14,13 @@ import java.util.HashMap;
 public class Request {
     HashMap<String, String[]> filterBy;
     HashMap<String, String[]> aggregateBy;
-    int batchsize;
+    int batchSize;
     String bucketname;
     String key;
     String tablename;
     String dbName;
-    String dbEndPoint;
-    int stressSize;
+    String dbEndpoint;
+    int stressTestLoops;
     String clusterName;
 
     public String getBucketName() {
@@ -62,18 +62,18 @@ public class Request {
     }
 
     public int getBatchSize() {
-        return this.batchsize;
+        return this.batchSize;
     }
 	
-    public void setBatchsize(int theBatchsize) {
-        this.batchsize = theBatchsize;
+    public void setBatchSize(int theBatchSize) {
+        this.batchSize = theBatchSize;
     }
     
-    public int getStressSize() {
-            return this.stressSize;
+    public int getStressTestLoops() {
+            return this.stressTestLoops;
     }
-    public void setStressSize(int theStressSize) {
-            this.stressSize = theStressSize;
+    public void setStressTestLoops(int theStressTestLoops) {
+            this.stressTestLoops = theStressTestLoops;
     }
 
     public String getDbName() {
@@ -84,11 +84,11 @@ public class Request {
             this.dbName = theDbName;
     }
 
-    public String getDbEndPoint() {
-        return this.dbEndPoint;
+    public String getDbEndpoint() {
+        return this.dbEndpoint;
     }
-    public void setDbEndPoint(String theDbEndPoint) {
-        this.dbEndPoint = theDbEndPoint;
+    public void setDbEndpoint(String theDbEndpoint) {
+        this.dbEndpoint = theDbEndpoint;
     }
     public HashMap<String, String[]> getFilterBy() {
             return this.filterBy;
@@ -114,16 +114,16 @@ public class Request {
 
 
 	//constructor
-    public Request(HashMap<String, String[]> filterBy, HashMap<String, String[]> aggregateBy, String key, String bucketname, String tablename, int batchsize, int stressSize, String dbName, String dbEndPoint, String clusterName) {
+    public Request(HashMap<String, String[]> filterBy, HashMap<String, String[]> aggregateBy, String key, String bucketname, String tablename, int batchSize, int stressTestLoops, String dbName, String dbEndpoint, String clusterName) {
         this.setFilterBy(filterBy);
         this.setAggregateBy(aggregateBy);
         this.setBucketname(bucketname);
         this.setKey(key);
         this.setTablename(tablename);
-    	this.setBatchsize(batchsize);
-        this.setStressSize(stressSize);
+    	this.setBatchSize(batchSize);
+        this.setStressTestLoops(stressTestLoops);
         this.setDbName(dbName);
-        this.setDbEndPoint(dbEndPoint);
+        this.setDbEndpoint(dbEndpoint);
         this.setClusterName(clusterName);
     }
 
