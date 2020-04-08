@@ -3,7 +3,7 @@
   "memorySettings": [],
   "payloads": [
     {
-      "bucketname": "<bucket>",
+      "bucketname": "project.fall19.tcss562.vmp",
       "key": "edited_1000_Sales_Records.csv",
       "tablename": "SalesData",
       "batchSize": "1000",

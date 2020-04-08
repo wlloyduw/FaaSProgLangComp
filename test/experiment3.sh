@@ -3,23 +3,59 @@
 # FaaS Programming Languages Comparison Experiment 3
 # @author Robert Cordingly
 
+# Remove folders: find . -name \*.json -exec mv {} . \;
+
 args="--runs 1 --threads 1 --warmupBuffer 0 --combineSheets 0 --sleepTime 0 --openCSV 0"
 
-subFolder="experiment3_results"
+dataSize=100
+bucket="project.fall19.tcss562.vmp"
+endpoint="python.cluster-ctutcfcxozkc.us-east-1.rds.amazonaws.com"
+name="DB_TCSS562"
+
+subFolder="experiment3_results_rerunJava"
 mkdir ./$subFolder
 
-for file in 100recordExperiment 1500000recordExperiment
+for lang in Python Java Go
 do
-    mkdir ./$subFolder/$file
-    for lang in Python Java Go
+    aws lambda update-function-configuration --function-name ServiceOne$lang --memory-size 3008
+    aws lambda update-function-configuration --function-name ServiceTwo$lang --memory-size 3008
+    aws lambda update-function-configuration --function-name ServiceThree$lang --memory-size 3008
+done
+
+for dataSize in 100
+do
+
+    payload1="[{\"bucketname\":\"$bucket\",\"key\":\"${dataSize}_Sales_Records.csv\"}]"
+    payload2="[{\"bucketname\":\"$bucket\",\"key\":\"edited_${dataSize}_Sales_Records.csv\",\"tablename\":\"SalesData\",\"batchSize\": 1000,\"dbEndpoint\":\"$endpoint\",\"dbName\":\"$name\"}]"
+    payload3="[{\"bucketname\":\"$bucket\",\"key\":\"QueryResults.csv\",\"tablename\":\"SalesData\",\"stressTestLoops\": 1,\"dbEndpoint\":\"$endpoint\",\"dbName\":\"$name\"}]"
+
+    mkdir ./$subFolder/WARMUP
+    mkdir ./$subFolder/COLD
+    mkdir ./$subFolder/WARM
+
+    for i in 1 2 3 4 5 6
     do
-        mkdir ./$subFolder/$file/$lang
-        for i in 1 2 3 4 5 6 7 8 9 10 10
+        mkdir ./$subFolder/WARMUP/Java
+        mkdir ./$subFolder/COLD/Java
+        mkdir ./$subFolder/WARM/Java
+
+        ./faas_runner.py -o ./$subFolder/WARMUP/Java --function ServiceOneJavaWAKEUP $args --payloads $payload1
+        ./faas_runner.py -o ./$subFolder/WARMUP/Java --function ServiceTwoJavaWAKEUP $args --payloads $payload2
+        ./faas_runner.py -o ./$subFolder/WARMUP/Java --function ServiceThreeJavaWAKEUP $args --payloads $payload3
+
+        for lang in Java
         do
-            echo "----- Running iteration $i of $file in $lang -------"
-            ./faas_runner.py -e ./experiment_s1/$file.json -o ./$subFolder/$file/$lang --function ServiceOne$lang $args
-            ./faas_runner.py -e ./experiment_s2/$file.json -o ./$subFolder/$file/$lang --function ServiceTwo$lang $args
-            ./faas_runner.py -e ./experiment_s3/$file.json -o ./$subFolder/$file/$lang --function ServiceThree$lang $args
+            mkdir ./$subFolder/COLD/$lang
+            mkdir ./$subFolder/WARM/$lang
+
+            echo "----- Running iteration $i of results$dataSize in $lang -------"
+            ./faas_runner.py -o ./$subFolder/COLD/$lang --function ServiceOne$lang $args --payloads $payload1
+            ./faas_runner.py -o ./$subFolder/COLD/$lang --function ServiceTwo$lang $args --payloads $payload2
+            ./faas_runner.py -o ./$subFolder/COLD/$lang --function ServiceThree$lang $args --payloads $payload3
+
+            ./faas_runner.py -o ./$subFolder/WARM/$lang --function ServiceOne$lang $args --payloads $payload1
+            ./faas_runner.py -o ./$subFolder/WARM/$lang --function ServiceTwo$lang $args --payloads $payload2
+            ./faas_runner.py -o ./$subFolder/WARM/$lang --function ServiceThree$lang $args --payloads $payload3
 
         done
 

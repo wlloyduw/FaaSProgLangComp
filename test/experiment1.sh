@@ -5,21 +5,54 @@
 
 args="--runs 1 --threads 1 --warmupBuffer 0 --combineSheets 0 --sleepTime 0 --openCSV 0"
 
+dataSize=100
+bucket="project.fall19.tcss562.vmp"
+endpoint="python.cluster-ctutcfcxozkc.us-east-1.rds.amazonaws.com"
+name="DB_TCSS562"
+
 subFolder="experiment1_results"
 mkdir ./$subFolder
 
-for file in 100recordExperiment 1000recordExperiment 5000recordExperiment 10000recordExperiment 50000recordExperiment 100000recordExperiment 500000recordExperiment 1000000recordExperiment 1500000recordExperiment
+for lang in Python Java Go
 do
-    mkdir ./$subFolder/$file
-    for lang in Python Java Go
+    aws lambda update-function-configuration --function-name ServiceOne$lang --memory-size 3008
+    aws lambda update-function-configuration --function-name ServiceTwo$lang --memory-size 3008
+    aws lambda update-function-configuration --function-name ServiceThree$lang --memory-size 3008
+done
+
+for dataSize in 250000 750000 875000
+do
+    mkdir ./$subFolder/results$dataSize
+    for i in 1 2 3 4 5 6 7 8 9 10 11
     do
-        mkdir ./$subFolder/$file/$lang
-        for i in 1 2 3 4 5 6 7 8 9 10 11
+        for lang in Python Go
         do
-            echo "----- Running iteration $i of $file in $lang -------"
-            ./faas_runner.py -e ./experiment_s1/$file.json -o ./$subFolder/$file/$lang --function ServiceOne$lang $args
-            ./faas_runner.py -e ./experiment_s2/$file.json -o ./$subFolder/$file/$lang --function ServiceTwo$lang $args
-            ./faas_runner.py -e ./experiment_s3/$file.json -o ./$subFolder/$file/$lang --function ServiceThree$lang $args
+            mkdir ./$subFolder/results$dataSize/$lang
+
+            payload1="[{\"bucketname\":\"$bucket\",\"key\":\"${dataSize}_Sales_Records.csv\"}]"
+            payload2="[{\"bucketname\":\"$bucket\",\"key\":\"edited_${dataSize}_Sales_Records.csv\",\"tablename\":\"SalesData\",\"batchSize\": 1000,\"dbEndpoint\":\"$endpoint\",\"dbName\":\"$name\"}]"
+            payload3="[{\"bucketname\":\"$bucket\",\"key\":\"QueryResults.csv\",\"tablename\":\"SalesData\",\"stressTestLoops\": 1,\"dbEndpoint\":\"$endpoint\",\"dbName\":\"$name\"}]"
+
+            echo
+            echo
+            echo "----- Running iteration $i of results$dataSize in $lang -------"
+            echo
+            echo
+
+            echo
+            echo "Service 1:"
+            echo
+            ./faas_runner.py -o ./$subFolder/results$dataSize/$lang --function ServiceOne$lang $args --payloads $payload1
+
+            echo
+            echo "Service 2:"
+            echo
+            ./faas_runner.py -o ./$subFolder/results$dataSize/$lang --function ServiceTwo$lang $args --payloads $payload2
+
+            echo
+            echo "Service 3:"
+            echo
+            ./faas_runner.py -o ./$subFolder/results$dataSize/$lang --function ServiceThree$lang $args --payloads $payload3
         done
     done
 done

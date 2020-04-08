@@ -3,7 +3,7 @@
   "memorySettings": [],
   "payloads": [
     {
-      "bucketname": "<bucket>",
+      "bucketname": "project.fall19.tcss562.vmp",
       "key": "QueryResults1000000.csv",
       "tablename": "SalesData",
       "stressTestLoops": "10",

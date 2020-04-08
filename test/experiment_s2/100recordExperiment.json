@@ -3,12 +3,12 @@
   "memorySettings": [],
   "payloads": [
     {
-      "bucketname": "<bucket>",
+      "bucketname": "project.fall19.tcss562.vmp",
       "key": "edited_100_Sales_Records.csv",
       "tablename": "SalesData",
-      "batchSize": "1000",
-      "dbEndpoint": "",
-		  "dbName": ""
+      "batchSize": 1000, 
+      "dbEndpoint": "python.cluster-ctutcfcxozkc.us-east-1.rds.amazonaws.com",
+		  "dbName": "DB_TCSS562"
     }
   ],
 

@@ -383,7 +383,7 @@ def write_file(baseFileName, data, openFile, runList = []):
             if not os.path.exists(baseFileName):
                 os.makedirs(baseFileName)
                 for i, run in enumerate(runList):
-                    file = open(baseFileName + '/run' + str(i) + '.json', 'w') 
+                    file = open(baseFileName + '/run' + str(i) + '-' + str(int(time.time())) + '.json', 'w') 
                     file.write(json.dumps(run)) 
                     file.close() 
 
