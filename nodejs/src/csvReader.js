@@ -7,6 +7,18 @@ const stream = require('stream');
 class CsvReader {
 
     /**
+     * @type {function(string):void}
+     */
+    #logger;
+
+    /**
+     * @param {function(string):void} logger
+     */
+    constructor(logger) {
+        this.#logger = logger;
+    }
+
+    /**
      * Reads the contents of a buffer line by line.
      * @param {Buffer} buffer
      * @return {Promise<Array<Array<String>>>}
@@ -26,6 +38,8 @@ class CsvReader {
             reader.on('line', (line) => {
                 // Add ",0,0" to the end of the line read from the stream.
                 line += ',0,0';
+                // Log the line read from the input.
+                this.#logger.call(null, line);
                 // Split the line by commas, and push the result to the records array.
                 records.push(line.split(','));
             });

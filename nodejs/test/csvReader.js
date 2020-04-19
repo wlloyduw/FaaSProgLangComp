@@ -3,8 +3,15 @@ const expect = require("chai").expect;
 
 describe("CsvReader", () => {
 
+    let reader;
+    let logs;
+
+    beforeEach(() => {
+        logs = [];
+        reader = new CsvReader(logs.push.bind(logs));
+    });
+
     it("should read a buffer, line-by-line", async () => {
-        let reader = new CsvReader();
         let buffer = Buffer.from("Hello\nWorld,Friend");
         let records = await reader.read(buffer);
 
@@ -23,6 +30,15 @@ describe("CsvReader", () => {
         expect(records[1][1]).to.equal("Friend");
         expect(records[1][2]).to.equal("0");
         expect(records[1][3]).to.equal("0");
+    });
+
+    it("should log each entry", async () => {
+        let buffer = Buffer.from("Hello\nWorld,Friend");
+        await reader.read(buffer);
+
+        expect(logs).to.have.lengthOf(2);
+        expect(logs[0]).to.equal("Hello,0,0");
+        expect(logs[1]).to.equal("World,Friend,0,0");
     });
 
 });
