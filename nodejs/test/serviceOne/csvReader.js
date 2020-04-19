@@ -1,4 +1,4 @@
-const CsvReader = require("../src/csvReader");
+const CsvReader = require("../../src/serviceOne/csvReader");
 const expect = require("chai").expect;
 
 describe("CsvReader", () => {
