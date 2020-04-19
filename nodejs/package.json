@@ -3,16 +3,16 @@
   "version": "1.0.0",
   "description": "SAAF is a programming framework that allows for tracing FaaS function server infrastructure for code deployments. This framework includes functions to enable tracing code containers and hosts (VMs) created by FaaS platform providers for hosting FaaS functions. This information can help verify the state of infrastructure (COLD vs. WARM) to understand performance results, and help preserve infrastructure for better FaaS performance.",
   "main": "src/index.js",
-  "directories": {
-    "test": "test"
+  "dependencies": {
+    "aws-sdk": "^2.658.0"
   },
-  "dependencies": {},
   "devDependencies": {
     "chai": "^4.2.0",
-    "mocha": "^7.1.1"
+    "mocha": "^7.1.1",
+    "sinon": "^9.0.2"
   },
   "scripts": {
-    "test": "node_modules/mocha/bin/mocha"
+    "test": "node_modules/mocha/bin/mocha test/**/*.js"
   },
   "author": "",
   "license": "ISC"

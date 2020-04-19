@@ -15,13 +15,13 @@ class CsvWriter {
     /**
      * @type {function(string):void}
      */
-    #logger;
+    _logger;
 
     /**
      * @param {function(string):void} logger
      */
     constructor(logger) {
-        this.#logger = logger;
+        this._logger = logger;
     }
 
     /**
@@ -79,8 +79,8 @@ class CsvWriter {
                 record[CsvColumns.GROSS_MARGIN] = String(parseFloat(record[CsvColumns.PROFIT]) / parseFloat(record[CsvColumns.REVENUE]));
 
                 // Log the two calculated values.
-                this.#logger.call(null, record[CsvColumns.ORDER_PROCESSING_TIME]);
-                this.#logger.call(null, record[CsvColumns.GROSS_MARGIN]);
+                this._logger.call(null, record[CsvColumns.ORDER_PROCESSING_TIME]);
+                this._logger.call(null, record[CsvColumns.GROSS_MARGIN]);
 
                 // Add the modified record to the output.
                 result.push(record.join(","));

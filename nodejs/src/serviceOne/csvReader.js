@@ -9,13 +9,13 @@ class CsvReader {
     /**
      * @type {function(string):void}
      */
-    #logger;
+    _logger;
 
     /**
      * @param {function(string):void} logger
      */
     constructor(logger) {
-        this.#logger = logger;
+        this._logger = logger;
     }
 
     /**
@@ -39,7 +39,7 @@ class CsvReader {
                 // Add ",0,0" to the end of the line read from the stream.
                 line += ',0,0';
                 // Log the line read from the input.
-                this.#logger.call(null, line);
+                this._logger.call(null, line);
                 // Split the line by commas, and push the result to the records array.
                 records.push(line.split(','));
             });

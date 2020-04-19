@@ -1,36 +1,7 @@
 const CsvWriter = require("../../src/serviceOne/csvWriter");
 const CsvColumns = require("../../src/serviceOne/csvColumns");
+const CsvUtils = require("../../testing/csvUtils");
 const expect = require("chai").expect;
-
-/**
- * Returns an array with 16 empty strings.
- *
- * @return {Array<String>}
- */
-function emptyRecord() {
-    let record = [];
-    for (let i = 0; i < 16; i++) {
-        record.push("");
-    }
-    return record;
-}
-
-function recordWith(...values) {
-    let record = emptyRecord();
-    for (let i = 0; i < values.length; i += 2) {
-        record[values[i]] = values[i + 1]
-    }
-    return record;
-}
-
-/**
- *
- * @param {String} string
- * @return {Array<Array<String>>}
- */
-function toRecords(string) {
-    return string.split("\n").map(row => row.split(","));
-}
 
 describe("CsvWriter", () => {
 
@@ -50,7 +21,7 @@ describe("CsvWriter", () => {
     });
 
     it("Should add the appropriate headers to the first line", () => {
-        let records = toRecords(csvWriter.write([(emptyRecord())]));
+        let records = CsvUtils.toRecords(csvWriter.write([(CsvUtils.emptyRecord())]));
 
         expect(records).to.have.lengthOf(1);
         expect(records[0]).to.have.lengthOf(16);
@@ -59,26 +30,26 @@ describe("CsvWriter", () => {
     });
 
     it("should only process unique identifiers", () => {
-        let records = toRecords(csvWriter.write([
-            emptyRecord(),
-            recordWith(CsvColumns.UNIQUE_ID, 1),
-            recordWith(CsvColumns.UNIQUE_ID, 1),
-            recordWith(CsvColumns.UNIQUE_ID, 2),
-            recordWith(CsvColumns.UNIQUE_ID, 2),
-            recordWith(CsvColumns.UNIQUE_ID, 3),
+        let records = CsvUtils.toRecords(csvWriter.write([
+            CsvUtils.emptyRecord(),
+            CsvUtils.recordWith(CsvColumns.UNIQUE_ID, 1),
+            CsvUtils.recordWith(CsvColumns.UNIQUE_ID, 1),
+            CsvUtils.recordWith(CsvColumns.UNIQUE_ID, 2),
+            CsvUtils.recordWith(CsvColumns.UNIQUE_ID, 2),
+            CsvUtils.recordWith(CsvColumns.UNIQUE_ID, 3),
         ]));
 
         expect(records).to.have.lengthOf(4);
     });
 
     it("should rewrite the priority when possible", () => {
-        let records = toRecords(csvWriter.write([
-            emptyRecord(),
-            recordWith(CsvColumns.UNIQUE_ID, 1, CsvColumns.PRIORITY, "H"),
-            recordWith(CsvColumns.UNIQUE_ID, 2, CsvColumns.PRIORITY, "M"),
-            recordWith(CsvColumns.UNIQUE_ID, 3, CsvColumns.PRIORITY, "L"),
-            recordWith(CsvColumns.UNIQUE_ID, 4, CsvColumns.PRIORITY, "C"),
-            recordWith(CsvColumns.UNIQUE_ID, 5, CsvColumns.PRIORITY, "X"),
+        let records = CsvUtils.toRecords(csvWriter.write([
+            CsvUtils.emptyRecord(),
+            CsvUtils.recordWith(CsvColumns.UNIQUE_ID, 1, CsvColumns.PRIORITY, "H"),
+            CsvUtils.recordWith(CsvColumns.UNIQUE_ID, 2, CsvColumns.PRIORITY, "M"),
+            CsvUtils.recordWith(CsvColumns.UNIQUE_ID, 3, CsvColumns.PRIORITY, "L"),
+            CsvUtils.recordWith(CsvColumns.UNIQUE_ID, 4, CsvColumns.PRIORITY, "C"),
+            CsvUtils.recordWith(CsvColumns.UNIQUE_ID, 5, CsvColumns.PRIORITY, "X"),
         ]));
 
         expect(records).to.have.lengthOf(6);
@@ -90,19 +61,19 @@ describe("CsvWriter", () => {
     });
 
     it("should calculate order processing time", () => {
-        let records = toRecords(csvWriter.write([
+        let records = CsvUtils.toRecords(csvWriter.write([
             // Header row.
-            emptyRecord(),
+            CsvUtils.emptyRecord(),
             // Same date.
-            recordWith(CsvColumns.UNIQUE_ID, 1, CsvColumns.DATE_STARTED, "01/01/2010", CsvColumns.DATE_FINISHED, "01/01/2010"),
+            CsvUtils.recordWith(CsvColumns.UNIQUE_ID, 1, CsvColumns.DATE_STARTED, "01/01/2010", CsvColumns.DATE_FINISHED, "01/01/2010"),
             // Ten years apart.
-            recordWith(CsvColumns.UNIQUE_ID, 2, CsvColumns.DATE_STARTED, "01/01/2010", CsvColumns.DATE_FINISHED, "01/01/2020"),
+            CsvUtils.recordWith(CsvColumns.UNIQUE_ID, 2, CsvColumns.DATE_STARTED, "01/01/2010", CsvColumns.DATE_FINISHED, "01/01/2020"),
             // One month apart.
-            recordWith(CsvColumns.UNIQUE_ID, 3, CsvColumns.DATE_STARTED, "01/01/2010", CsvColumns.DATE_FINISHED, "02/01/2010"),
+            CsvUtils.recordWith(CsvColumns.UNIQUE_ID, 3, CsvColumns.DATE_STARTED, "01/01/2010", CsvColumns.DATE_FINISHED, "02/01/2010"),
             // One day apart.
-            recordWith(CsvColumns.UNIQUE_ID, 4, CsvColumns.DATE_STARTED, "01/01/2010", CsvColumns.DATE_FINISHED, "01/02/2010"),
+            CsvUtils.recordWith(CsvColumns.UNIQUE_ID, 4, CsvColumns.DATE_STARTED, "01/01/2010", CsvColumns.DATE_FINISHED, "01/02/2010"),
             // One year, two month, and three days apart.
-            recordWith(CsvColumns.UNIQUE_ID, 5, CsvColumns.DATE_STARTED, "01/01/2010", CsvColumns.DATE_FINISHED, "03/04/2011"),
+            CsvUtils.recordWith(CsvColumns.UNIQUE_ID, 5, CsvColumns.DATE_STARTED, "01/01/2010", CsvColumns.DATE_FINISHED, "03/04/2011"),
         ]));
 
         expect(records).to.have.lengthOf(6);
@@ -124,9 +95,9 @@ describe("CsvWriter", () => {
     });
 
     it("should calculate the gross margin", () => {
-        let records = toRecords(csvWriter.write([
-            emptyRecord(),
-            recordWith(CsvColumns.PROFIT, "456", CsvColumns.REVENUE, "1000")
+        let records = CsvUtils.toRecords(csvWriter.write([
+            CsvUtils.emptyRecord(),
+            CsvUtils.recordWith(CsvColumns.PROFIT, "456", CsvColumns.REVENUE, "1000")
         ]));
 
         expect(records).to.have.lengthOf(2);
@@ -135,19 +106,19 @@ describe("CsvWriter", () => {
 
 
     it("should log the processing time and gross margin", () => {
-        toRecords(csvWriter.write([
+        CsvUtils.toRecords(csvWriter.write([
             // Header row.
-            emptyRecord(),
+            CsvUtils.emptyRecord(),
             // Same date.
-            recordWith(CsvColumns.UNIQUE_ID, 1, CsvColumns.DATE_STARTED, "01/01/2010", CsvColumns.DATE_FINISHED, "01/01/2010", CsvColumns.PROFIT, "123", CsvColumns.REVENUE, "1000"),
+            CsvUtils.recordWith(CsvColumns.UNIQUE_ID, 1, CsvColumns.DATE_STARTED, "01/01/2010", CsvColumns.DATE_FINISHED, "01/01/2010", CsvColumns.PROFIT, "123", CsvColumns.REVENUE, "1000"),
             // Ten years apart.
-            recordWith(CsvColumns.UNIQUE_ID, 2, CsvColumns.DATE_STARTED, "01/01/2010", CsvColumns.DATE_FINISHED, "01/01/2020", CsvColumns.PROFIT, "234", CsvColumns.REVENUE, "1000"),
+            CsvUtils.recordWith(CsvColumns.UNIQUE_ID, 2, CsvColumns.DATE_STARTED, "01/01/2010", CsvColumns.DATE_FINISHED, "01/01/2020", CsvColumns.PROFIT, "234", CsvColumns.REVENUE, "1000"),
             // One month apart.
-            recordWith(CsvColumns.UNIQUE_ID, 3, CsvColumns.DATE_STARTED, "01/01/2010", CsvColumns.DATE_FINISHED, "02/01/2010", CsvColumns.PROFIT, "345", CsvColumns.REVENUE, "1000"),
+            CsvUtils.recordWith(CsvColumns.UNIQUE_ID, 3, CsvColumns.DATE_STARTED, "01/01/2010", CsvColumns.DATE_FINISHED, "02/01/2010", CsvColumns.PROFIT, "345", CsvColumns.REVENUE, "1000"),
             // One day apart.
-            recordWith(CsvColumns.UNIQUE_ID, 4, CsvColumns.DATE_STARTED, "01/01/2010", CsvColumns.DATE_FINISHED, "01/02/2010", CsvColumns.PROFIT, "456", CsvColumns.REVENUE, "1000"),
+            CsvUtils.recordWith(CsvColumns.UNIQUE_ID, 4, CsvColumns.DATE_STARTED, "01/01/2010", CsvColumns.DATE_FINISHED, "01/02/2010", CsvColumns.PROFIT, "456", CsvColumns.REVENUE, "1000"),
             // One year, two month, and three days apart.
-            recordWith(CsvColumns.UNIQUE_ID, 5, CsvColumns.DATE_STARTED, "01/01/2010", CsvColumns.DATE_FINISHED, "03/04/2011", CsvColumns.PROFIT, "567", CsvColumns.REVENUE, "1000"),
+            CsvUtils.recordWith(CsvColumns.UNIQUE_ID, 5, CsvColumns.DATE_STARTED, "01/01/2010", CsvColumns.DATE_FINISHED, "03/04/2011", CsvColumns.PROFIT, "567", CsvColumns.REVENUE, "1000"),
         ]));
 
         expect(logs).to.have.lengthOf(10);
