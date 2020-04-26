@@ -11,6 +11,4 @@ let s3 = new AWS.S3({apiVersion: '2006-03-01'});
  */
 let serviceOne = new ServiceOne(console.log.bind(console), s3, Date.now, inspector => inspector.getAttribute("uuid"));
 
-module.exports = async (request, context) => {
-    return serviceOne.handleRequest(request, context);
-};
+module.exports = serviceOne.asLambda();
