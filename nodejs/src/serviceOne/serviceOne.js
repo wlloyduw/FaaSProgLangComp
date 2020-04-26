@@ -1,6 +1,6 @@
 const Inspector = require('../Inspector');
 const RequestHandler = require("../requestHandler");
-const CsvReader = require('./csvReader');
+const CsvReader = require('../common/csvReader');
 const CsvWriter = require('./csvWriter');
 
 /**

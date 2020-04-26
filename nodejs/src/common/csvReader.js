@@ -36,8 +36,6 @@ class CsvReader {
             let records = [];
             // For every line read from the stream, do this.
             reader.on('line', (line) => {
-                // Add ",0,0" to the end of the line read from the stream.
-                line += ',0,0';
                 // Log the line read from the input.
                 this._logger.call(null, line);
                 // Split the line by commas, and push the result to the records array.
