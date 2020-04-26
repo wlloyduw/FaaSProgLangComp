@@ -19,4 +19,5 @@ echo "Creating archive ..."
 zip -r package.zip ./*
 mv package.zip "${pp}"
 cd "${pp}" || exit 1
+du -sh package.zip
 echo "Done."
