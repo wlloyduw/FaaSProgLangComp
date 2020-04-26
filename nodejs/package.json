@@ -5,6 +5,7 @@
   "main": "src/index.js",
   "dependencies": {
     "aws-sdk": "^2.658.0",
+    "promise-mysql": "^4.1.3",
     "uuid": "latest"
   },
   "devDependencies": {

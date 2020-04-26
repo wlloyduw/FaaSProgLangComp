@@ -1,5 +1,5 @@
 const ServiceOne = require('../../src/serviceOne/serviceOne');
-const FakeS3 = require('../../testing/fake-s3');
+const FakeS3 = require('../../testing/fakeS3');
 const expect = require('chai').expect;
 const sinon = require('sinon');
 const CsvUtils = require("../../testing/csvUtils");
@@ -65,7 +65,7 @@ describe("ServiceOne", () => {
         fakeS3.putObject({
             Bucket: 'bucket1',
             Key: 'myCsvFile.csv',
-            Body: Buffer.of(CsvUtils.fromRecords(input))
+            Body: Buffer.from(CsvUtils.fromRecords(input))
         });
 
         sandbox.reset();

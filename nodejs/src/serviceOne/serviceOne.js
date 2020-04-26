@@ -2,11 +2,11 @@ const Inspector = require('../Inspector');
 const RequestHandler = require("../requestHandler");
 const CsvReader = require('../common/csvReader');
 const CsvWriter = require('./csvWriter');
+const LambdaUtils = require("../common/lambdaUtils");
 
 /**
  * @typedef ServiceOneRequest
- * @property {String} bucketName
- * @property {String} key
+ * @implements S3ObjectRequest
  */
 
 /**
@@ -71,7 +71,7 @@ class ServiceOne extends RequestHandler {
     /**
      * @param {ServiceOneRequest} request
      * @param context
-     * @return {Promise<Attributes>}
+     * @return {Promise<Object>}
      */
     async handleRequest(request, context) {
         let inspector = new Inspector();
@@ -81,7 +81,7 @@ class ServiceOne extends RequestHandler {
 
         let body;
         try {
-            body = await this._readRequestedFile(request);
+            body = await LambdaUtils.readObject(this._s3, request);
         } catch (e) {
             this._log("Failed to read requested file");
             inspector.inspectAllDeltas();
