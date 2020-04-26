@@ -4,7 +4,10 @@
 let connections = [];
 
 let objEqualsLeftToRight = (first, second) => {
-    return typeof Object.keys(first).find(key => first[key] !== second[key]) === 'undefined';
+    if (typeof first !== typeof second) {
+        return false;
+    }
+    return typeof Object.keys(first).find(key => typeof second[key] === 'undefined' || first[key] !== second[key]) === 'undefined';
 };
 
 let objEquals = (first, second) => {
@@ -73,7 +76,7 @@ class FakeConnection {
     _queries;
 
     /**
-     * @type Array<RegExp>
+     * @type Array<QueryExpectation>
      */
     _expectations;
 
@@ -88,19 +91,20 @@ class FakeConnection {
 
     /**
      * @param {RegExp} pattern
+     * @param {*} [result]
      */
-    expect(pattern) {
-        this._expectations.push(pattern);
+    expect(pattern, result = null) {
+        this._expectations.push(new QueryExpectation(pattern, result));
     }
 
     query(sql) {
         return new Promise((resolve, reject) => {
             if (this._expectations.length === 0 || !this._expectations[0].test(sql)) {
-                reject(new Error("Unexpected statement"));
+                reject(new Error("Unexpected statement: " + sql));
             } else {
-                this._expectations.splice(0, 1);
+                let [expectation] = this._expectations.splice(0, 1);
                 this._queries.push(sql);
-                resolve(true);
+                resolve(expectation.result());
             }
         });
     }
@@ -124,6 +128,44 @@ class FakeConnection {
                 resolve(true);
             }
         })
+    }
+
+}
+
+class QueryExpectation {
+
+    /**
+     * @type {RegExp}
+     */
+    _expression;
+
+    /**
+     * @type {*}
+     */
+    _result;
+
+    /**
+     * @param {RegExp} expression
+     * @param {*} result
+     */
+    constructor(expression, result) {
+        this._expression = expression;
+        this._result = result;
+    }
+
+    /**
+     * @param {String} query
+     * @returns {boolean}
+     */
+    test(query) {
+        return this._expression.test(query);
+    }
+
+    /**
+     * @return {*}
+     */
+    result() {
+        return this._result;
     }
 
 }

@@ -146,7 +146,7 @@ class ServiceTwo extends RequestHandler {
 
             await connection.end();
         } catch (e) {
-            this._log("Failed to write to the database");
+            this._log("Failed to write to the database: " + (typeof e === 'string' ? e : (e.message + "\n" + e.stack)));
         }
 
         inspector.addAttribute("value", "Finished with reading csv into database");
