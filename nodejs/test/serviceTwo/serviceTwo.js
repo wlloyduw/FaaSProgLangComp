@@ -153,14 +153,14 @@ describe("ServiceTwo", () => {
                 await service.handleRequest(createRequest(), null);
 
                 expect(connection.queries()).to.have.lengthOf(2);
-                expect(connection.queries(1)).to.be.equal('CREATE TABLE myTable ' +
-                    '( Region VARCHAR(40), Country VARCHAR(40), `Item Type` VARCHAR(40),' +
-                    ' `Sales Channel` VARCHAR(40), `Order Priority` VARCHAR(40),' +
-                    ' `Order Date` VARCHAR(40), `Order ID` INT PRIMARY KEY,' +
-                    ' `Ship Date` VARCHAR(40), `Units Sold` INT, `Unit Price` DOUBLE,' +
-                    ' `Unit Cost` DOUBLE, `Total Revenue` DOUBLE, `Total Cost` DOUBLE,' +
-                    ' `Total Profit` DOUBLE, `Order Processing Time` INT,' +
-                    ' `Gross Margin` FLOAT) ENGINE = MyISAM;');
+                expect(connection.queries(1)).to.be.equal('CREATE TABLE myTable' +
+                    ' (`Region` VARCHAR(40),`Country` VARCHAR(40),`Item Type` VARCHAR(40),' +
+                    '`Sales Channel` VARCHAR(40),`Order Priority` VARCHAR(40),' +
+                    '`Order Date` VARCHAR(40),`Order ID` INT PRIMARY KEY,' +
+                    '`Ship Date` VARCHAR(40),`Units Sold` INT,`Unit Price` DOUBLE,' +
+                    '`Unit Cost` DOUBLE,`Total Revenue` DOUBLE,`Total Cost` DOUBLE,' +
+                    '`Total Profit` DOUBLE,`Order Processing Time` INT,' +
+                    '`Gross Margin` FLOAT) ENGINE = MyISAM;');
                 expect(lastLog).to.match(/Unexpected statement: INSERT/);
             });
 
@@ -174,22 +174,22 @@ describe("ServiceTwo", () => {
 
                 expect(connection.queries()).to.have.lengthOf(3);
                 expect(connection.queries(2)).to.be.equal('INSERT INTO myTable ' +
-                    '(Region, Country, `Item Type`, `Sales Channel`, `Order Priority`, ' +
-                    '`Order Date`, `Order ID`, `Ship Date`, `Units Sold`, `Unit Price`, ' +
-                    '`Unit Cost`, `Total Revenue`, `Total Cost`, `Total Profit`, ' +
-                    '`Order Processing Time`, `Gross Margin`) VALUES (A, B, , , , , , , , , , ,  , , ,));' +
-                    'INSERT INTO myTable (Region, Country, `Item Type`, `Sales Channel`, `Order Priority`, ' +
-                    '`Order Date`, `Order ID`, `Ship Date`, `Units Sold`, `Unit Price`, `Unit Cost`, ' +
-                    '`Total Revenue`, `Total Cost`, `Total Profit`, `Order Processing Time`, `Gross Margin`)' +
-                    ' VALUES (C, D, , , , , , , , , , ,  , , ,));' +
-                    'INSERT INTO myTable (Region, Country, `Item Type`, `Sales Channel`, `Order Priority`, ' +
-                    '`Order Date`, `Order ID`, `Ship Date`, `Units Sold`, `Unit Price`, `Unit Cost`, ' +
-                    '`Total Revenue`, `Total Cost`, `Total Profit`, `Order Processing Time`, ' +
-                    '`Gross Margin`) VALUES (E, F, , , , , , , , , , ,  , , ,));' +
-                    'INSERT INTO myTable (Region, Country, `Item Type`, `Sales Channel`, ' +
-                    '`Order Priority`, `Order Date`, `Order ID`, `Ship Date`, `Units Sold`, ' +
-                    '`Unit Price`, `Unit Cost`, `Total Revenue`, `Total Cost`, `Total Profit`, ' +
-                    '`Order Processing Time`, `Gross Margin`) VALUES (G, H, , , , , , , , , , ,  , , ,));');
+                    '(`Region`,`Country`,`Item Type`,`Sales Channel`,`Order Priority`,' +
+                    '`Order Date`,`Order ID`,`Ship Date`,`Units Sold`,`Unit Price`,' +
+                    '`Unit Cost`,`Total Revenue`,`Total Cost`,`Total Profit`,' +
+                    '`Order Processing Time`,`Gross Margin`) VALUES (A,B,,,,,,,,,,,,,,));' +
+                    'INSERT INTO myTable (`Region`,`Country`,`Item Type`,`Sales Channel`,`Order Priority`,' +
+                    '`Order Date`,`Order ID`,`Ship Date`,`Units Sold`,`Unit Price`,`Unit Cost`,' +
+                    '`Total Revenue`,`Total Cost`,`Total Profit`,`Order Processing Time`,`Gross Margin`)' +
+                    ' VALUES (C,D,,,,,,,,,,,,,,));' +
+                    'INSERT INTO myTable (`Region`,`Country`,`Item Type`,`Sales Channel`,`Order Priority`,' +
+                    '`Order Date`,`Order ID`,`Ship Date`,`Units Sold`,`Unit Price`,`Unit Cost`,' +
+                    '`Total Revenue`,`Total Cost`,`Total Profit`,`Order Processing Time`,' +
+                    '`Gross Margin`) VALUES (E,F,,,,,,,,,,,,,,));' +
+                    'INSERT INTO myTable (`Region`,`Country`,`Item Type`,`Sales Channel`,' +
+                    '`Order Priority`,`Order Date`,`Order ID`,`Ship Date`,`Units Sold`,' +
+                    '`Unit Price`,`Unit Cost`,`Total Revenue`,`Total Cost`,`Total Profit`,' +
+                    '`Order Processing Time`,`Gross Margin`) VALUES (G,H,,,,,,,,,,,,,,));');
 
                 expect(lastLog).to.not.match(/Unexpected statement/);
             });
@@ -207,22 +207,22 @@ describe("ServiceTwo", () => {
 
                 expect(connection.queries()).to.have.lengthOf(4);
                 expect(connection.queries(2)).to.be.equal('INSERT INTO myTable ' +
-                    '(Region, Country, `Item Type`, `Sales Channel`, `Order Priority`, ' +
-                    '`Order Date`, `Order ID`, `Ship Date`, `Units Sold`, `Unit Price`, ' +
-                    '`Unit Cost`, `Total Revenue`, `Total Cost`, `Total Profit`, ' +
-                    '`Order Processing Time`, `Gross Margin`) VALUES (A, B, , , , , , , , , , ,  , , ,));' +
-                    'INSERT INTO myTable (Region, Country, `Item Type`, `Sales Channel`, `Order Priority`, ' +
-                    '`Order Date`, `Order ID`, `Ship Date`, `Units Sold`, `Unit Price`, `Unit Cost`, ' +
-                    '`Total Revenue`, `Total Cost`, `Total Profit`, `Order Processing Time`, `Gross Margin`)' +
-                    ' VALUES (C, D, , , , , , , , , , ,  , , ,));' +
-                    'INSERT INTO myTable (Region, Country, `Item Type`, `Sales Channel`, `Order Priority`, ' +
-                    '`Order Date`, `Order ID`, `Ship Date`, `Units Sold`, `Unit Price`, `Unit Cost`, ' +
-                    '`Total Revenue`, `Total Cost`, `Total Profit`, `Order Processing Time`, ' +
-                    '`Gross Margin`) VALUES (E, F, , , , , , , , , , ,  , , ,));');
-                expect(connection.queries(3)).to.be.equal('INSERT INTO myTable (Region, Country, `Item Type`, `Sales Channel`, ' +
-                    '`Order Priority`, `Order Date`, `Order ID`, `Ship Date`, `Units Sold`, ' +
-                    '`Unit Price`, `Unit Cost`, `Total Revenue`, `Total Cost`, `Total Profit`, ' +
-                    '`Order Processing Time`, `Gross Margin`) VALUES (G, H, , , , , , , , , , ,  , , ,));');
+                    '(`Region`,`Country`,`Item Type`,`Sales Channel`,`Order Priority`,' +
+                    '`Order Date`,`Order ID`,`Ship Date`,`Units Sold`,`Unit Price`,' +
+                    '`Unit Cost`,`Total Revenue`,`Total Cost`,`Total Profit`,' +
+                    '`Order Processing Time`,`Gross Margin`) VALUES (A,B,,,,,,,,,,,,,,));' +
+                    'INSERT INTO myTable (`Region`,`Country`,`Item Type`,`Sales Channel`,`Order Priority`,' +
+                    '`Order Date`,`Order ID`,`Ship Date`,`Units Sold`,`Unit Price`,`Unit Cost`,' +
+                    '`Total Revenue`,`Total Cost`,`Total Profit`,`Order Processing Time`,`Gross Margin`)' +
+                    ' VALUES (C,D,,,,,,,,,,,,,,));' +
+                    'INSERT INTO myTable (`Region`,`Country`,`Item Type`,`Sales Channel`,`Order Priority`,' +
+                    '`Order Date`,`Order ID`,`Ship Date`,`Units Sold`,`Unit Price`,`Unit Cost`,' +
+                    '`Total Revenue`,`Total Cost`,`Total Profit`,`Order Processing Time`,' +
+                    '`Gross Margin`) VALUES (E,F,,,,,,,,,,,,,,));');
+                expect(connection.queries(3)).to.be.equal('INSERT INTO myTable (`Region`,`Country`,`Item Type`,`Sales Channel`,' +
+                    '`Order Priority`,`Order Date`,`Order ID`,`Ship Date`,`Units Sold`,' +
+                    '`Unit Price`,`Unit Cost`,`Total Revenue`,`Total Cost`,`Total Profit`,' +
+                    '`Order Processing Time`,`Gross Margin`) VALUES (G,H,,,,,,,,,,,,,,));');
 
                 expect(lastLog).to.not.match(/Unexpected statement/);
 

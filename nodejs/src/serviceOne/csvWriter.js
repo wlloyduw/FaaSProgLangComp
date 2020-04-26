@@ -1,4 +1,4 @@
-const CsvColumns = require('./csvColumns');
+const CsvColumns = require('../common/csvColumns');
 
 /**
  * @typedef DateRecord

@@ -3,7 +3,7 @@ const FakeS3 = require('../../testing/fakeS3');
 const expect = require('chai').expect;
 const sinon = require('sinon');
 const CsvUtils = require("../../testing/csvUtils");
-const CsvColumns = require("../../src/serviceOne/csvColumns");
+const CsvColumns = require("../../src/common/csvColumns");
 
 describe("ServiceOne", () => {
 
