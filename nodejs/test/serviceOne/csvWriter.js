@@ -1,6 +1,6 @@
 const CsvWriter = require("../../src/serviceOne/csvWriter");
 const CsvColumns = require("../../src/common/csvColumns");
-const CsvUtils = require("../../testing/csvUtils");
+const CsvUtils = require("../../src/common/csvUtils");
 const expect = require("chai").expect;
 
 describe("CsvWriter", () => {

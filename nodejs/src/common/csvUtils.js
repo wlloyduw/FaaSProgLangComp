@@ -13,10 +13,18 @@ class CsvUtils {
         return record;
     }
 
+    /**
+     * @param {...*} values
+     * @return {Array<String>}
+     */
     static recordWith(...values) {
         let record = CsvUtils.emptyRecord();
         for (let i = 0; i < values.length; i += 2) {
-            record[values[i]] = values[i + 1]
+            let index = values[i];
+            if (index < 0 || index >= record.length) {
+                continue;
+            }
+            record[index] = values[i + 1]
         }
         return record;
     }

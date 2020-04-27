@@ -1,7 +1,7 @@
 const ServiceTwo = require('../../src/serviceTwo/serviceTwo');
 const FakeS3 = require('../../testing/fakeS3');
 const FakeMySql = require('../../testing/fakeMySql');
-const CsvUtils = require("../../testing/csvUtils");
+const CsvUtils = require("../../src/common/csvUtils");
 const chai = require('chai');
 chai.use(require('chai-string'));
 const expect = chai.expect;
