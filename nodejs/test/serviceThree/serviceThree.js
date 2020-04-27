@@ -91,7 +91,7 @@ describe('ServiceThree', () => {
             dbEndpoint: 'aws',
             dbName: 'myDb',
             tableName: 'myTable',
-            bucketName: 'myBucket',
+            bucketname: 'myBucket',
             key: 'root/sub-directory/file.csv'
         };
         await service.handleRequest(request, null);
@@ -117,7 +117,7 @@ describe('ServiceThree', () => {
             "'WHERE Country=Fiji' AS `Filtered By` FROM myTable WHERE `Country`= 'Fiji';");
 
         let records = CsvUtils.toRecords(fakeS3.getObject({
-            Bucket: request.bucketName,
+            Bucket: request.bucketname,
             Key: request.key,
         }).string());
 
@@ -155,7 +155,7 @@ describe('ServiceThree', () => {
             dbEndpoint: 'aws',
             dbName: 'myDb',
             tableName: 'myTable',
-            bucketName: 'myBucket',
+            bucketname: 'myBucket',
             key: 'root/sub-directory/file.csv',
             stressTestLoops: batchSize
         };

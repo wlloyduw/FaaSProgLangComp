@@ -40,7 +40,7 @@ describe("ServiceOne", () => {
 
     it('will read from the S3 bucket', async () => {
         await service.handleRequest({
-            bucketName: 'bucket1',
+            bucketname: 'bucket1',
             key: 'myCsvFile.csv'
         }, null);
         expect(fakeS3.getObject.calledOnce).to.be.true;
@@ -51,7 +51,7 @@ describe("ServiceOne", () => {
 
     it('will not write anything if CSV file does not exist', async () => {
         await service.handleRequest({
-            bucketName: 'bucket1',
+            bucketname: 'bucket1',
             key: 'myCsvFile.csv'
         }, null);
         expect(fakeS3.putObject.called).to.be.false;
@@ -71,7 +71,7 @@ describe("ServiceOne", () => {
         sandbox.reset();
 
         await service.handleRequest({
-            bucketName: 'bucket1',
+            bucketname: 'bucket1',
             key: 'myCsvFile.csv'
         }, null);
 

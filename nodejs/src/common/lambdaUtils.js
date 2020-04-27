@@ -1,6 +1,6 @@
 /**
  * @typedef S3ObjectRequest
- * @property {String} bucketName
+ * @property {String} bucketname
  * @property {String} key
  */
 
@@ -13,7 +13,7 @@ class LambdaUtils {
      */
     static async readObject(s3, request) {
         let s3Object = await s3.getObject({
-            Bucket: request.bucketName,
+            Bucket: request.bucketname,
             Key: request.key
         }).promise();
         return s3Object.Body;

@@ -25,7 +25,7 @@ const DbColumns = require("../common/dbColumns");
 
 /**
  * @typedef ServiceTwoRequest
- * @property {String} bucketName
+ * @property {String} bucketname
  * @property {String} key
  * @property {String} dbName
  * @property {String} dbEndpoint

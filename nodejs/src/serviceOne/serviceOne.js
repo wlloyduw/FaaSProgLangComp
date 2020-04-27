@@ -77,7 +77,7 @@ class ServiceOne extends RequestHandler {
         let inspector = new Inspector();
         inspector.inspectAll();
 
-        inspector.addAttribute("message", `bucketname is = ${request['bucketName']}! This is an attributed added to the Inspector!`);
+        inspector.addAttribute("message", `bucketname is = ${request['bucketname']}! This is an attributed added to the Inspector!`);
 
         let body;
         try {
@@ -90,7 +90,7 @@ class ServiceOne extends RequestHandler {
         let output = await this._produceCsvOutput(body);
         await this._uploadCsv(request, inspector, output);
 
-        inspector.addAttribute("value", "Bucket: " + request.bucketName + " key:" + request.key + " processed. record 0 = ");
+        inspector.addAttribute("value", "Bucket: " + request.bucketname + " key:" + request.key + " processed. record 0 = ");
         inspector.inspectAllDeltas();
 
         return inspector.finish();
@@ -111,7 +111,7 @@ class ServiceOne extends RequestHandler {
     async _readRequestedFile(request) {
         this._log("start getobj");
         let s3Object = await this._s3.getObject({
-            Bucket: request.bucketName,
+            Bucket: request.bucketname,
             Key: request.key
         }).promise();
 
@@ -150,7 +150,7 @@ class ServiceOne extends RequestHandler {
     async _uploadCsv(request, inspector, csv) {
         let targetKey = `${request.key.substring(0, request.key.lastIndexOf('.'))}/${this._timeTagProducer.call()}_${this._uuidProvider.call(null, inspector)}.csv`;
         return this._s3.putObject({
-            Bucket: request.bucketName,
+            Bucket: request.bucketname,
             Key: targetKey,
             Body: csv
         }).promise();

@@ -47,7 +47,7 @@ describe("ServiceTwo", () => {
 
         it('will read from the S3 bucket', async () => {
             await service.handleRequest({
-                bucketName: 'bucket1',
+                bucketname: 'bucket1',
                 key: 'myCsvFile.csv'
             }, null);
             expect(fakeS3.getObject.calledOnce).to.be.true;
@@ -58,7 +58,7 @@ describe("ServiceTwo", () => {
 
         it('will not write anything if CSV file does not exist', async () => {
             await service.handleRequest({
-                bucketName: 'bucket1',
+                bucketname: 'bucket1',
                 key: 'myCsvFile.csv'
             }, null);
 
@@ -88,7 +88,7 @@ describe("ServiceTwo", () => {
 
         it('will quit gracefully when database fails to connect', async () => {
             await service.handleRequest({
-                bucketName: 'bucket1',
+                bucketname: 'bucket1',
                 key: 'myCsvFile.csv'
             }, null);
 
@@ -106,7 +106,7 @@ describe("ServiceTwo", () => {
             });
 
             await service.handleRequest({
-                bucketName: 'bucket1',
+                bucketname: 'bucket1',
                 key: 'myCsvFile.csv',
                 dbName: 'theDB',
                 dbEndpoint: 'myHost',
@@ -124,7 +124,7 @@ describe("ServiceTwo", () => {
              */
             let createRequest = (request = {}) => {
                 return {
-                    bucketName: 'bucket1',
+                    bucketname: 'bucket1',
                     key: 'myCsvFile.csv',
                     dbName: 'theDB',
                     dbEndpoint: 'myHost',

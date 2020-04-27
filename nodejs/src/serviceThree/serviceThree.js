@@ -6,7 +6,7 @@ const CsvUtils = require('../common/csvUtils');
 
 /**
  * @typedef ServiceThreeRequest
- * @property {String} bucketName
+ * @property {String} bucketname
  * @property {String} key
  * @property {String} dbName
  * @property {String} dbEndpoint
@@ -80,7 +80,7 @@ class ServiceThree extends RequestHandler {
             let buffer = Buffer.from(CsvUtils.fromRecords(result.map(row => DbUtils.fromObject(row))));
 
             await this._s3.putObject({
-                Bucket: request.bucketName,
+                Bucket: request.bucketname,
                 Key: request.key,
                 Body: buffer
             }).promise();
