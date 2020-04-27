@@ -153,28 +153,30 @@ class ServiceTwo extends RequestHandler {
         // Delete the top row, which is just CSV headers.
         records.splice(0, 1);
 
+        let insertStatement = Statements.INSERT(table);
+
         let batch = [];
         for (let i = 0; i < records.length; i++) {
             batch.push(records[i]);
             if (batch.length === batchSize) {
-                await this._writeBatch(connection, table, batch);
+                await this._writeBatch(connection, insertStatement, batch);
                 batch = [];
             }
         }
         if (batch.length > 0) {
-            await this._writeBatch(connection, table, batch);
+            await this._writeBatch(connection, insertStatement, batch);
         }
     }
 
     /**
      * @param {Connection} connection
-     * @param {String} table
+     * @param {String} insertStatement
      * @param {Array<Array<String>>} batch
      * @private
      */
-    async _writeBatch(connection, table, batch) {
+    async _writeBatch(connection, insertStatement, batch) {
         // noinspection SqlNoDataSourceInspection
-        let statements = batch.map(row => this._mysql.format(Statements.INSERT(table), row)).join(";") + ";";
+        let statements = batch.map(row => this._mysql.format(insertStatement, row)).join(";") + ";";
         await connection.query(statements);
     }
 

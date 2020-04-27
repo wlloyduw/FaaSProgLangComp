@@ -4,16 +4,27 @@ const CsvUtils = require("./csvUtils");
 class DbUtils {
 
     /**
-     * @param {Object} record
+     * @param {Object} object
      * @return {Array<String>}
      */
-    static fromRecord(record) {
+    static fromObject(object) {
         let values = [];
-        DbColumns.all().filter(c => typeof record[c.name] !== 'undefined').forEach(c => {
+        DbColumns.all().filter(c => typeof object[c.name] !== 'undefined').forEach(c => {
             values.push(c.index);
-            values.push(record[c.name]);
+            values.push(object[c.name]);
         });
         return CsvUtils.recordWith(...values);
+    }
+
+    /**
+     * @param {Array<String>} record
+     * @return {Object}
+     */
+    static toObject(record) {
+        return DbColumns.all().reduce((object, column) => {
+            object[column.name] = record[column.index];
+            return object;
+        }, {});
     }
 
 }

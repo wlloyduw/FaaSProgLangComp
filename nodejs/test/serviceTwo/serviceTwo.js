@@ -96,11 +96,20 @@ describe("ServiceTwo", () => {
         });
 
         it('will quit gracefully when database fails to query', async () => {
-            FakeMySql.expectConnection();
+            FakeMySql.expectConnection({
+                database: 'theDB',
+                host: 'myHost',
+                user: 'zoe',
+                password: 'UW',
+                charset: 'utf8mb4',
+                multipleStatements: true
+            });
 
             await service.handleRequest({
                 bucketName: 'bucket1',
-                key: 'myCsvFile.csv'
+                key: 'myCsvFile.csv',
+                dbName: 'theDB',
+                dbEndpoint: 'myHost',
             }, null);
 
             expect(lastLog).to.match(/Unexpected statement: DROP TABLE/);
@@ -127,10 +136,12 @@ describe("ServiceTwo", () => {
 
             beforeEach(() => {
                 connection = FakeMySql.expectConnection({
-                    dbName: 'theDB',
-                    dbEndpoint: 'myHost',
+                    database: 'theDB',
+                    host: 'myHost',
                     user: 'zoe',
-                    password: 'UW'
+                    password: 'UW',
+                    charset: 'utf8mb4',
+                    multipleStatements: true
                 });
             });
 

@@ -34,7 +34,7 @@ class FakeMySql {
         return new Promise((resolve, reject) => {
             if (connections.length === 0) {
                 reject(new Error("Unexpected connection"));
-            } else if (objEquals(options, connections[0]._config)) {
+            } else if (!objEquals(options, connections[0]._config)) {
                 reject(new Error("Unexpected connection"));
             } else {
                 resolve(connections.pop());
