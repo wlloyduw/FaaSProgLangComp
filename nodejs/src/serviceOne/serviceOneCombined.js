@@ -61,32 +61,32 @@ class ServiceOneCombined extends RequestHandler {
         let inspector = new Inspector();
         inspector.inspectAll();
         inspector.addAttribute("message", `bucketname is = ${request['bucketname']}! This is an attributed added to the Inspector!`);
-        inspector.addTimeStamp('CsvProcess.start');
+        inspector.addTimeStamp('ServiceOne.start');
         try {
-            inspector.addTimeStamp('CsvProcess.S3Read.start');
+            inspector.addTimeStamp('ServiceOne.S3Read.start');
             let body = (await this._s3.getObject({
                 Bucket: request.bucketname,
                 Key: request.key
             }).promise()).Body;
-            inspector.addTimeStamp('CsvProcess.S3Read.end');
-            inspector.addTimeStamp('CsvProcess.CsvRead.start');
+            inspector.addTimeStamp('ServiceOne.S3Read.end');
+            inspector.addTimeStamp('ServiceOne.CsvRead.start');
             let records = await this.readCsv(body);
-            inspector.addTimeStamp('CsvProcess.CsvRead.end');
-            inspector.addTimeStamp('CsvProcess.CsvWrite.start');
+            inspector.addTimeStamp('ServiceOne.CsvRead.end');
+            inspector.addTimeStamp('ServiceOne.CsvWrite.start');
             let csv = this.writeCsv(records);
-            inspector.addTimeStamp('CsvProcess.CsvWrite.end');
+            inspector.addTimeStamp('ServiceOne.CsvWrite.end');
             let targetKey = `${request.key.substring(0, request.key.lastIndexOf('.'))}/${Date.now()}_${inspector.getAttribute('uuid')}.csv`;
-            inspector.addTimeStamp('CsvProcess.S3Write.start');
+            inspector.addTimeStamp('ServiceOne.S3Write.start');
             await this._s3.putObject({
                 Bucket: request.bucketname,
                 Key: targetKey,
                 Body: Buffer.from(csv)
             }).promise();
-            inspector.addTimeStamp('CsvProcess.S3Write.end');
+            inspector.addTimeStamp('ServiceOne.S3Write.end');
         } catch (e) {
             console.log("Failed to read requested file: " + (typeof e === 'string' ? e : (e.message + '\n' + e.stack)));
         }
-        inspector.addTimeStamp('CsvProcess.end');
+        inspector.addTimeStamp('ServiceOne.end');
         inspector.addAttribute("value", "Bucket: " + request.bucketname + " key:" + request.key + " processed. record 0 = ");
         inspector.inspectAllDeltas();
         return inspector.finish();
