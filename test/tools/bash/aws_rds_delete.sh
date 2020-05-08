@@ -16,7 +16,7 @@ MASTER_PASSWORD=password
 
 while [ $INSTANCES_NO -gt 0 ]
 do
-	RESULT=$(aws rds delete-db-cluster --db-cluster-identifier admin$COUNT --skip-final-snapshot 2>&1)
+	RESULT=$(aws rds delete-db-cluster --db-cluster-identifier admin$INSTANCES_NO --skip-final-snapshot 2>&1)
 	INSTANCES_NO=$(($INSTANCES_NO - 1))
 	sleep 5 # avoid network latency from AWS (similar to GCloud)
 done
