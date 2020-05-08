@@ -4,7 +4,7 @@
 # @author Hanfei Yu
 
 
-BUCKET_NAME="project.fall19.tcss562.vmp"
+BUCKET_NAME="project.bucket.tcss562.sps"
 DB_NAME="DB_TCSS562"
 DB_ENDPOINT=".cluster-cftyxgwyrild.us-east-1.rds.amazonaws.com"
 
@@ -23,7 +23,6 @@ else
 fi
 
 test_size="100000"
-test_file="100000recordExperiment.json"
 mkdir ./$sub_results_folder/$test_size
 
 # Father payloads
@@ -88,3 +87,5 @@ echo "************* Experiments Finally Done! Hurray! **************"
 echo "**************************************************************"
 echo "##############################################################"
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+sudo shutdown -P

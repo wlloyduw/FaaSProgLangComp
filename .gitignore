@@ -5,7 +5,10 @@
 # For Proglang
 .DS_Store
 test.sh
-data_analysis.sh
+#data_analysis.sh
 experiment2_results
+experiment2_results_nodejs
+experiment2_results_hybrid
 experiment2_results_analysis
 experiment2_results.zip
+nohup.out
