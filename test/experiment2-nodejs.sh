@@ -34,8 +34,7 @@ parentPayload3="{\"bucketname\":\"$BUCKET_NAME\",\"key\":\"QueryResults.csv\",\"
 for lang in NodeJS
 do
     mkdir ./$sub_results_folder/$test_size/$lang
-    #for con in 1 5 10 15 20 25 30 35 40 45 50 # Current limitation is 50 instances, should be 100 instances
-    for con in 1 2 3
+    for con in 1 5 10 15 20 25 30 35 40 45 50 # Current limitation is 50 instances, should be 100 instances
     do
         args="--runs $con --threads $con --warmupBuffer 0 --combineSheets 0 --sleepTime 0 --openCSV 0"
         

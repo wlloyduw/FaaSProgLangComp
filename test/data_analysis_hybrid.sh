@@ -7,10 +7,8 @@ PATH_PREFIX="./experiment2_results/"
 OUTPUT_PATH="./experiment2_results_analysis"
 METRICS="runtime cpuUsr cpuNice cpuKrn cpuIdle cpuIowait cpuIrq cpuSoftIrq vmcpusteal"
 
-#cons="1 5 10 15 20 25 30 35 40 45 50"
-cons="1 2 3"
-#con_max="50"
-con_max="3"
+cons="1 5 10 15 20 25 30 35 40 45 50"
+con_max="50"
 iter="11"
 data_size="100000"
 
@@ -29,8 +27,7 @@ do
     for service in $SERVICES
     do
         output_file="$OUTPUT_PATH/${service}${lang}.csv"
-        #header="concurrency,1,5,10,15,20,25,30,35,40,45,50"
-        header="concurrency,1,2,3"
+        header="concurrency,1,5,10,15,20,25,30,35,40,45,50"
         echo $header > $output_file
         
         runtime_row="runtime,"
@@ -76,7 +73,6 @@ do
 				result_path="${PATH_PREFIX}/${data_size}/${lang}/concurrency_${con}/iteration_${i}/${service}${PATH_SUFFIX}"
                 if [ -d "$result_path" ]
                 then 
-                	echo $result_path
                 	cnt=$(($cnt+1))
                 	
 	                for run in $(seq 0 $runs)
