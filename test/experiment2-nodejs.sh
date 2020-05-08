@@ -6,7 +6,7 @@
 
 BUCKET_NAME="project.fall19.tcss562.vmp"
 DB_NAME="DB_TCSS562"
-DB_ENDPOINT=".cluster-ctutcfcxozkc.us-east-1.rds.amazonaws.com"
+DB_ENDPOINT=".cluster-cftyxgwyrild.us-east-1.rds.amazonaws.com"
 
 files="100recordExperiment 1000recordExperiment 5000recordExperiment
     10000recordExperiment 50000recordExperiment 100000recordExperiment
