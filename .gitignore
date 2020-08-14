@@ -10,3 +10,9 @@ experiment2_configs
 experiment2_results
 experiment2_results_analysis
 
+#IntelliJ crap
+.idea
+*.ipr
+*.iml
+*.iws
+

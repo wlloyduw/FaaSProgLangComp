@@ -9,6 +9,7 @@
 
 const { execSync } = require('child_process'); 
 const fs = require('fs');
+const uuidv4 = require('uuid').v4;
 
 class Inspector {
     /**
@@ -48,7 +49,6 @@ class Inspector {
             myUuid = fs.readFileSync('/tmp/container-id', { encoding : 'utf8' });
             newContainer = 0;
         } else {
-            let uuidv4 = require('uuid/v4');
             myUuid = uuidv4();
             fs.writeFileSync('/tmp/container-id', myUuid);
         }
